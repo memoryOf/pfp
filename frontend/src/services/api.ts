@@ -48,8 +48,8 @@ api.interceptors.response.use(
 // 压测机相关API
 export const loadGeneratorService = {
   // 获取压测机列表
-  getLoadGenerators: (params?: any): Promise<LoadGenerator[]> => 
-    api.get('/load-generators', { params }),
+  getLoadGenerators: (params?: any): Promise<LoadGenerator[]> =>
+    api.get('/load-generators/', { params }),
 
   // 获取单个压测机
   getLoadGenerator: (id: number): Promise<LoadGenerator> => 

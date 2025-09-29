@@ -49,7 +49,7 @@
     ]
   },
   "devDependencies": {
-    "@types/echarts": "^4.9.21"
-  },
-  "proxy": "http://localhost:8000"
+    "@types/echarts": "^4.9.21",
+    "http-proxy-middleware": "^2.0.6"
+  }
 }
