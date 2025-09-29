@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, Table, Tag, Button } from 'antd';
+import { Card, Row, Col, Statistic, Table, Tag, Button, Typography } from 'antd';
 import { 
   CloudServerOutlined, 
   ExperimentOutlined, 
   CheckCircleOutlined,
   CloseCircleOutlined,
   PlayCircleOutlined,
-  PauseCircleOutlined
+  PauseCircleOutlined,
+  RocketOutlined,
+  ThunderboltOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { loadGeneratorService } from '../services/api';
 import type { LoadGenerator } from '../types/loadGenerator';
+
+const { Title } = Typography;
 
 const Dashboard: React.FC = () => {
   const [loadGenerators, setLoadGenerators] = useState<LoadGenerator[]>([]);
@@ -88,61 +92,73 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <h1>仪表盘</h1>
-        <p>性能测试平台总览</p>
+    <div style={{ background: 'var(--lol-dark)', minHeight: '100vh' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <Title level={1} className="lol-title" style={{ marginBottom: '8px' }}>
+          COMMAND CENTER
+        </Title>
+        <p style={{ color: 'var(--lol-text-secondary)', fontSize: '16px', margin: 0, fontFamily: 'Cinzel, sans-serif', letterSpacing: '1px' }}>
+          SYSTEM STATUS: READY FOR BOMBARDMENT
+        </p>
       </div>
 
       {/* 统计卡片 */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
-          <Card>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="压测机总数"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>TOTAL UNITS</span>}
               value={stats.total}
-              prefix={<CloudServerOutlined />}
+              prefix={<CloudServerOutlined style={{ color: 'var(--lol-primary)' }} />}
+              valueStyle={{ color: 'var(--lol-text)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="在线压测机"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>ONLINE</span>}
               value={stats.online}
-              valueStyle={{ color: '#3f8600' }}
-              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: 'var(--lol-primary)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<CheckCircleOutlined style={{ color: 'var(--lol-primary)' }} />}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="离线压测机"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>OFFLINE</span>}
               value={stats.offline}
-              valueStyle={{ color: '#cf1322' }}
-              prefix={<CloseCircleOutlined />}
+              valueStyle={{ color: 'var(--lol-secondary)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<CloseCircleOutlined style={{ color: 'var(--lol-secondary)' }} />}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="维护中"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>MAINTENANCE</span>}
               value={stats.maintenance}
-              valueStyle={{ color: '#d48806' }}
+              valueStyle={{ color: 'var(--lol-accent)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<ThunderboltOutlined style={{ color: 'var(--lol-accent)' }} />}
             />
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={16}>
+      <Row gutter={[16, 16]}>
         {/* 最近压测机 */}
-        <Col span={16}>
+        <Col xs={24} lg={16}>
           <Card 
-            title="最近压测机" 
+            className="lol-card"
+            style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}
+            title={<span style={{ color: 'var(--lol-text)', fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px' }}>LOAD GENERATORS</span>}
             extra={
-              <Button type="link" onClick={() => navigate('/load-generators')}>
+              <Button 
+                type="link" 
+                onClick={() => navigate('/load-generators')}
+                style={{ color: 'var(--lol-primary)' }}
+              >
                 查看全部
               </Button>
             }
@@ -159,30 +175,39 @@ const Dashboard: React.FC = () => {
         </Col>
 
         {/* 快速操作 */}
-        <Col span={8}>
-          <Card title="快速操作">
+        <Col xs={24} lg={8}>
+          <Card 
+            className="lol-card"
+            style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}
+            title={<span style={{ color: 'var(--lol-text)', fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px' }}>QUICK ACTIONS</span>}
+          >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <Button 
-                type="primary" 
+                className="lol-button"
                 icon={<CloudServerOutlined />}
                 onClick={() => navigate('/load-generators')}
                 block
+                size="large"
               >
-                管理压测机
+                MANAGE UNITS
               </Button>
               <Button 
+                className="lol-button"
                 icon={<ExperimentOutlined />}
                 onClick={() => navigate('/test-tasks')}
                 block
+                size="large"
               >
-                创建测试任务
+                CREATE MISSION
               </Button>
               <Button 
-                icon={<PlayCircleOutlined />}
+                className="lol-button"
+                icon={<RocketOutlined />}
                 onClick={() => navigate('/test-tasks')}
                 block
+                size="large"
               >
-                查看测试历史
+                START BOMBARDMENT
               </Button>
             </div>
           </Card>

@@ -1,4 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { LoadGenerator, LoadGeneratorConfig, ConnectionTestResult, ConfigValidationResult } from '../types/loadGenerator';
+import { TestTask, TestExecution, TestScript } from '../types/testTask';
 
 // 创建axios实例
 const api = axios.create({
@@ -46,113 +48,113 @@ api.interceptors.response.use(
 // 压测机相关API
 export const loadGeneratorService = {
   // 获取压测机列表
-  getLoadGenerators: (params?: any) => 
+  getLoadGenerators: (params?: any): Promise<LoadGenerator[]> => 
     api.get('/load-generators', { params }),
 
   // 获取单个压测机
-  getLoadGenerator: (id: number) => 
+  getLoadGenerator: (id: number): Promise<LoadGenerator> => 
     api.get(`/load-generators/${id}`),
 
   // 创建压测机
-  createLoadGenerator: (data: any) => 
+  createLoadGenerator: (data: any): Promise<LoadGenerator> => 
     api.post('/load-generators', data),
 
   // 更新压测机
-  updateLoadGenerator: (id: number, data: any) => 
+  updateLoadGenerator: (id: number, data: any): Promise<LoadGenerator> => 
     api.put(`/load-generators/${id}`, data),
 
   // 删除压测机
-  deleteLoadGenerator: (id: number) => 
+  deleteLoadGenerator: (id: number): Promise<void> => 
     api.delete(`/load-generators/${id}`),
 
   // 测试连接
-  testConnection: (id: number) => 
+  testConnection: (id: number): Promise<ConnectionTestResult> => 
     api.post(`/load-generators/${id}/test-connection`),
 
   // 获取压测机配置列表
-  getConfigs: (id: number) => 
+  getConfigs: (id: number): Promise<LoadGeneratorConfig[]> => 
     api.get(`/load-generators/${id}/configs`),
 
   // 创建压测机配置
-  createConfig: (id: number, data: any) => 
+  createConfig: (id: number, data: any): Promise<LoadGeneratorConfig> => 
     api.post(`/load-generators/${id}/configs`, data),
 
   // 更新压测机配置
-  updateConfig: (id: number, data: any) => 
+  updateConfig: (id: number, data: any): Promise<LoadGeneratorConfig> => 
     api.put(`/load-generators/configs/${id}`, data),
 
   // 删除压测机配置
-  deleteConfig: (id: number) => 
+  deleteConfig: (id: number): Promise<void> => 
     api.delete(`/load-generators/configs/${id}`),
 
   // 验证压测机配置
-  validateConfig: (id: number) => 
+  validateConfig: (id: number): Promise<ConfigValidationResult> => 
     api.post(`/load-generators/configs/${id}/validate`),
 };
 
 // 测试任务相关API
 export const testTaskService = {
   // 获取测试任务列表
-  getTestTasks: (params?: any) => 
+  getTestTasks: (params?: any): Promise<TestTask[]> => 
     api.get('/test-tasks', { params }),
 
   // 获取单个测试任务
-  getTestTask: (id: number) => 
+  getTestTask: (id: number): Promise<TestTask> => 
     api.get(`/test-tasks/${id}`),
 
   // 创建测试任务
-  createTestTask: (data: any) => 
+  createTestTask: (data: any): Promise<TestTask> => 
     api.post('/test-tasks', data),
 
   // 更新测试任务
-  updateTestTask: (id: number, data: any) => 
+  updateTestTask: (id: number, data: any): Promise<TestTask> => 
     api.put(`/test-tasks/${id}`, data),
 
   // 删除测试任务
-  deleteTestTask: (id: number) => 
+  deleteTestTask: (id: number): Promise<void> => 
     api.delete(`/test-tasks/${id}`),
 
   // 启动测试任务
-  startTestTask: (id: number) => 
+  startTestTask: (id: number): Promise<void> => 
     api.post(`/test-tasks/${id}/start`),
 
   // 停止测试任务
-  stopTestTask: (id: number) => 
+  stopTestTask: (id: number): Promise<void> => 
     api.post(`/test-tasks/${id}/stop`),
 
   // 获取测试执行记录
-  getExecutions: (taskId: number) => 
+  getExecutions: (taskId: number): Promise<TestExecution[]> => 
     api.get(`/test-tasks/${taskId}/executions`),
 };
 
 // 测试脚本相关API
 export const testScriptService = {
   // 获取测试脚本列表
-  getTestScripts: (params?: any) => 
+  getTestScripts: (params?: any): Promise<TestScript[]> => 
     api.get('/test-scripts', { params }),
 
   // 获取单个测试脚本
-  getTestScript: (id: number) => 
+  getTestScript: (id: number): Promise<TestScript> => 
     api.get(`/test-scripts/${id}`),
 
   // 创建测试脚本
-  createTestScript: (data: any) => 
+  createTestScript: (data: any): Promise<TestScript> => 
     api.post('/test-scripts', data),
 
   // 更新测试脚本
-  updateTestScript: (id: number, data: any) => 
+  updateTestScript: (id: number, data: any): Promise<TestScript> => 
     api.put(`/test-scripts/${id}`, data),
 
   // 删除测试脚本
-  deleteTestScript: (id: number) => 
+  deleteTestScript: (id: number): Promise<void> => 
     api.delete(`/test-scripts/${id}`),
 
   // AI生成脚本
-  generateScript: (data: any) => 
+  generateScript: (data: any): Promise<TestScript> => 
     api.post('/test-scripts/generate', data),
 
   // AI优化脚本
-  optimizeScript: (id: number, data: any) => 
+  optimizeScript: (id: number, data: any): Promise<TestScript> => 
     api.post(`/test-scripts/${id}/optimize`, data),
 };
 

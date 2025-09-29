@@ -14,7 +14,8 @@ import {
   Card,
   Row,
   Col,
-  Statistic
+  Statistic,
+  Typography
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -26,26 +27,15 @@ import {
   ExperimentOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  ClockCircleOutlined
+  ClockCircleOutlined,
+  RocketOutlined,
+  ThunderboltOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { testTaskService } from '../services/api';
+import type { TestTask } from '../types/testTask';
 
-interface TestTask {
-  id: number;
-  name: string;
-  description?: string;
-  status: 'draft' | 'running' | 'completed' | 'failed' | 'cancelled';
-  target_host: string;
-  user_count: number;
-  spawn_rate: number;
-  run_time: string;
-  test_strategy: 'single' | 'progressive' | 'adaptive';
-  created_at: string;
-  updated_at: string;
-  started_at?: string;
-  completed_at?: string;
-}
+const { Title } = Typography;
 
 const TestTaskList: React.FC = () => {
   const [testTasks, setTestTasks] = useState<TestTask[]>([]);
@@ -206,7 +196,7 @@ const TestTaskList: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_, record: TestTask) => (
+      render: (_: any, record: TestTask) => (
         <Space size="small">
           {record.status === 'draft' && (
             <Button 
@@ -258,93 +248,111 @@ const TestTaskList: React.FC = () => {
   };
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <h1>测试任务管理</h1>
-        <p>管理性能测试任务</p>
+    <div style={{ background: 'var(--lol-dark)', minHeight: '100vh' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <Title level={1} className="lol-title" style={{ marginBottom: '8px' }}>
+          BOMBARDMENT CENTER
+        </Title>
+        <p style={{ color: 'var(--lol-text-secondary)', fontSize: '16px', margin: 0, fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px' }}>
+          CREATE AND MANAGE YOUR BOMBARDMENT MISSIONS
+        </p>
       </div>
 
       {/* 统计卡片 */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={5}>
-          <Card>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="总任务数"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>TOTAL</span>}
               value={stats.total}
-              prefix={<ExperimentOutlined />}
+              prefix={<ExperimentOutlined style={{ color: 'var(--lol-primary)' }} />}
+              valueStyle={{ color: 'var(--lol-text)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
             />
           </Card>
         </Col>
-        <Col span={5}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="草稿"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>DRAFT</span>}
               value={stats.draft}
-              valueStyle={{ color: '#666' }}
-              prefix={<ClockCircleOutlined />}
+              valueStyle={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<ClockCircleOutlined style={{ color: 'var(--lol-text-secondary)' }} />}
             />
           </Card>
         </Col>
-        <Col span={5}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="运行中"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>RUNNING</span>}
               value={stats.running}
-              valueStyle={{ color: '#1890ff' }}
-              prefix={<PlayCircleOutlined />}
+              valueStyle={{ color: 'var(--lol-primary)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<PlayCircleOutlined style={{ color: 'var(--lol-primary)' }} />}
             />
           </Card>
         </Col>
-        <Col span={5}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="已完成"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>COMPLETED</span>}
               value={stats.completed}
-              valueStyle={{ color: '#3f8600' }}
-              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: 'var(--lol-accent)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<CheckCircleOutlined style={{ color: 'var(--lol-accent)' }} />}
             />
           </Card>
         </Col>
-        <Col span={4}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="失败"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>FAILED</span>}
               value={stats.failed}
-              valueStyle={{ color: '#cf1322' }}
-              prefix={<CloseCircleOutlined />}
+              valueStyle={{ color: 'var(--lol-secondary)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<CloseCircleOutlined style={{ color: 'var(--lol-secondary)' }} />}
             />
           </Card>
         </Col>
       </Row>
 
-      <div className="page-content">
-        <div className="action-buttons">
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
           <Button 
-            type="primary" 
+            className="lol-button"
             icon={<PlusOutlined />}
             onClick={handleAdd}
+            size="large"
           >
-            创建测试任务
+            CREATE MISSION
           </Button>
           <Button 
+            className="lol-button"
             icon={<ReloadOutlined />}
             onClick={fetchTestTasks}
+            size="large"
           >
-            刷新
+            REFRESH
           </Button>
         </div>
 
-        <Table
-          columns={columns}
-          dataSource={testTasks}
-          rowKey="id"
-          loading={loading}
-          pagination={{
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 条记录`,
-          }}
-        />
+        <Card 
+          className="lol-card"
+          style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}
+        >
+          <Table
+            columns={columns}
+            dataSource={testTasks}
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total) => `TOTAL ${total} RECORDS`,
+            }}
+            style={{ 
+              background: 'var(--lol-gray)',
+              color: 'var(--lol-text)'
+            }}
+            className="lol-table"
+          />
+        </Card>
       </div>
 
       {/* 添加/编辑模态框 */}

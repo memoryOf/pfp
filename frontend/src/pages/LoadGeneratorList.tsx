@@ -13,7 +13,8 @@ import {
   Card,
   Row,
   Col,
-  Statistic
+  Statistic,
+  Typography
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -22,11 +23,14 @@ import {
   ReloadOutlined,
   CloudServerOutlined,
   CheckCircleOutlined,
-  CloseCircleOutlined
+  CloseCircleOutlined,
+  RocketOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { loadGeneratorService } from '../services/api';
 import type { LoadGenerator } from '../types/loadGenerator';
+
+const { Title } = Typography;
 
 const LoadGeneratorList: React.FC = () => {
   const [loadGenerators, setLoadGenerators] = useState<LoadGenerator[]>([]);
@@ -164,7 +168,7 @@ const LoadGeneratorList: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_, record: LoadGenerator) => (
+      render: (_: any, record: LoadGenerator) => (
         <Space size="small">
           <Button 
             type="link" 
@@ -204,82 +208,101 @@ const LoadGeneratorList: React.FC = () => {
   };
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <h1>压测机管理</h1>
-        <p>管理性能测试的负载生成器</p>
+    <div style={{ background: 'var(--lol-dark)', minHeight: '100vh' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <Title level={1} className="lol-title" style={{ marginBottom: '8px' }}>
+          LOAD GENERATORS
+        </Title>
+        <p style={{ color: 'var(--lol-text-secondary)', fontSize: '16px', margin: 0, fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px' }}>
+          CONFIGURE YOUR LOAD GENERATOR ARMY FOR BOMBARDMENT
+        </p>
       </div>
 
       {/* 统计卡片 */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
-          <Card>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="总数量"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>TOTAL</span>}
               value={stats.total}
-              prefix={<CloudServerOutlined />}
+              prefix={<CloudServerOutlined style={{ color: 'var(--lol-primary)' }} />}
+              valueStyle={{ color: 'var(--lol-text)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="在线"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>ONLINE</span>}
               value={stats.online}
-              valueStyle={{ color: '#3f8600' }}
-              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: 'var(--lol-primary)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<CheckCircleOutlined style={{ color: 'var(--lol-primary)' }} />}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="离线"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>OFFLINE</span>}
               value={stats.offline}
-              valueStyle={{ color: '#cf1322' }}
-              prefix={<CloseCircleOutlined />}
+              valueStyle={{ color: 'var(--lol-secondary)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<CloseCircleOutlined style={{ color: 'var(--lol-secondary)' }} />}
             />
           </Card>
         </Col>
-        <Col span={6}>
-          <Card>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
-              title="维护中"
+              title={<span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>MAINTENANCE</span>}
               value={stats.maintenance}
-              valueStyle={{ color: '#d48806' }}
+              valueStyle={{ color: 'var(--lol-accent)', fontFamily: 'Orbitron, sans-serif', fontWeight: 900 }}
+              prefix={<RocketOutlined style={{ color: 'var(--lol-accent)' }} />}
             />
           </Card>
         </Col>
       </Row>
 
-      <div className="page-content">
-        <div className="action-buttons">
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
           <Button 
-            type="primary" 
+            className="lol-button"
             icon={<PlusOutlined />}
             onClick={handleAdd}
+            size="large"
           >
-            添加压测机
+            ADD UNIT
           </Button>
           <Button 
+            className="lol-button"
             icon={<ReloadOutlined />}
             onClick={fetchLoadGenerators}
+            size="large"
           >
-            刷新
+            REFRESH
           </Button>
         </div>
 
-        <Table
-          columns={columns}
-          dataSource={loadGenerators}
-          rowKey="id"
-          loading={loading}
-          pagination={{
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 条记录`,
-          }}
-        />
+        <Card 
+          className="lol-card"
+          style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}
+        >
+          <Table
+            columns={columns}
+            dataSource={loadGenerators}
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total) => `TOTAL ${total} RECORDS`,
+            }}
+            style={{ 
+              background: 'var(--lol-gray)',
+              color: 'var(--lol-text)'
+            }}
+            className="lol-table"
+          />
+        </Card>
       </div>
 
       {/* 添加/编辑模态框 */}

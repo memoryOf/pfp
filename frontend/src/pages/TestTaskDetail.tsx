@@ -24,42 +24,7 @@ import {
   ClockCircleOutlined
 } from '@ant-design/icons';
 import { testTaskService } from '../services/api';
-
-interface TestTask {
-  id: number;
-  name: string;
-  description?: string;
-  status: 'draft' | 'running' | 'completed' | 'failed' | 'cancelled';
-  target_host: string;
-  user_count: number;
-  spawn_rate: number;
-  run_time: string;
-  test_strategy: 'single' | 'progressive' | 'adaptive';
-  created_at: string;
-  updated_at: string;
-  started_at?: string;
-  completed_at?: string;
-}
-
-interface TestExecution {
-  id: number;
-  task_id: number;
-  execution_name: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
-  user_count: number;
-  spawn_rate: number;
-  run_time: string;
-  total_requests: number;
-  total_failures: number;
-  avg_response_time: number;
-  max_response_time: number;
-  min_response_time: number;
-  requests_per_second: number;
-  error_rate: number;
-  created_at: string;
-  started_at?: string;
-  completed_at?: string;
-}
+import type { TestTask, TestExecution } from '../types/testTask';
 
 const TestTaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();

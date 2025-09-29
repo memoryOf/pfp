@@ -1,35 +1,326 @@
 /* 全局样式 */
+/* 英雄联盟宇宙主题样式 */
 .App {
-  text-align: center;
+  min-height: 100vh;
+  background: var(--lol-darker);
+  color: var(--lol-text);
+  position: relative;
 }
 
-.App-logo {
-  height: 40vmin;
+/* 英雄联盟宇宙动画效果 */
+@keyframes lol-mystic-glow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 var(--lol-shadow);
+    filter: brightness(1);
+  }
+  25% {
+    transform: scale(1.01);
+    box-shadow: 0 0 20px 5px var(--lol-shadow);
+    filter: brightness(1.1);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 30px 10px var(--lol-glow);
+    filter: brightness(1.2);
+  }
+  75% {
+    transform: scale(1.01);
+    box-shadow: 0 0 20px 5px var(--lol-shadow);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes lol-title-glow {
+  0%, 100% {
+    text-shadow: 
+      0 0 5px var(--lol-primary),
+      0 0 10px var(--lol-primary),
+      0 0 15px var(--lol-glow);
+  }
+  50% {
+    text-shadow: 
+      0 0 10px var(--lol-primary),
+      0 0 20px var(--lol-glow),
+      0 0 30px var(--lol-secondary),
+      0 0 40px var(--lol-glow);
+  }
+}
+
+@keyframes lol-mystic-pulse {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    opacity: 0.9;
+    filter: brightness(1.3) saturate(1.2);
+  }
+}
+
+@keyframes lol-mystic-scan {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes lol-floating {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 英雄联盟宇宙按钮效果 */
+.lol-button {
+  background: linear-gradient(135deg, var(--lol-primary) 0%, var(--lol-accent) 100%);
+  border: 2px solid var(--lol-primary);
+  color: var(--lol-darker);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Cinzel', 'Playfair Display', sans-serif;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px var(--lol-shadow);
+  border-radius: 4px;
+}
+
+.lol-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s;
+}
+
+.lol-button:hover::before {
+  left: 100%;
+}
+
+.lol-button:hover {
+  animation: lol-mystic-glow 1s ease;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--lol-glow);
+  border-color: var(--lol-secondary);
+  color: var(--lol-darker);
+}
+
+.lol-button:active {
+  transform: translateY(0px);
+  box-shadow: 0 4px 20px var(--lol-shadow);
+}
+
+/* 英雄联盟宇宙卡片 */
+.lol-card {
+  background: var(--lol-gray);
+  border: 2px solid var(--lol-border);
+  border-radius: 8px;
+  box-shadow: 
+    0 0 0 1px var(--lol-primary),
+    0 4px 25px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(201, 170, 113, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.lol-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--lol-primary), var(--lol-accent), var(--lol-primary));
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.lol-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, var(--lol-mystic) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.lol-card:hover::before {
+  opacity: 1;
+}
+
+.lol-card:hover::after {
+  opacity: 1;
+}
+
+.lol-card:hover {
+  border-color: var(--lol-primary);
+  box-shadow: 
+    0 0 0 2px var(--lol-primary),
+    0 8px 40px var(--lol-shadow),
+    inset 0 1px 0 rgba(201, 170, 113, 0.3);
+  transform: translateY(-4px);
+  animation: lol-floating 2s ease-in-out infinite;
+}
+
+/* 英雄联盟宇宙标题 */
+.lol-title {
+  color: var(--lol-primary);
+  font-weight: 700;
+  font-family: 'Cinzel', 'Playfair Display', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 
+    0 0 5px var(--lol-primary),
+    0 0 10px var(--lol-primary),
+    0 0 15px var(--lol-glow),
+    0 0 20px var(--lol-glow);
+  animation: lol-title-glow 4s ease-in-out infinite;
+  position: relative;
+}
+
+.lol-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--lol-primary), var(--lol-accent), var(--lol-primary), transparent);
+  animation: lol-mystic-scan 3s linear infinite;
+  border-radius: 2px;
+}
+
+.lol-title::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(circle at 50% 50%, var(--lol-mystic) 0%, transparent 70%);
+  opacity: 0.3;
+  animation: lol-mystic-pulse 4s ease-in-out infinite;
+  z-index: -1;
+}
+
+/* 金克斯风格的进度条 */
+.jinx-progress {
+  background: var(--jinx-gray);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.jinx-progress-bar {
+  background: linear-gradient(90deg, var(--jinx-primary), var(--jinx-accent));
+  height: 100%;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.jinx-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: jinx-pulse 1.5s ease-in-out infinite;
+}
+
+/* 英雄联盟宇宙表格样式 */
+.lol-table {
+  background: var(--lol-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-table .ant-table {
+  background: var(--lol-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-table .ant-table-thead > tr > th {
+  background: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border-bottom: 2px solid var(--lol-primary) !important;
+  font-family: 'Cinzel', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 0 5px var(--lol-primary) !important;
+}
+
+.lol-table .ant-table-tbody > tr > td {
+  background: var(--lol-gray) !important;
+  color: var(--lol-text) !important;
+  border-bottom: 1px solid var(--lol-border) !important;
+  transition: all 0.3s ease !important;
+}
+
+.lol-table .ant-table-tbody > tr:hover > td {
+  background: var(--lol-light-gray) !important;
+  box-shadow: inset 0 0 10px var(--lol-mystic) !important;
+}
+
+.lol-table .ant-pagination {
+  color: var(--lol-text) !important;
+}
+
+.lol-table .ant-pagination .ant-pagination-item {
+  background: var(--lol-gray) !important;
+  border: 1px solid var(--lol-border) !important;
+  transition: all 0.3s ease !important;
+}
+
+.lol-table .ant-pagination .ant-pagination-item a {
+  color: var(--lol-text) !important;
+}
+
+.lol-table .ant-pagination .ant-pagination-item:hover {
+  border-color: var(--lol-primary) !important;
+  box-shadow: 0 0 10px var(--lol-shadow) !important;
+}
+
+.lol-table .ant-pagination .ant-pagination-item-active {
+  background: var(--lol-primary) !important;
+  border-color: var(--lol-primary) !important;
+  box-shadow: 0 0 15px var(--lol-glow) !important;
+}
+
+.lol-table .ant-pagination .ant-pagination-item-active a {
+  color: var(--lol-darker) !important;
+  font-weight: 700 !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .jinx-card {
+    margin: 10px;
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  padding: 20px;
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+  
+  .jinx-title {
+    font-size: 1.5rem;
   }
 }
 

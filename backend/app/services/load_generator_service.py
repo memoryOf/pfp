@@ -8,8 +8,8 @@ from datetime import datetime, timedelta
 import paramiko
 import json
 import asyncio
-from ..models.load_generator import LoadGenerator, LoadGeneratorConfig
-from ..schemas.load_generator import (
+from app.models.load_generator import LoadGenerator, LoadGeneratorConfig
+from app.schemas.load_generator import (
     LoadGeneratorCreate, LoadGeneratorUpdate, LoadGeneratorConfigCreate, LoadGeneratorConfigUpdate
 )
 

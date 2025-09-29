@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from .core.config import settings
 from .core.database import engine, Base
-from .api.v1.endpoints import load_generators
+from .api.v1.endpoints.load_generators import router as load_generators_router
 
 
 @asynccontextmanager
@@ -95,7 +95,7 @@ async def root():
 
 # 注册API路由
 app.include_router(
-    load_generators.router,
+    load_generators_router,
     prefix=f"{settings.API_V1_STR}/load-generators",
     tags=["压测机管理"]
 )

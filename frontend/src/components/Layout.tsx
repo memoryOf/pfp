@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout as AntLayout, Menu, Button, Avatar, Dropdown } from 'antd';
+import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Typography } from 'antd';
 import { 
   DashboardOutlined, 
   CloudServerOutlined, 
@@ -7,9 +7,12 @@ import {
   UserOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  RocketOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
+
+const { Title } = Typography;
 
 const { Header, Sider, Content } = AntLayout;
 
@@ -24,19 +27,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const menuItems = [
     {
-      key: '/dashboard',
+      key: '/',
       icon: <DashboardOutlined />,
-      label: '仪表盘',
+      label: 'COMMAND CENTER',
     },
     {
       key: '/load-generators',
       icon: <CloudServerOutlined />,
-      label: '压测机管理',
+      label: 'LOAD GENERATORS',
     },
     {
       key: '/test-tasks',
       icon: <ExperimentOutlined />,
-      label: '测试任务',
+      label: 'BOMBARDMENT',
     },
   ];
 
@@ -65,14 +68,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <AntLayout style={{ minHeight: '100vh' }}>
+    <AntLayout style={{ minHeight: '100vh', background: 'var(--lol-dark)' }}>
       <Sider 
         trigger={null} 
         collapsible 
         collapsed={collapsed}
         style={{
-          background: '#fff',
-          boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
+          background: 'var(--lol-darker)',
+          boxShadow: '2px 0 8px rgba(255, 71, 87, 0.2)',
+          borderRight: '1px solid var(--lol-border)',
         }}
       >
         <div style={{ 
@@ -80,33 +84,44 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          borderBottom: '1px solid #f0f0f0'
+          borderBottom: '1px solid var(--lol-border)',
+          background: 'linear-gradient(90deg, var(--lol-primary), var(--lol-secondary))'
         }}>
-          <h2 style={{ 
+          <Title level={3} style={{ 
             margin: 0, 
-            color: '#1890ff',
+            color: 'white',
             fontSize: collapsed ? 16 : 20,
-            transition: 'all 0.2s'
+            transition: 'all 0.2s',
+            textShadow: '0 0 10px rgba(255,0,64,0.8)',
+            fontFamily: 'Orbitron, Exo 2, sans-serif',
+            fontWeight: 900,
+            letterSpacing: '2px'
           }}>
-            {collapsed ? 'PFP' : '性能测试平台'}
-          </h2>
+            {collapsed ? 'J' : 'JINX'}
+          </Title>
         </div>
         <Menu
           mode="inline"
           selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={handleMenuClick}
-          style={{ borderRight: 0 }}
+          style={{ 
+            borderRight: 0,
+            background: 'var(--lol-darker)',
+            color: 'var(--jinx-text)'
+          }}
+          theme="dark"
         />
       </Sider>
       <AntLayout>
         <Header style={{ 
           padding: '0 24px', 
-          background: '#fff',
+          background: 'var(--lol-gray)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          boxShadow: '0 2px 8px rgba(255, 71, 87, 0.2)',
+          borderBottom: '1px solid var(--lol-border)'
         }}>
           <Button
             type="text"
@@ -115,7 +130,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             style={{ fontSize: '16px', width: 64, height: 64 }}
           />
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <span style={{ color: '#666' }}>v1.0.0</span>
+            <span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>BOMBARDMENT v1.0</span>
             <Dropdown
               menu={{ 
                 items: userMenuItems,
@@ -124,13 +139,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               placement="bottomRight"
             >
               <Avatar 
-                icon={<UserOutlined />} 
-                style={{ cursor: 'pointer' }}
+                icon={<RocketOutlined />} 
+                style={{ 
+                  cursor: 'pointer',
+                  background: 'var(--lol-primary)',
+                  border: '2px solid var(--lol-secondary)'
+                }}
               />
             </Dropdown>
           </div>
         </Header>
-        <Content style={{ margin: 0, minHeight: 280 }}>
+        <Content style={{ 
+          margin: 0, 
+          minHeight: 280,
+          background: 'var(--lol-dark)',
+          padding: '24px'
+        }}>
           {children}
         </Content>
       </AntLayout>

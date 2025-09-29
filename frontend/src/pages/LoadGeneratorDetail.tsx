@@ -143,7 +143,7 @@ const LoadGeneratorDetail: React.FC = () => {
     {
       title: 'Master配置',
       key: 'master',
-      render: (_, record: LoadGeneratorConfig) => (
+      render: (_: any, record: LoadGeneratorConfig) => (
         <div>
           <div>CPU: {record.master_cpu_cores}核</div>
           <div>内存: {record.master_memory_gb}GB</div>
@@ -153,7 +153,7 @@ const LoadGeneratorDetail: React.FC = () => {
     {
       title: 'Worker配置',
       key: 'worker',
-      render: (_, record: LoadGeneratorConfig) => (
+      render: (_: any, record: LoadGeneratorConfig) => (
         <div>
           <div>数量: {record.worker_count}个</div>
           <div>CPU: {record.worker_cpu_cores}核/个</div>
@@ -174,7 +174,7 @@ const LoadGeneratorDetail: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_, record: LoadGeneratorConfig) => (
+      render: (_: any, record: LoadGeneratorConfig) => (
         <Space size="small">
           <Button 
             type="link" 
