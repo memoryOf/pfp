@@ -1,0 +1,179 @@
+version: '3.8'
+
+services:
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: pfp-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pfp123456
+      MYSQL_DATABASE: pfp
+      MYSQL_USER: pfp
+      MYSQL_PASSWORD: pfp123456
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - pfp-network
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: pfp-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - pfp-network
+
+  # InfluxDB时序数据库
+  influxdb:
+    image: influxdb:2.7
+    container_name: pfp-influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: pfp123456
+      DOCKER_INFLUXDB_INIT_ORG: pfp
+      DOCKER_INFLUXDB_INIT_BUCKET: performance_metrics
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: pfp-admin-token-123456
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    networks:
+      - pfp-network
+
+  # 后端API服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pfp-backend
+    environment:
+      MYSQL_SERVER: mysql
+      MYSQL_USER: pfp
+      MYSQL_PASSWORD: pfp123456
+      MYSQL_DB: pfp
+      REDIS_HOST: redis
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: pfp-admin-token-123456
+      INFLUXDB_ORG: pfp
+      INFLUXDB_BUCKET: performance_metrics
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - uploads_data:/app/uploads
+    depends_on:
+      - mysql
+      - redis
+      - influxdb
+    networks:
+      - pfp-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Celery Worker
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pfp-celery-worker
+    environment:
+      MYSQL_SERVER: mysql
+      MYSQL_USER: pfp
+      MYSQL_PASSWORD: pfp123456
+      MYSQL_DB: pfp
+      REDIS_HOST: redis
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: pfp-admin-token-123456
+      INFLUXDB_ORG: pfp
+      INFLUXDB_BUCKET: performance_metrics
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+    volumes:
+      - ./backend:/app
+      - uploads_data:/app/uploads
+    depends_on:
+      - mysql
+      - redis
+      - influxdb
+    networks:
+      - pfp-network
+    command: celery -A app.celery worker --loglevel=info
+
+  # Celery Beat (定时任务)
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pfp-celery-beat
+    environment:
+      MYSQL_SERVER: mysql
+      MYSQL_USER: pfp
+      MYSQL_PASSWORD: pfp123456
+      MYSQL_DB: pfp
+      REDIS_HOST: redis
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: pfp-admin-token-123456
+      INFLUXDB_ORG: pfp
+      INFLUXDB_BUCKET: performance_metrics
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mysql
+      - redis
+      - influxdb
+    networks:
+      - pfp-network
+    command: celery -A app.celery beat --loglevel=info
+
+  # 前端服务
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pfp-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - pfp-network
+    command: npm start
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: pfp-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - pfp-network
+
+volumes:
+  mysql_data:
+  redis_data:
+  influxdb_data:
+  uploads_data:
+
+networks:
+  pfp-network:
+    driver: bridge
