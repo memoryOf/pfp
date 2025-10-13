@@ -1,0 +1,441 @@
+/* Ant Design 主题覆盖 - 现代暗黑风格 */
+
+/* 全局覆盖 Ant Design 的默认样式 */
+.ant-layout {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-layout-header {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.ant-layout-sider {
+  background: var(--bg-secondary) !important;
+  border-right: 1px solid var(--border) !important;
+}
+
+.ant-layout-content {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 卡片样式覆盖 */
+.ant-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.ant-card-head {
+  background: var(--bg-card) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.ant-card-head-title {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+
+.ant-card-body {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 统计组件样式覆盖 */
+.ant-statistic {
+  color: var(--text-primary) !important;
+}
+
+.ant-statistic-title {
+  color: var(--text-muted) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.ant-statistic-content {
+  color: var(--text-primary) !important;
+}
+
+.ant-statistic-content-value {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+  font-size: 24px !important;
+}
+
+.ant-statistic-content-prefix {
+  color: var(--primary) !important;
+}
+
+/* 表格样式覆盖 */
+.ant-table {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-table-thead > tr > th {
+  background: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+  border-bottom: 1px solid var(--border) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.ant-table-tbody > tr > td {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--bg-hover) !important;
+}
+
+.ant-table-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+
+/* 按钮样式覆盖 */
+.ant-btn {
+  background: var(--primary) !important;
+  border: 1px solid var(--primary) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-btn:hover {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.ant-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.ant-btn-primary {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.ant-btn-primary:hover {
+  background: var(--primary-hover) !important;
+  border-color: var(--primary-hover) !important;
+}
+
+.ant-btn-default {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-btn-default:hover {
+  background: var(--bg-hover) !important;
+  border-color: var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-btn-text {
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-btn-text:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 标签样式覆盖 */
+.ant-tag {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.ant-tag-success {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: var(--success) !important;
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.ant-tag-error {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: var(--error) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+.ant-tag-warning {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: var(--warning) !important;
+  border-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+.ant-tag-processing {
+  background: rgba(99, 102, 241, 0.1) !important;
+  color: var(--primary) !important;
+  border-color: rgba(99, 102, 241, 0.2) !important;
+}
+
+/* 输入框样式覆盖 */
+.ant-input {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px !important;
+}
+
+.ant-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+.ant-input:hover {
+  border-color: var(--border-light) !important;
+}
+
+.ant-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.ant-input-number {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+}
+
+.ant-input-number-input {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-input-password {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+}
+
+.ant-input-password .ant-input {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 表单样式覆盖 */
+.ant-form-item-label > label {
+  color: var(--text-secondary) !important;
+  font-weight: 500 !important;
+}
+
+.ant-form-item-control-input {
+  color: var(--text-primary) !important;
+}
+
+/* 模态框样式覆盖 */
+.ant-modal {
+  color: var(--text-primary) !important;
+}
+
+.ant-modal-mask {
+  background: rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(1px) !important;
+}
+
+/* 强制覆盖模态框遮罩 */
+.ant-modal-wrap .ant-modal-mask {
+  background: rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(1px) !important;
+}
+
+/* 针对现代模态框的特殊处理 */
+.modern-modal .ant-modal-mask {
+  background: rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(1px) !important;
+}
+
+/* 终极解决方案 - 强制所有模态框遮罩透明 */
+.ant-modal-mask,
+.ant-modal-wrap .ant-modal-mask,
+.modern-modal .ant-modal-mask,
+[class*="ant-modal-mask"] {
+  background: rgba(0, 0, 0, 0.15) !important;
+  backdrop-filter: blur(0.5px) !important;
+}
+
+.ant-modal-content {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+.ant-modal-header {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: 16px 16px 0 0 !important;
+}
+
+.ant-modal-title {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+
+.ant-modal-body {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-modal-footer {
+  background: var(--bg-secondary) !important;
+  border-top: 1px solid var(--border) !important;
+  border-radius: 0 0 16px 16px !important;
+}
+
+.ant-modal-close {
+  color: var(--text-secondary) !important;
+}
+
+.ant-modal-close:hover {
+  color: var(--text-primary) !important;
+}
+
+/* 分页样式覆盖 */
+.ant-pagination {
+  color: var(--text-primary) !important;
+}
+
+.ant-pagination-item {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-pagination-item a {
+  color: var(--text-primary) !important;
+}
+
+.ant-pagination-item:hover {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.ant-pagination-item-active {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.ant-pagination-item-active a {
+  color: white !important;
+}
+
+/* 菜单样式覆盖 */
+.ant-menu {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-menu-item {
+  color: var(--text-secondary) !important;
+}
+
+.ant-menu-item:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-menu-item-selected {
+  background: var(--bg-hover) !important;
+  color: var(--primary) !important;
+}
+
+/* 下拉菜单样式覆盖 */
+.ant-dropdown {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.ant-dropdown-menu {
+  background: var(--bg-card) !important;
+  border-radius: 8px !important;
+}
+
+.ant-dropdown-menu-item {
+  color: var(--text-primary) !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 头像样式覆盖 */
+.ant-avatar {
+  background: var(--primary) !important;
+  color: white !important;
+}
+
+/* 加载状态样式覆盖 */
+.ant-spin {
+  color: var(--primary) !important;
+}
+
+.ant-spin-dot-item {
+  background-color: var(--primary) !important;
+}
+
+/* 空状态样式覆盖 */
+.ant-empty {
+  color: var(--text-muted) !important;
+}
+
+.ant-empty-description {
+  color: var(--text-muted) !important;
+}
+
+/* 工具提示样式覆盖 */
+.ant-tooltip-inner {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.ant-tooltip-arrow::before {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* 确认框样式覆盖 */
+.ant-popover {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.ant-popover-inner {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-popover-title {
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.ant-popover-inner-content {
+  color: var(--text-primary) !important;
+}

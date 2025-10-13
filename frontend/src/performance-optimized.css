@@ -1,0 +1,287 @@
+/* 性能优化CSS - 专门针对流畅度优化 */
+
+/* 禁用所有动画以减少CPU使用 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 优化动画性能 - 使用transform和opacity */
+@keyframes lol-mystic-glow-optimized {
+  0%, 100% {
+    transform: scale(1) translateZ(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.002) translateZ(0);
+    opacity: 0.98;
+  }
+}
+
+@keyframes lol-title-glow-optimized {
+  0%, 100% {
+    text-shadow: 0 0 3px var(--lol-primary);
+  }
+  50% {
+    text-shadow: 0 0 5px var(--lol-primary);
+  }
+}
+
+@keyframes lol-mystic-pulse-optimized {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.98;
+  }
+}
+
+@keyframes lol-mystic-scan-optimized {
+  0% {
+    transform: translateX(-30%) translateZ(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(30%) translateZ(0);
+    opacity: 0;
+  }
+}
+
+@keyframes lol-floating-optimized {
+  0%, 100% {
+    transform: translateY(0) translateZ(0);
+  }
+  50% {
+    transform: translateY(-2px) translateZ(0);
+  }
+}
+
+/* 优化后的动画类 */
+.lol-mystic-glow-optimized {
+  animation: lol-mystic-glow-optimized 8s ease-in-out infinite;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.lol-title-glow-optimized {
+  animation: lol-title-glow-optimized 10s ease-in-out infinite;
+  will-change: text-shadow;
+}
+
+.lol-mystic-pulse-optimized {
+  animation: lol-mystic-pulse-optimized 12s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.lol-mystic-scan-optimized {
+  animation: lol-mystic-scan-optimized 6s linear infinite;
+  will-change: transform, opacity;
+}
+
+.lol-floating-optimized {
+  animation: lol-floating-optimized 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* 性能优化按钮 */
+.lol-button-optimized {
+  background: var(--lol-gray);
+  border: 2px solid var(--lol-primary);
+  color: var(--lol-primary);
+  font-family: 'Cinzel', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+  will-change: transform, background-color, border-color;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.lol-button-optimized:hover {
+  background: var(--lol-primary);
+  color: var(--lol-dark);
+  border-color: var(--lol-accent);
+  transform: translateY(-1px) translateZ(0);
+}
+
+.lol-button-optimized:active {
+  transform: translateY(0) translateZ(0);
+  transition: all 0.05s ease;
+}
+
+/* 性能优化卡片 */
+.lol-card-optimized {
+  background: var(--lol-gray);
+  border: 1px solid var(--lol-border);
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.lol-card-optimized:hover {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 0 4px 12px var(--lol-shadow);
+}
+
+/* 性能优化表格 */
+.lol-table-optimized {
+  background: var(--lol-gray);
+  border: 1px solid var(--lol-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.lol-table-optimized .ant-table-thead > tr > th {
+  background: var(--lol-light-gray);
+  border-bottom: 2px solid var(--lol-primary);
+  color: var(--lol-primary);
+  font-family: 'Cinzel', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 16px;
+}
+
+.lol-table-optimized .ant-table-tbody > tr > td {
+  background: var(--lol-gray);
+  border-bottom: 1px solid var(--lol-border);
+  color: var(--lol-text);
+  padding: 12px 16px;
+  transition: background-color 0.1s ease;
+}
+
+.lol-table-optimized .ant-table-tbody > tr:hover > td {
+  background: var(--lol-light-gray);
+}
+
+/* 性能优化输入框 */
+.lol-input-optimized {
+  background: var(--lol-light-gray);
+  border: 2px solid var(--lol-border);
+  color: var(--lol-text);
+  border-radius: 4px;
+  transition: all 0.1s ease;
+  will-change: border-color, background-color;
+  transform: translateZ(0);
+}
+
+.lol-input-optimized:focus {
+  background: var(--lol-gray);
+  border-color: var(--lol-primary);
+  box-shadow: 0 0 0 2px rgba(201, 170, 113, 0.2);
+  outline: none;
+}
+
+.lol-input-optimized:hover {
+  border-color: var(--lol-primary);
+}
+
+/* 性能优化Modal */
+.lol-modal-optimized {
+  background: var(--lol-gray);
+  border: 2px solid var(--lol-primary);
+  border-radius: 8px;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 减少重绘和重排 */
+.performance-container {
+  contain: layout style paint;
+  will-change: auto;
+}
+
+.performance-container * {
+  contain: layout style;
+}
+
+/* 优化滚动性能 */
+.performance-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  contain: layout style paint;
+}
+
+/* 优化字体渲染 */
+.performance-text {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-display: swap;
+}
+
+/* 禁用不必要的动画 */
+.no-animations * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* 优化图片和媒体 */
+.performance-image {
+  will-change: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 优化阴影效果 */
+.performance-shadow {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  will-change: box-shadow;
+}
+
+/* 优化渐变效果 */
+.performance-gradient {
+  background: linear-gradient(135deg, var(--lol-gray) 0%, var(--lol-light-gray) 100%);
+  will-change: background;
+}
+
+/* 减少GPU使用 */
+.gpu-optimized {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* 优化选择器性能 */
+.performance-selector {
+  contain: layout style;
+}
+
+/* 减少DOM操作 */
+.performance-dom {
+  contain: layout style paint;
+  will-change: auto;
+}
+
+/* 优化事件处理 */
+.performance-event {
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+/* 优化内存使用 */
+.performance-memory {
+  contain: layout style paint;
+  will-change: auto;
+  transform: translateZ(0);
+}
+
+/* 优化渲染性能 */
+.performance-render {
+  contain: layout style paint;
+  will-change: auto;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+

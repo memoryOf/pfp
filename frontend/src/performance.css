@@ -1,0 +1,48 @@
+/* 性能优化样式 */
+
+/* 启用硬件加速 */
+.lol-button,
+.lol-card,
+.lol-title,
+.ant-table,
+.ant-card {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* 减少重绘 */
+.ant-table-tbody > tr > td {
+  contain: layout style paint;
+}
+
+/* 优化滚动性能 */
+.ant-table-body {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* 减少动画复杂度 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 优化字体渲染 */
+.lol-title,
+.lol-button {
+  font-display: swap;
+  text-rendering: optimizeSpeed;
+}
+
+/* 减少阴影计算 */
+.lol-card:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.lol-button:hover {
+  box-shadow: 0 2px 8px var(--lol-glow) !important;
+}
+

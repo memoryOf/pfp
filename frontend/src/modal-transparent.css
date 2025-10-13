@@ -1,0 +1,68 @@
+/* 模态框透明背景专用样式 - 最高优先级 */
+
+/* 强制所有模态框遮罩透明 - 使用最高优先级选择器 */
+body .ant-modal-mask,
+html body .ant-modal-mask,
+#root .ant-modal-mask {
+  background: rgba(0, 0, 0, 0.05) !important;
+  backdrop-filter: none !important;
+}
+
+/* 针对不同类名的模态框 - 最高优先级 */
+body .ant-modal-wrap .ant-modal-mask,
+html body .ant-modal-wrap .ant-modal-mask,
+body .modern-modal .ant-modal-mask,
+html body .modern-modal .ant-modal-mask,
+body .lol-modal-wrap .ant-modal-mask,
+html body .lol-modal-wrap .ant-modal-mask {
+  background: rgba(0, 0, 0, 0.05) !important;
+  backdrop-filter: none !important;
+}
+
+/* 使用属性选择器强制覆盖 - 最高优先级 */
+body [class*="ant-modal-mask"],
+html body [class*="ant-modal-mask"] {
+  background: rgba(0, 0, 0, 0.05) !important;
+  backdrop-filter: none !important;
+}
+
+/* 终极解决方案 - 直接覆盖内联样式 */
+.ant-modal-mask[style] {
+  background: rgba(0, 0, 0, 0.05) !important;
+  backdrop-filter: none !important;
+}
+
+/* 确保模态框内容有足够的对比度 */
+.ant-modal-content {
+  background: var(--bg-card) !important;
+  border: 2px solid var(--primary) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 模态框标题增强对比度 */
+.ant-modal-header {
+  background: var(--bg-secondary) !important;
+  border-bottom: 2px solid var(--primary) !important;
+}
+
+.ant-modal-title {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+
+/* 模态框关闭按钮 */
+.ant-modal-close {
+  color: var(--text-primary) !important;
+  background: var(--bg-hover) !important;
+  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ant-modal-close:hover {
+  background: var(--primary) !important;
+  color: white !important;
+}
