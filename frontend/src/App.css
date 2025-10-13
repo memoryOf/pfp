@@ -1,128 +1,89 @@
-/* 全局样式 */
-/* 英雄联盟宇宙主题样式 */
+/* 现代暗黑主题样式 */
 .App {
   min-height: 100vh;
-  background: var(--lol-darker);
-  color: var(--lol-text);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   position: relative;
 }
 
-/* 英雄联盟宇宙动画效果 */
-@keyframes lol-mystic-glow {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 var(--lol-shadow);
-    filter: brightness(1);
+/* 现代动画效果 */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  25% {
-    transform: scale(1.01);
-    box-shadow: 0 0 20px 5px var(--lol-shadow);
-    filter: brightness(1.1);
-  }
-  50% {
-    transform: scale(1.02);
-    box-shadow: 0 0 30px 10px var(--lol-glow);
-    filter: brightness(1.2);
-  }
-  75% {
-    transform: scale(1.01);
-    box-shadow: 0 0 20px 5px var(--lol-shadow);
-    filter: brightness(1.1);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes lol-title-glow {
-  0%, 100% {
-    text-shadow: 
-      0 0 5px var(--lol-primary),
-      0 0 10px var(--lol-primary),
-      0 0 15px var(--lol-glow);
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
   }
-  50% {
-    text-shadow: 
-      0 0 10px var(--lol-primary),
-      0 0 20px var(--lol-glow),
-      0 0 30px var(--lol-secondary),
-      0 0 40px var(--lol-glow);
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
-@keyframes lol-mystic-pulse {
+@keyframes pulse {
   0%, 100% {
     opacity: 1;
-    filter: brightness(1) saturate(1);
   }
   50% {
-    opacity: 0.9;
-    filter: brightness(1.3) saturate(1.2);
+    opacity: 0.8;
   }
 }
 
-@keyframes lol-mystic-scan {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-@keyframes lol-floating {
+@keyframes glow {
   0%, 100% {
-    transform: translateY(0px);
+    box-shadow: 0 0 5px var(--primary);
   }
   50% {
-    transform: translateY(-5px);
+    box-shadow: 0 0 20px var(--primary), 0 0 30px var(--primary);
   }
 }
 
-/* 英雄联盟宇宙按钮效果 */
-.lol-button {
-  background: linear-gradient(135deg, var(--lol-primary) 0%, var(--lol-accent) 100%);
-  border: 2px solid var(--lol-primary);
-  color: var(--lol-darker);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-family: 'Cinzel', 'Playfair Display', sans-serif;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 20px var(--lol-shadow);
-  border-radius: 4px;
+/* 现代按钮样式 */
+.modern-button {
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
 }
 
-.lol-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.6s;
+.modern-button:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
-.lol-button:hover::before {
-  left: 100%;
+.modern-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
-.lol-button:hover {
-  animation: lol-mystic-glow 1s ease;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px var(--lol-glow);
-  border-color: var(--lol-secondary);
-  color: var(--lol-darker);
-}
-
-.lol-button:active {
-  transform: translateY(0px);
-  box-shadow: 0 4px 20px var(--lol-shadow);
+.modern-button:disabled {
+  background: var(--text-disabled);
+  border-color: var(--text-disabled);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* 英雄联盟宇宙卡片 */
@@ -130,57 +91,20 @@
   background: var(--lol-gray);
   border: 2px solid var(--lol-border);
   border-radius: 8px;
-  box-shadow: 
-    0 0 0 1px var(--lol-primary),
-    0 4px 25px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(201, 170, 113, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease;
   position: relative;
-  overflow: hidden;
-}
-
-.lol-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--lol-primary), var(--lol-accent), var(--lol-primary));
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-
-.lol-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 50% 50%, var(--lol-mystic) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.4s;
-  pointer-events: none;
-}
-
-.lol-card:hover::before {
-  opacity: 1;
-}
-
-.lol-card:hover::after {
-  opacity: 1;
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .lol-card:hover {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   border-color: var(--lol-primary);
-  box-shadow: 
-    0 0 0 2px var(--lol-primary),
-    0 8px 40px var(--lol-shadow),
-    inset 0 1px 0 rgba(201, 170, 113, 0.3);
-  transform: translateY(-4px);
-  animation: lol-floating 2s ease-in-out infinite;
 }
+
 
 /* 英雄联盟宇宙标题 */
 .lol-title {
@@ -188,14 +112,11 @@
   font-weight: 700;
   font-family: 'Cinzel', 'Playfair Display', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 
-    0 0 5px var(--lol-primary),
-    0 0 10px var(--lol-primary),
-    0 0 15px var(--lol-glow),
-    0 0 20px var(--lol-glow);
-  animation: lol-title-glow 4s ease-in-out infinite;
+  letter-spacing: 1px;
+  text-shadow: 0 0 3px var(--lol-primary);
+  animation: lol-title-glow 10s ease-in-out infinite;
   position: relative;
+  will-change: text-shadow;
 }
 
 .lol-title::after {
@@ -206,7 +127,7 @@
   right: 0;
   height: 3px;
   background: linear-gradient(90deg, transparent, var(--lol-primary), var(--lol-accent), var(--lol-primary), transparent);
-  animation: lol-mystic-scan 3s linear infinite;
+  animation: lol-mystic-scan 8s linear infinite;
   border-radius: 2px;
 }
 
@@ -219,7 +140,7 @@
   bottom: -10px;
   background: radial-gradient(circle at 50% 50%, var(--lol-mystic) 0%, transparent 70%);
   opacity: 0.3;
-  animation: lol-mystic-pulse 4s ease-in-out infinite;
+  animation: lol-mystic-pulse 8s ease-in-out infinite;
   z-index: -1;
 }
 
@@ -249,7 +170,7 @@
   animation: jinx-pulse 1.5s ease-in-out infinite;
 }
 
-/* 英雄联盟宇宙表格样式 */
+/* 英雄联盟宇宙表格样式 - 优化版本 */
 .lol-table {
   background: var(--lol-gray) !important;
   color: var(--lol-text) !important;
@@ -268,19 +189,17 @@
   font-weight: 700 !important;
   letter-spacing: 1px !important;
   text-transform: uppercase !important;
-  text-shadow: 0 0 5px var(--lol-primary) !important;
 }
 
 .lol-table .ant-table-tbody > tr > td {
   background: var(--lol-gray) !important;
   color: var(--lol-text) !important;
   border-bottom: 1px solid var(--lol-border) !important;
-  transition: all 0.3s ease !important;
+  transition: background-color 0.2s ease !important;
 }
 
 .lol-table .ant-table-tbody > tr:hover > td {
   background: var(--lol-light-gray) !important;
-  box-shadow: inset 0 0 10px var(--lol-mystic) !important;
 }
 
 .lol-table .ant-pagination {
@@ -490,4 +409,1431 @@
   color: #1890ff;
   border-bottom: 1px solid #f0f0f0;
   padding-bottom: 8px;
+}
+
+/* 英雄联盟宇宙Modal样式 */
+.lol-modal-wrap .ant-modal {
+  background: var(--lol-gray) !important;
+  border: 3px solid var(--lol-primary) !important;
+  box-shadow: 
+    0 0 0 1px var(--lol-accent),
+    0 0 20px var(--lol-shadow),
+    inset 0 0 0 1px rgba(201, 170, 113, 0.3) !important;
+  border-radius: 8px !important;
+  position: relative !important;
+}
+
+.lol-modal-wrap .ant-modal::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--lol-primary), var(--lol-accent), var(--lol-secondary), var(--lol-primary));
+  border-radius: 10px;
+  z-index: -1;
+  animation: lol-mystic-glow 4s ease-in-out infinite;
+}
+
+.lol-modal-wrap .ant-modal-header {
+  background: linear-gradient(90deg, var(--lol-gray) 0%, var(--lol-light-gray) 50%, var(--lol-gray) 100%) !important;
+  border-bottom: 2px solid var(--lol-primary) !important;
+  border-radius: 6px 6px 0 0 !important;
+  position: relative !important;
+}
+
+.lol-modal-wrap .ant-modal-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--lol-primary), var(--lol-accent), var(--lol-primary), transparent);
+  animation: lol-mystic-scan 3s linear infinite;
+}
+
+.lol-modal-wrap .ant-modal-title {
+  color: var(--lol-primary) !important;
+  font-family: 'Cinzel', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+}
+
+.lol-modal-wrap .ant-modal-close {
+  color: var(--lol-text-secondary) !important;
+}
+
+.lol-modal-wrap .ant-modal-close:hover {
+  color: var(--lol-primary) !important;
+}
+
+.lol-modal-wrap .ant-modal-footer {
+  background: linear-gradient(90deg, var(--lol-gray) 0%, var(--lol-light-gray) 50%, var(--lol-gray) 100%) !important;
+  border-top: 2px solid var(--lol-primary) !important;
+  border-radius: 0 0 6px 6px !important;
+  position: relative !important;
+}
+
+.lol-modal-wrap .ant-modal-footer::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--lol-primary), var(--lol-accent), var(--lol-primary), transparent);
+  animation: lol-mystic-scan 3s linear infinite reverse;
+}
+
+.lol-modal-wrap .ant-form-item-label > label {
+  color: var(--lol-text-secondary) !important;
+  font-family: 'Cinzel', sans-serif !important;
+}
+
+.lol-modal-wrap .ant-input,
+.lol-modal-wrap .ant-input-number,
+.lol-modal-wrap .ant-input-password {
+  background: var(--lol-light-gray) !important;
+  border: 2px solid var(--lol-border) !important;
+  color: var(--lol-text) !important;
+  border-radius: 4px !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+}
+
+.lol-modal-wrap .ant-input:hover,
+.lol-modal-wrap .ant-input-number:hover,
+.lol-modal-wrap .ant-input-password:hover {
+  border-color: var(--lol-primary) !important;
+  box-shadow: 0 0 0 1px rgba(201, 170, 113, 0.3) !important;
+}
+
+.lol-modal-wrap .ant-input:focus,
+.lol-modal-wrap .ant-input-number:focus,
+.lol-modal-wrap .ant-input-password:focus {
+  border-color: var(--lol-primary) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+  background: var(--lol-gray) !important;
+}
+
+.lol-modal-wrap .ant-input::placeholder,
+.lol-modal-wrap .ant-input-password::placeholder {
+  color: var(--lol-text-secondary) !important;
+}
+
+/* 覆盖所有可能的白色背景 */
+.lol-modal-wrap .ant-modal-content {
+  background: var(--lol-gray) !important;
+  border-radius: 8px !important;
+}
+
+.lol-modal-wrap .ant-modal-body {
+  background: var(--lol-gray) !important;
+  color: var(--lol-text) !important;
+  padding: 24px !important;
+}
+
+.lol-modal-wrap .ant-form-item {
+  margin-bottom: 16px !important;
+}
+
+.lol-modal-wrap .ant-form-item-control-input {
+  background: transparent !important;
+}
+
+.lol-modal-wrap .ant-form-item-control-input-content {
+  background: transparent !important;
+}
+
+/* 覆盖InputNumber的样式 */
+.lol-modal-wrap .ant-input-number-input {
+  background: var(--lol-light-gray) !important;
+  border: none !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-modal-wrap .ant-input-number-input::placeholder {
+  color: var(--lol-text-secondary) !important;
+}
+
+/* 覆盖TextArea的样式 */
+.lol-modal-wrap .ant-input {
+  background: var(--lol-light-gray) !important;
+  border: 2px solid var(--lol-border) !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-modal-wrap .ant-input:focus {
+  background: var(--lol-gray) !important;
+}
+
+/* 覆盖Password的样式 */
+.lol-modal-wrap .ant-input-password {
+  background: var(--lol-light-gray) !important;
+}
+
+.lol-modal-wrap .ant-input-password .ant-input {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* 覆盖所有按钮样式 */
+.lol-modal-wrap .ant-btn {
+  background: var(--lol-gray) !important;
+  border: 2px solid var(--lol-primary) !important;
+  color: var(--lol-primary) !important;
+  font-family: 'Cinzel', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+  transition: all 0.3s ease !important;
+}
+
+.lol-modal-wrap .ant-btn:hover {
+  background: var(--lol-primary) !important;
+  color: var(--lol-dark) !important;
+  border-color: var(--lol-accent) !important;
+  box-shadow: 0 0 10px var(--lol-shadow) !important;
+}
+
+.lol-modal-wrap .ant-btn-primary {
+  background: var(--lol-primary) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-dark) !important;
+}
+
+.lol-modal-wrap .ant-btn-primary:hover {
+  background: var(--lol-accent) !important;
+  border-color: var(--lol-accent) !important;
+  color: var(--lol-dark) !important;
+}
+
+/* 强制覆盖所有可能的白色背景 */
+.lol-modal-wrap * {
+  background-color: inherit !important;
+}
+
+/* 特别强制覆盖白色背景 */
+.lol-modal-wrap *[style*="background-color: white"],
+.lol-modal-wrap *[style*="background-color: #fff"],
+.lol-modal-wrap *[style*="background-color: #ffffff"],
+.lol-modal-wrap *[style*="background: white"],
+.lol-modal-wrap *[style*="background: #fff"],
+.lol-modal-wrap *[style*="background: #ffffff"] {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+}
+
+.lol-modal-wrap .ant-modal-content,
+.lol-modal-wrap .ant-modal-header,
+.lol-modal-wrap .ant-modal-body,
+.lol-modal-wrap .ant-modal-footer {
+  background: var(--lol-gray) !important;
+}
+
+/* 覆盖Form相关样式 */
+.lol-modal-wrap .ant-form {
+  background: transparent !important;
+}
+
+.lol-modal-wrap .ant-form-item-label {
+  background: transparent !important;
+}
+
+.lol-modal-wrap .ant-form-item-control {
+  background: transparent !important;
+}
+
+/* 覆盖所有输入框的白色背景 */
+.lol-modal-wrap .ant-input,
+.lol-modal-wrap .ant-input-number,
+.lol-modal-wrap .ant-input-password,
+.lol-modal-wrap .ant-input-number-input,
+.lol-modal-wrap .ant-input-password .ant-input,
+.lol-modal-wrap .ant-input-number .ant-input-number-input,
+.lol-modal-wrap .ant-input-password .ant-input-password-input,
+.lol-modal-wrap .ant-input-affix-wrapper,
+.lol-modal-wrap .ant-input-affix-wrapper .ant-input {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border: 2px solid var(--lol-border) !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-modal-wrap .ant-input:focus,
+.lol-modal-wrap .ant-input-number:focus,
+.lol-modal-wrap .ant-input-password:focus,
+.lol-modal-wrap .ant-input-number-input:focus,
+.lol-modal-wrap .ant-input-password .ant-input:focus,
+.lol-modal-wrap .ant-input-affix-wrapper:focus,
+.lol-modal-wrap .ant-input-affix-wrapper .ant-input:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-primary) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+}
+
+/* 强制覆盖输入时的白色背景 */
+.lol-modal-wrap .ant-input:not(:placeholder-shown),
+.lol-modal-wrap .ant-input-number:not(:placeholder-shown),
+.lol-modal-wrap .ant-input-password:not(:placeholder-shown),
+.lol-modal-wrap .ant-input-number-input:not(:placeholder-shown),
+.lol-modal-wrap .ant-input-password .ant-input:not(:placeholder-shown) {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖所有可能的输入状态 */
+.lol-modal-wrap .ant-input[value]:not([value=""]),
+.lol-modal-wrap .ant-input-number[value]:not([value=""]),
+.lol-modal-wrap .ant-input-password[value]:not([value=""]) {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖所有按钮的白色背景 */
+.lol-modal-wrap .ant-btn,
+.lol-modal-wrap .ant-btn-primary {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+}
+
+.lol-modal-wrap .ant-btn-primary {
+  background: var(--lol-primary) !important;
+  background-color: var(--lol-primary) !important;
+}
+
+.lol-modal-wrap .ant-btn:hover,
+.lol-modal-wrap .ant-btn-primary:hover {
+  background: var(--lol-primary) !important;
+  background-color: var(--lol-primary) !important;
+}
+
+/* 特殊处理InputNumber组件 */
+.lol-modal-wrap .ant-input-number {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+.lol-modal-wrap .ant-input-number .ant-input-number-input {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-modal-wrap .ant-input-number:hover {
+  border-color: var(--lol-primary) !important;
+}
+
+.lol-modal-wrap .ant-input-number:focus,
+.lol-modal-wrap .ant-input-number-focused {
+  border-color: var(--lol-primary) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+}
+
+/* 特殊处理Input.Password组件 */
+.lol-modal-wrap .ant-input-password {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+.lol-modal-wrap .ant-input-password .ant-input {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-modal-wrap .ant-input-password:hover {
+  border-color: var(--lol-primary) !important;
+}
+
+.lol-modal-wrap .ant-input-password:focus,
+.lol-modal-wrap .ant-input-password-focused {
+  border-color: var(--lol-primary) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+}
+
+/* 特殊处理TextArea组件 */
+.lol-modal-wrap .ant-input {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border: 2px solid var(--lol-border) !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-modal-wrap .ant-input:hover {
+  border-color: var(--lol-primary) !important;
+}
+
+.lol-modal-wrap .ant-input:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-primary) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+}
+
+/* 强制覆盖所有可能的白色底框和背景 */
+.lol-modal-wrap .ant-input-number .ant-input-number-handler-wrap,
+.lol-modal-wrap .ant-input-number .ant-input-number-handler,
+.lol-modal-wrap .ant-input-number .ant-input-number-handler-up,
+.lol-modal-wrap .ant-input-number .ant-input-number-handler-down,
+.lol-modal-wrap .ant-input-password .ant-input-suffix,
+.lol-modal-wrap .ant-input-password .ant-input-password-icon,
+.lol-modal-wrap .ant-input-affix-wrapper .ant-input-suffix,
+.lol-modal-wrap .ant-input-affix-wrapper .ant-input-prefix {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border-color: var(--lol-border) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖所有可能的白色背景元素 */
+.lol-modal-wrap .ant-input-number .ant-input-number-handler:hover,
+.lol-modal-wrap .ant-input-number .ant-input-number-handler-up:hover,
+.lol-modal-wrap .ant-input-number .ant-input-number-handler-down:hover {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  color: var(--lol-primary) !important;
+}
+
+/* 覆盖所有图标和按钮的白色背景 */
+.lol-modal-wrap .ant-input-password .ant-input-password-icon:hover,
+.lol-modal-wrap .ant-input-suffix .anticon:hover {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  color: var(--lol-primary) !important;
+}
+
+/* 确保所有输入框容器都是深色 */
+.lol-modal-wrap .ant-input-group,
+.lol-modal-wrap .ant-input-group-addon,
+.lol-modal-wrap .ant-input-group-wrapper {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border-color: var(--lol-border) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 终极覆盖 - 确保没有任何白色背景 */
+.lol-modal-wrap *:not(.ant-input-number .ant-input-number-input):not(.ant-input-password .ant-input) {
+  background-color: var(--lol-light-gray) !important;
+}
+
+.lol-modal-wrap .ant-input-number .ant-input-number-input,
+.lol-modal-wrap .ant-input-password .ant-input {
+  background-color: transparent !important;
+}
+
+/* 覆盖所有可能的白色边框 */
+.lol-modal-wrap *[style*="border-color: white"],
+.lol-modal-wrap *[style*="border-color: #fff"],
+.lol-modal-wrap *[style*="border-color: #ffffff"] {
+  border-color: var(--lol-border) !important;
+}
+
+/* 覆盖所有可能的白色文字 */
+.lol-modal-wrap *[style*="color: white"],
+.lol-modal-wrap *[style*="color: #fff"],
+.lol-modal-wrap *[style*="color: #ffffff"] {
+  color: var(--lol-text) !important;
+}
+
+/* 强制覆盖所有输入框的白色背景 - 终极解决方案 */
+.lol-modal-wrap .ant-input,
+.lol-modal-wrap .ant-input-number,
+.lol-modal-wrap .ant-input-password,
+.lol-modal-wrap .ant-input-number-input,
+.lol-modal-wrap .ant-input-password .ant-input,
+.lol-modal-wrap .ant-input-affix-wrapper,
+.lol-modal-wrap .ant-input-affix-wrapper .ant-input,
+.lol-modal-wrap .ant-input-group .ant-input,
+.lol-modal-wrap .ant-input-group .ant-input-number,
+.lol-modal-wrap .ant-input-group .ant-input-password {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+/* 覆盖所有输入框的悬停状态 */
+.lol-modal-wrap .ant-input:hover,
+.lol-modal-wrap .ant-input-number:hover,
+.lol-modal-wrap .ant-input-password:hover {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖所有输入框的激活状态 */
+.lol-modal-wrap .ant-input:active,
+.lol-modal-wrap .ant-input-number:active,
+.lol-modal-wrap .ant-input-password:active {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖所有输入框的禁用状态 */
+.lol-modal-wrap .ant-input:disabled,
+.lol-modal-wrap .ant-input-number:disabled,
+.lol-modal-wrap .ant-input-password:disabled {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-border) !important;
+  color: var(--lol-text-secondary) !important;
+}
+
+/* 覆盖所有输入框的只读状态 */
+.lol-modal-wrap .ant-input[readonly],
+.lol-modal-wrap .ant-input-number[readonly],
+.lol-modal-wrap .ant-input-password[readonly] {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-border) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 特别针对HOST ADDRESS等输入框的强制覆盖 */
+.lol-modal-wrap .ant-input[placeholder*="主机地址"],
+.lol-modal-wrap .ant-input[placeholder*="请输入主机地址"],
+.lol-modal-wrap .ant-form-item:has(.ant-input[placeholder*="主机地址"]) .ant-input,
+.lol-modal-wrap .ant-form-item:has(.ant-input[placeholder*="请输入主机地址"]) .ant-input {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+/* 覆盖所有可能的输入框状态 - 终极强制覆盖 */
+.lol-modal-wrap .ant-input,
+.lol-modal-wrap .ant-input-number,
+.lol-modal-wrap .ant-input-password,
+.lol-modal-wrap .ant-input-affix-wrapper {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+.lol-modal-wrap .ant-input:focus,
+.lol-modal-wrap .ant-input-number:focus,
+.lol-modal-wrap .ant-input-password:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+}
+
+/* 覆盖所有输入框的内部元素 */
+.lol-modal-wrap .ant-input-number .ant-input-number-input,
+.lol-modal-wrap .ant-input-password .ant-input,
+.lol-modal-wrap .ant-input-affix-wrapper .ant-input {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--lol-text) !important;
+  border: none !important;
+}
+
+/* 终极强制覆盖 - 使用最高优先级 */
+.lol-modal-wrap.lol-modal-wrap .ant-input,
+.lol-modal-wrap.lol-modal-wrap .ant-input-number,
+.lol-modal-wrap.lol-modal-wrap .ant-input-password,
+.lol-modal-wrap.lol-modal-wrap .ant-input-affix-wrapper {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+.lol-modal-wrap.lol-modal-wrap .ant-input:focus,
+.lol-modal-wrap.lol-modal-wrap .ant-input-number:focus,
+.lol-modal-wrap.lol-modal-wrap .ant-input-password:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+}
+
+/* 覆盖所有可能的白色背景 - 使用属性选择器 */
+.lol-modal-wrap [class*="ant-input"] {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-modal-wrap [class*="ant-input"]:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 终极解决方案 - 使用内联样式级别的优先级 */
+.lol-modal-wrap .ant-input[style*="background"],
+.lol-modal-wrap .ant-input[style*="background-color"] {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 强制覆盖所有输入框 - 使用最高可能的优先级 */
+.lol-modal-wrap .ant-form-item .ant-input,
+.lol-modal-wrap .ant-form-item .ant-input-number,
+.lol-modal-wrap .ant-form-item .ant-input-password {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+.lol-modal-wrap .ant-form-item .ant-input:focus,
+.lol-modal-wrap .ant-form-item .ant-input-number:focus,
+.lol-modal-wrap .ant-form-item .ant-input-password:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+}
+
+/* 覆盖所有可能的输入状态 */
+.lol-modal-wrap .ant-form-item .ant-input:hover,
+.lol-modal-wrap .ant-form-item .ant-input-number:hover,
+.lol-modal-wrap .ant-form-item .ant-input-password:hover {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-modal-wrap .ant-form-item .ant-input:active,
+.lol-modal-wrap .ant-form-item .ant-input-number:active,
+.lol-modal-wrap .ant-form-item .ant-input-password:active {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖输入时的状态 */
+.lol-modal-wrap .ant-form-item .ant-input:not(:placeholder-shown),
+.lol-modal-wrap .ant-form-item .ant-input-number:not(:placeholder-shown),
+.lol-modal-wrap .ant-form-item .ant-input-password:not(:placeholder-shown) {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 终极强制覆盖 - 重置所有样式后重新应用 */
+.lol-modal-wrap .ant-input,
+.lol-modal-wrap .ant-input-number,
+.lol-modal-wrap .ant-input-password {
+  all: unset !important;
+  display: block !important;
+  width: 100% !important;
+  padding: 8px 12px !important;
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  transition: all 0.3s ease !important;
+  box-sizing: border-box !important;
+}
+
+.lol-modal-wrap .ant-input:focus,
+.lol-modal-wrap .ant-input-number:focus,
+.lol-modal-wrap .ant-input-password:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+  outline: none !important;
+}
+
+.lol-modal-wrap .ant-input:hover,
+.lol-modal-wrap .ant-input-number:hover,
+.lol-modal-wrap .ant-input-password:hover {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖InputNumber的特殊处理 */
+.lol-modal-wrap .ant-input-number {
+  all: unset !important;
+  display: block !important;
+  width: 100% !important;
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border: 2px solid var(--lol-border) !important;
+  border-radius: 4px !important;
+  position: relative !important;
+}
+
+.lol-modal-wrap .ant-input-number .ant-input-number-input {
+  all: unset !important;
+  display: block !important;
+  width: 100% !important;
+  padding: 8px 12px !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--lol-text) !important;
+  border: none !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+/* 覆盖Input.Password的特殊处理 */
+.lol-modal-wrap .ant-input-password {
+  all: unset !important;
+  display: block !important;
+  width: 100% !important;
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border: 2px solid var(--lol-border) !important;
+  border-radius: 4px !important;
+  position: relative !important;
+}
+
+.lol-modal-wrap .ant-input-password .ant-input {
+  all: unset !important;
+  display: block !important;
+  width: 100% !important;
+  padding: 8px 12px !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--lol-text) !important;
+  border: none !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+/* 终极强制覆盖 - 使用最高优先级和CSS变量 */
+.lol-modal-wrap .ant-input,
+.lol-modal-wrap .ant-input-number,
+.lol-modal-wrap .ant-input-password,
+.lol-modal-wrap .ant-input-affix-wrapper {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  transition: all 0.3s ease !important;
+  box-sizing: border-box !important;
+}
+
+.lol-modal-wrap .ant-input:focus,
+.lol-modal-wrap .ant-input-number:focus,
+.lol-modal-wrap .ant-input-password:focus,
+.lol-modal-wrap .ant-input-affix-wrapper:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+  outline: none !important;
+}
+
+.lol-modal-wrap .ant-input:hover,
+.lol-modal-wrap .ant-input-number:hover,
+.lol-modal-wrap .ant-input-password:hover,
+.lol-modal-wrap .ant-input-affix-wrapper:hover {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  border-color: var(--lol-primary) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖所有可能的输入状态 */
+.lol-modal-wrap .ant-input:not(:placeholder-shown),
+.lol-modal-wrap .ant-input-number:not(:placeholder-shown),
+.lol-modal-wrap .ant-input-password:not(:placeholder-shown) {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖所有可能的白色背景 - 使用CSS变量强制覆盖 */
+.lol-modal-wrap .ant-input[style*="background"],
+.lol-modal-wrap .ant-input[style*="background-color"],
+.lol-modal-wrap .ant-input-number[style*="background"],
+.lol-modal-wrap .ant-input-number[style*="background-color"],
+.lol-modal-wrap .ant-input-password[style*="background"],
+.lol-modal-wrap .ant-input-password[style*="background-color"] {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 终极解决方案 - 使用CSS自定义属性强制覆盖 */
+.lol-modal-wrap .ant-input,
+.lol-modal-wrap .ant-input-number,
+.lol-modal-wrap .ant-input-password,
+.lol-modal-wrap .ant-input-affix-wrapper {
+  --ant-input-bg: var(--lol-light-gray) !important;
+  --ant-input-color: var(--lol-text) !important;
+  --ant-input-border-color: var(--lol-border) !important;
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+.lol-modal-wrap .ant-input:focus,
+.lol-modal-wrap .ant-input-number:focus,
+.lol-modal-wrap .ant-input-password:focus,
+.lol-modal-wrap .ant-input-affix-wrapper:focus {
+  --ant-input-bg: var(--lol-gray) !important;
+  --ant-input-color: var(--lol-text) !important;
+  --ant-input-border-color: var(--lol-primary) !important;
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  color: var(--lol-text) !important;
+  border-color: var(--lol-primary) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+}
+
+/* 覆盖所有可能的输入状态 - 使用最高优先级 */
+.lol-modal-wrap .ant-input:not(:placeholder-shown),
+.lol-modal-wrap .ant-input-number:not(:placeholder-shown),
+.lol-modal-wrap .ant-input-password:not(:placeholder-shown),
+.lol-modal-wrap .ant-input[value]:not([value=""]),
+.lol-modal-wrap .ant-input-number[value]:not([value=""]),
+.lol-modal-wrap .ant-input-password[value]:not([value=""]) {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖所有可能的白色背景 - 使用属性选择器 */
+.lol-modal-wrap [class*="ant-input"]:not([class*="ant-input-number-input"]):not([class*="ant-input-password-input"]) {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 覆盖所有可能的白色背景 - 使用通用选择器 */
+.lol-modal-wrap input[type="text"],
+.lol-modal-wrap input[type="number"],
+.lol-modal-wrap input[type="password"],
+.lol-modal-wrap textarea {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+.lol-modal-wrap input[type="text"]:focus,
+.lol-modal-wrap input[type="number"]:focus,
+.lol-modal-wrap input[type="password"]:focus,
+.lol-modal-wrap textarea:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  color: var(--lol-text) !important;
+  border-color: var(--lol-primary) !important;
+  box-shadow: 
+    0 0 0 2px rgba(201, 170, 113, 0.3),
+    0 0 10px rgba(201, 170, 113, 0.2) !important;
+}
+
+/* 终极方案 - 强制覆盖所有input元素，无论任何状态 */
+.lol-modal-wrap input,
+.lol-modal-wrap textarea {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+.lol-modal-wrap input:focus,
+.lol-modal-wrap textarea:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  color: var(--lol-text) !important;
+  border-color: var(--lol-primary) !important;
+}
+
+/* 覆盖ant-input内部的input元素 */
+.lol-modal-wrap .ant-input-number-input,
+.lol-modal-wrap .ant-input-password input {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+.lol-modal-wrap .ant-input-number-input:focus,
+.lol-modal-wrap .ant-input-password input:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 强制覆盖所有可能的状态 - 包括有值的状态 */
+.lol-modal-wrap input:not(:placeholder-shown),
+.lol-modal-wrap textarea:not(:placeholder-shown),
+.lol-modal-wrap input[value],
+.lol-modal-wrap textarea[value] {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 强制覆盖active和visited状态 */
+.lol-modal-wrap input:active,
+.lol-modal-wrap input:visited,
+.lol-modal-wrap textarea:active,
+.lol-modal-wrap textarea:visited {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+}
+
+/* 使用更高优先级的选择器 - 直接覆盖所有状态组合 */
+.lol-modal-wrap .ant-form-item input,
+.lol-modal-wrap .ant-form-item textarea,
+.lol-modal-wrap .ant-form-item-control input,
+.lol-modal-wrap .ant-form-item-control textarea {
+  background: var(--lol-light-gray) !important;
+  background-color: var(--lol-light-gray) !important;
+  color: var(--lol-text) !important;
+  border: 2px solid var(--lol-border) !important;
+}
+
+.lol-modal-wrap .ant-form-item input:focus,
+.lol-modal-wrap .ant-form-item textarea:focus,
+.lol-modal-wrap .ant-form-item-control input:focus,
+.lol-modal-wrap .ant-form-item-control textarea:focus {
+  background: var(--lol-gray) !important;
+  background-color: var(--lol-gray) !important;
+  color: var(--lol-text) !important;
+  border-color: var(--lol-primary) !important;
+}
+
+/* 强制所有输入框和InputNumber宽度一致 */
+.lol-modal-wrap .ant-input,
+.lol-modal-wrap .ant-input-number,
+.lol-modal-wrap .ant-input-password,
+.lol-modal-wrap .ant-input-affix-wrapper {
+  width: 100% !important;
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
+/* 强制InputNumber内部input宽度一致 */
+.lol-modal-wrap .ant-input-number-input-wrap,
+.lol-modal-wrap .ant-input-number-input {
+  width: 100% !important;
+  display: block !important;
+}
+
+/* 强制Password组件内部input宽度一致 */
+.lol-modal-wrap .ant-input-password .ant-input,
+.lol-modal-wrap .ant-input-affix-wrapper .ant-input {
+  width: 100% !important;
+  display: block !important;
+}
+
+/* 密码输入框特殊样式修复 */
+.ant-input-password {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.ant-input-password .ant-input {
+  background: var(--bg-tertiary) !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  flex: 1 !important;
+  padding-right: 40px !important;
+}
+
+.ant-input-password .ant-input-suffix {
+  color: var(--text-primary) !important;
+  background: transparent !important;
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 10 !important;
+}
+
+.ant-input-password .ant-input-suffix .anticon {
+  color: var(--text-primary) !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+}
+
+.ant-input-password .ant-input-suffix .anticon:hover {
+  color: var(--primary) !important;
+}
+
+.ant-input-password:focus,
+.ant-input-password:focus-within {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* InputNumber 组件样式修复 */
+.ant-input-number {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-input-number .ant-input-number-input {
+  background: var(--bg-tertiary) !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.ant-input-number .ant-input-number-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.ant-input-number:focus,
+.ant-input-number:focus-within {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+.ant-input-number:hover {
+  border-color: var(--primary) !important;
+}
+
+/* 隐藏InputNumber的增减按钮 */
+.ant-input-number-handler-wrap {
+  display: none !important;
+}
+
+/* 移除增减按钮后，调整输入框宽度 */
+.ant-input-number:not(.ant-input-number-disabled):hover .ant-input-number-handler-wrap {
+  display: none !important;
+}
+
+.ant-input-number:not(.ant-input-number-disabled):focus .ant-input-number-handler-wrap {
+  display: none !important;
+}
+
+/* Popconfirm 组件样式修复 - 增强对比度 */
+.custom-popconfirm .ant-popover-inner {
+  background: #1a1a1a !important;
+  border: 2px solid #6366f1 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
+
+.custom-popconfirm .ant-popover-inner-content {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.custom-popconfirm .ant-popover-title {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #6366f1 !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+}
+
+.custom-popconfirm .ant-popover-arrow::before {
+  background: #1a1a1a !important;
+  border: 2px solid #6366f1 !important;
+}
+
+.custom-popconfirm .ant-popover-arrow::after {
+  background: #1a1a1a !important;
+}
+
+/* 修复箭头颜色，使其更清晰可见 */
+.custom-popconfirm .ant-popover-arrow {
+  color: #1a1a1a !important;
+}
+
+.custom-popconfirm .ant-popover-arrow-content {
+  background: #1a1a1a !important;
+  border: 2px solid #6366f1 !important;
+}
+
+.custom-popconfirm .ant-popover-arrow-content::before {
+  background: #1a1a1a !important;
+  border: 2px solid #6366f1 !important;
+}
+
+.custom-popconfirm .ant-popover-arrow-content::after {
+  background: #1a1a1a !important;
+}
+
+/* 增强箭头可见性：与弹层一致背景并添加清晰描边与投影 */
+.custom-popconfirm.ant-popover .ant-popover-arrow {
+  width: 12px !important;
+  height: 12px !important;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.8)) drop-shadow(0 0 0 3px #6366f1) !important;
+}
+
+.custom-popconfirm.ant-popover .ant-popover-arrow::before {
+  background: #1a1a1a !important;            /* 与气泡背景一致 */
+  box-shadow: 0 0 0 3px #6366f1 !important;   /* 更粗的紫色描边 */
+  border: 1px solid #6366f1 !important;       /* 额外边框增强可见性 */
+}
+
+.custom-popconfirm.ant-popover .ant-popover-arrow::after {
+  background: #1a1a1a !important;
+  border: 1px solid #6366f1 !important;       /* 内层也加边框 */
+}
+
+/* 不同方位下也保持清晰描边（顶部/底部/左右） */
+.custom-popconfirm.ant-popover.ant-popover-placement-top .ant-popover-arrow::before,
+.custom-popconfirm.ant-popover.ant-popover-placement-topLeft .ant-popover-arrow::before,
+.custom-popconfirm.ant-popover.ant-popover-placement-topRight .ant-popover-arrow::before,
+.custom-popconfirm.ant-popover.ant-popover-placement-bottom .ant-popover-arrow::before,
+.custom-popconfirm.ant-popover.ant-popover-placement-bottomLeft .ant-popover-arrow::before,
+.custom-popconfirm.ant-popover.ant-popover-placement-bottomRight .ant-popover-arrow::before,
+.custom-popconfirm.ant-popover.ant-popover-placement-left .ant-popover-arrow::before,
+.custom-popconfirm.ant-popover.ant-popover-placement-right .ant-popover-arrow::before {
+  box-shadow: 0 0 0 3px #6366f1 !important;
+  border: 1px solid #6366f1 !important;
+}
+
+/* 特别针对底部箭头增强可见性 */
+.custom-popconfirm.ant-popover.ant-popover-placement-bottom .ant-popover-arrow::before,
+.custom-popconfirm.ant-popover.ant-popover-placement-bottomLeft .ant-popover-arrow::before,
+.custom-popconfirm.ant-popover.ant-popover-placement-bottomRight .ant-popover-arrow::before {
+  background: #1a1a1a !important;
+  box-shadow: 
+    0 0 0 3px #6366f1,
+    0 2px 4px rgba(0,0,0,0.8) !important;
+  border: 2px solid #6366f1 !important;
+}
+
+.custom-popconfirm.ant-popover.ant-popover-placement-bottom .ant-popover-arrow::after,
+.custom-popconfirm.ant-popover.ant-popover-placement-bottomLeft .ant-popover-arrow::after,
+.custom-popconfirm.ant-popover.ant-popover-placement-bottomRight .ant-popover-arrow::after {
+  background: #1a1a1a !important;
+  border: 2px solid #6366f1 !important;
+}
+
+.custom-popconfirm .ant-btn {
+  background: #2d2d2d !important;
+  border: 1px solid #6366f1 !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  min-width: 60px !important;
+}
+
+.custom-popconfirm .ant-btn-primary {
+  background: #6366f1 !important;
+  border-color: #6366f1 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.custom-popconfirm .ant-btn:hover {
+  background: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+  color: #ffffff !important;
+}
+
+.custom-popconfirm .ant-btn-primary:hover {
+  background: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+  color: #ffffff !important;
+}
+
+/* 确保所有文字元素都有足够的对比度 */
+.custom-popconfirm * {
+  color: #ffffff !important;
+}
+
+.custom-popconfirm .ant-popover-message {
+  color: #ffffff !important;
+}
+
+.custom-popconfirm .ant-popover-message-title {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* 设置警告图标为黄色 - 超强覆盖 */
+.custom-popconfirm .ant-popover-message .anticon {
+  color: #faad14 !important;
+  font-size: 16px !important;
+}
+
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle {
+  color: #faad14 !important;
+}
+
+.custom-popconfirm .anticon-exclamation-circle {
+  color: #faad14 !important;
+}
+
+/* 强制覆盖所有可能的警告图标样式 */
+.custom-popconfirm .anticon {
+  color: #faad14 !important;
+}
+
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle:before {
+  color: #faad14 !important;
+}
+
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle:after {
+  color: #faad14 !important;
+}
+
+/* 覆盖可能的SVG图标 */
+.custom-popconfirm .ant-popover-message svg {
+  color: #faad14 !important;
+  fill: #faad14 !important;
+}
+
+.custom-popconfirm .ant-popover-message .anticon svg {
+  color: #faad14 !important;
+  fill: #faad14 !important;
+}
+
+/* 超强覆盖 - 针对所有可能的图标元素 */
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle,
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle *,
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle::before,
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle::after,
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle svg,
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle svg *,
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle svg path,
+.custom-popconfirm .ant-popover-message .anticon-exclamation-circle svg circle {
+  color: #faad14 !important;
+  fill: #faad14 !important;
+  stroke: #faad14 !important;
+}
+
+/* 全局覆盖所有Popconfirm中的图标 */
+.ant-popover.custom-popconfirm .ant-popover-message .anticon-exclamation-circle {
+  color: #faad14 !important;
+  fill: #faad14 !important;
+}
+
+.ant-popover.custom-popconfirm .ant-popover-message .anticon-exclamation-circle svg {
+  color: #faad14 !important;
+  fill: #faad14 !important;
+}
+
+.ant-popover.custom-popconfirm .ant-popover-message .anticon-exclamation-circle svg path {
+  fill: #faad14 !important;
+  stroke: #faad14 !important;
+}
+
+/* Load Generator Detail Page Styles */
+.detail-page-container {
+  background: var(--bg-primary);
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.detail-page-header {
+  margin-bottom: 32px;
+}
+
+.detail-page-title {
+  color: var(--text-primary);
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.detail-page-content {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Detail Page Cards */
+.detail-card {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.detail-card .ant-card-head {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.detail-card .ant-card-head-title {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.detail-card .ant-card-body {
+  color: var(--text-primary) !important;
+}
+
+/* Detail Page Tabs */
+.detail-tabs .ant-tabs-tab {
+  color: var(--text-secondary) !important;
+}
+
+.detail-tabs .ant-tabs-tab-active {
+  color: var(--primary) !important;
+}
+
+.detail-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--primary) !important;
+  font-weight: 600;
+}
+
+.detail-tabs .ant-tabs-ink-bar {
+  background: var(--primary) !important;
+}
+
+.detail-tabs .ant-tabs-nav::before {
+  border-bottom: 1px solid var(--border) !important;
+}
+
+/* Detail Page Buttons */
+.detail-button-primary {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+.detail-button-secondary {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Detail Page Table */
+.detail-table {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.detail-table .ant-table-thead > tr > th {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.detail-table .ant-table-tbody > tr > td {
+  background: var(--bg-tertiary) !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.detail-table .ant-table-tbody > tr:hover > td {
+  background: var(--bg-hover) !important;
+}
+
+/* Detail Page Modal */
+.detail-modal .ant-modal-content {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.detail-modal .ant-modal-header {
+  background: var(--bg-card) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.detail-modal .ant-modal-title {
+  color: var(--text-primary) !important;
+}
+
+.detail-modal .ant-modal-body {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.detail-modal .ant-modal-footer {
+  background: var(--bg-card) !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+/* Detail Page Form */
+.detail-form .ant-form-item-label > label {
+  color: var(--text-primary) !important;
+}
+
+.detail-form .ant-input {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.detail-form .ant-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+.detail-form .ant-input-number {
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.detail-form .ant-input-number-input {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+.detail-form .ant-switch {
+  background: var(--border) !important;
+}
+
+.detail-form .ant-switch-checked {
+  background: var(--primary) !important;
 }

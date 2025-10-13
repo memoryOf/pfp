@@ -27,7 +27,7 @@ async def get_load_generators(
     return await service.get_load_generators(skip=skip, limit=limit, status=status)
 
 
-@router.get("/{load_generator_id}", response_model=LoadGeneratorResponse)
+@router.get("/{load_generator_id}/", response_model=LoadGeneratorResponse)
 async def get_load_generator(
     load_generator_id: int,
     db: Session = Depends(get_db)
@@ -53,7 +53,7 @@ async def create_load_generator(
     return await service.create_load_generator(load_generator)
 
 
-@router.put("/{load_generator_id}", response_model=LoadGeneratorResponse)
+@router.put("/{load_generator_id}/", response_model=LoadGeneratorResponse)
 async def update_load_generator(
     load_generator_id: int,
     load_generator_update: LoadGeneratorUpdate,
@@ -70,7 +70,7 @@ async def update_load_generator(
     return load_generator
 
 
-@router.delete("/{load_generator_id}")
+@router.delete("/{load_generator_id}/")
 async def delete_load_generator(
     load_generator_id: int,
     db: Session = Depends(get_db)
@@ -86,7 +86,7 @@ async def delete_load_generator(
     return {"message": "压测机删除成功"}
 
 
-@router.post("/{load_generator_id}/test-connection")
+@router.post("/{load_generator_id}/test-connection/")
 async def test_connection(
     load_generator_id: int,
     db: Session = Depends(get_db)
@@ -102,7 +102,7 @@ async def test_connection(
     return result
 
 
-@router.get("/{load_generator_id}/configs", response_model=List[LoadGeneratorConfigResponse])
+@router.get("/{load_generator_id}/configs/", response_model=List[LoadGeneratorConfigResponse])
 async def get_load_generator_configs(
     load_generator_id: int,
     db: Session = Depends(get_db)
@@ -112,7 +112,7 @@ async def get_load_generator_configs(
     return await service.get_configs(load_generator_id)
 
 
-@router.post("/{load_generator_id}/configs", response_model=LoadGeneratorConfigResponse)
+@router.post("/{load_generator_id}/configs/", response_model=LoadGeneratorConfigResponse)
 async def create_load_generator_config(
     load_generator_id: int,
     config: LoadGeneratorConfigCreate,
@@ -123,7 +123,7 @@ async def create_load_generator_config(
     return await service.create_config(load_generator_id, config)
 
 
-@router.put("/configs/{config_id}", response_model=LoadGeneratorConfigResponse)
+@router.put("/configs/{config_id}/", response_model=LoadGeneratorConfigResponse)
 async def update_load_generator_config(
     config_id: int,
     config_update: LoadGeneratorConfigUpdate,
@@ -140,7 +140,7 @@ async def update_load_generator_config(
     return config
 
 
-@router.delete("/configs/{config_id}")
+@router.delete("/configs/{config_id}/")
 async def delete_load_generator_config(
     config_id: int,
     db: Session = Depends(get_db)
@@ -156,7 +156,7 @@ async def delete_load_generator_config(
     return {"message": "配置删除成功"}
 
 
-@router.post("/configs/{config_id}/validate")
+@router.post("/configs/{config_id}/validate/")
 async def validate_config(
     config_id: int,
     db: Session = Depends(get_db)

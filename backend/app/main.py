@@ -10,6 +10,14 @@ import uvicorn
 from .core.config import settings
 from .core.database import engine, Base
 from .api.v1.endpoints.load_generators import router as load_generators_router
+from .api.v1.endpoints.test_tasks import router as test_tasks_router
+from .api.v1.endpoints.test_scripts import router as test_scripts_router
+from .api.v1.endpoints.test_strategies import router as test_strategies_router
+from .api.v1.endpoints.test_scenarios import router as test_scenarios_router
+from .api.v1.endpoints.test_executions import router as test_executions_router
+from .api.v1.endpoints.scenario_files import router as scenario_files_router
+from .api.v1.endpoints.heartbeat import router as heartbeat_router
+from .services.minio_init import init_minio
 
 
 @asynccontextmanager
@@ -21,6 +29,12 @@ async def lifespan(app: FastAPI):
     # 创建数据库表
     Base.metadata.create_all(bind=engine)
     print("✅ 数据库表创建完成")
+    
+    # 初始化MinIO
+    if init_minio():
+        print("✅ MinIO初始化完成")
+    else:
+        print("❌ MinIO初始化失败")
     
     yield
     
@@ -98,6 +112,48 @@ app.include_router(
     load_generators_router,
     prefix=f"{settings.API_V1_STR}/load-generators",
     tags=["压测机管理"]
+)
+
+app.include_router(
+    test_tasks_router,
+    prefix=f"{settings.API_V1_STR}/test-tasks",
+    tags=["测试任务管理"]
+)
+
+app.include_router(
+    test_scripts_router,
+    prefix=f"{settings.API_V1_STR}/test-scripts",
+    tags=["测试脚本管理"]
+)
+
+app.include_router(
+    test_strategies_router,
+    prefix=f"{settings.API_V1_STR}/test-strategies",
+    tags=["压测策略管理"]
+)
+
+app.include_router(
+    test_scenarios_router,
+    prefix=f"{settings.API_V1_STR}/test-scenarios",
+    tags=["测试场景管理"]
+)
+
+app.include_router(
+    test_executions_router,
+    prefix=f"{settings.API_V1_STR}/test-executions",
+    tags=["测试执行管理"]
+)
+
+app.include_router(
+    scenario_files_router,
+    prefix=f"{settings.API_V1_STR}/scenario-files",
+    tags=["场景文件管理"]
+)
+
+app.include_router(
+    heartbeat_router,
+    prefix=f"{settings.API_V1_STR}/heartbeat",
+    tags=["心跳检测"]
 )
 
 

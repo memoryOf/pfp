@@ -85,7 +85,43 @@ class LoadGeneratorService:
         """测试压测机连接"""
         load_generator = await self.get_load_generator(load_generator_id)
         if not load_generator:
-            return {"success": False, "message": "压测机不存在"}
+            return {"success": False, "message": "Load generator not found"}
+        
+        # 首先测试网络连通性
+        import socket
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(5)
+            result = sock.connect_ex((load_generator.host, load_generator.port))
+            sock.close()
+            
+            if result != 0:
+                # 网络连接失败，更新状态为离线
+                load_generator.status = "offline"
+                load_generator.updated_at = datetime.utcnow()
+                self.db.commit()
+                
+                error_messages = {
+                    11: "Connection refused - SSH service may not be running or firewall blocking",
+                    110: "Connection timed out - Host may be unreachable",
+                    111: "Connection refused - Port may be closed",
+                    113: "No route to host - Network routing issue"
+                }
+                error_msg = error_messages.get(result, f"Network connection failed with error code: {result}")
+                return {
+                    "success": False, 
+                    "message": f"Network connection failed: {error_msg}. Please check if SSH service is running on {load_generator.host}:{load_generator.port}"
+                }
+        except Exception as e:
+            # 网络测试异常，更新状态为离线
+            load_generator.status = "offline"
+            load_generator.updated_at = datetime.utcnow()
+            self.db.commit()
+            
+            return {
+                "success": False, 
+                "message": f"Network test failed: {str(e)}"
+            }
         
         try:
             # 创建SSH连接
@@ -105,7 +141,7 @@ class LoadGeneratorService:
             elif load_generator.password:
                 connect_kwargs["password"] = load_generator.password
             else:
-                return {"success": False, "message": "未配置认证信息"}
+                return {"success": False, "message": "No authentication method configured (password or SSH key required)"}
             
             # 建立连接
             ssh.connect(**connect_kwargs)
@@ -124,6 +160,15 @@ class LoadGeneratorService:
             stdin, stdout, stderr = ssh.exec_command("free -m | grep Mem | awk '{print $2}'")
             memory_mb = int(stdout.read().decode().strip())
             
+            # 获取操作系统信息
+            stdin, stdout, stderr = ssh.exec_command("cat /etc/os-release | grep PRETTY_NAME | cut -d'=' -f2 | tr -d '\"'")
+            os_info = stdout.read().decode().strip()
+            
+            # 如果上面的命令失败，尝试其他方法
+            if not os_info:
+                stdin, stdout, stderr = ssh.exec_command("uname -a")
+                os_info = stdout.read().decode().strip()
+            
             ssh.close()
             
             # 更新压测机信息
@@ -131,11 +176,13 @@ class LoadGeneratorService:
             load_generator.last_heartbeat = datetime.utcnow()
             load_generator.python_version = python_version
             load_generator.locust_version = locust_version
+            load_generator.os_info = os_info
             load_generator.cpu_cores = cpu_cores
             load_generator.memory_gb = memory_mb / 1024
             load_generator.system_info = {
                 "python_version": python_version,
                 "locust_version": locust_version,
+                "os_info": os_info,
                 "cpu_cores": cpu_cores,
                 "memory_gb": memory_mb / 1024
             }
@@ -144,16 +191,40 @@ class LoadGeneratorService:
             
             return {
                 "success": True,
-                "message": "连接成功",
+                "message": "Connection successful",
                 "system_info": load_generator.system_info
             }
             
+        except paramiko.AuthenticationException as e:
+            # 更新状态为离线
+            load_generator.status = "offline"
+            load_generator.updated_at = datetime.utcnow()
+            self.db.commit()
+            
+            return {
+                "success": False, 
+                "message": f"Authentication failed: Invalid username or password for user '{load_generator.username}'"
+            }
+        except paramiko.SSHException as e:
+            # 更新状态为离线
+            load_generator.status = "offline"
+            load_generator.updated_at = datetime.utcnow()
+            self.db.commit()
+            
+            return {
+                "success": False, 
+                "message": f"SSH connection error: {str(e)}"
+            }
         except Exception as e:
             # 更新状态为离线
             load_generator.status = "offline"
+            load_generator.updated_at = datetime.utcnow()
             self.db.commit()
             
-            return {"success": False, "message": f"连接失败: {str(e)}"}
+            return {
+                "success": False, 
+                "message": f"Connection failed: {str(e)}"
+            }
     
     async def get_configs(self, load_generator_id: int) -> List[LoadGeneratorConfig]:
         """获取压测机配置列表"""

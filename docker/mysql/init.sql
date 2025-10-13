@@ -141,3 +141,5 @@ INSERT INTO test_tasks (name, description, status) VALUES
 INSERT INTO test_scripts (name, content, version) VALUES
 ('用户登录测试', 'from locust import HttpUser, task\n\nclass UserBehavior(HttpUser):\n    @task\n    def login(self):\n        self.client.post("/api/login", json={"username": "test", "password": "test"})', '1.0.0'),
 ('API查询测试', 'from locust import HttpUser, task\n\nclass ApiBehavior(HttpUser):\n    @task\n    def get_data(self):\n        self.client.get("/api/data")', '1.0.0');
+
+

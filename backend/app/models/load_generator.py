@@ -1,8 +1,9 @@
 """
 压测机数据模型
 """
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, Float, JSON
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, Float, JSON, ForeignKey
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from ..core.database import Base
 
 
@@ -19,8 +20,8 @@ class LoadGenerator(Base):
     ssh_key_path = Column(String(500), comment="SSH密钥路径")
     
     # 硬件配置
-    cpu_cores = Column(Integer, nullable=False, comment="CPU核心数")
-    memory_gb = Column(Float, nullable=False, comment="内存大小(GB)")
+    cpu_cores = Column(Integer, comment="CPU核心数")
+    memory_gb = Column(Float, comment="内存大小(GB)")
     network_bandwidth = Column(String(50), comment="网络带宽")
     disk_space = Column(String(50), comment="磁盘空间")
     
@@ -36,6 +37,7 @@ class LoadGenerator(Base):
     # 配置信息
     locust_version = Column(String(20), comment="Locust版本")
     python_version = Column(String(20), comment="Python版本")
+    os_info = Column(String(100), comment="操作系统信息")
     system_info = Column(JSON, comment="系统信息")
     
     # 时间戳
@@ -45,6 +47,10 @@ class LoadGenerator(Base):
     # 备注
     description = Column(Text, comment="备注说明")
     is_active = Column(Boolean, default=True, comment="是否启用")
+    
+    # 关联关系
+    test_executions = relationship("TestExecution", back_populates="load_generator")
+    configs = relationship("LoadGeneratorConfig", back_populates="load_generator")
 
 
 class LoadGeneratorConfig(Base):
@@ -52,7 +58,7 @@ class LoadGeneratorConfig(Base):
     __tablename__ = "load_generator_configs"
     
     id = Column(Integer, primary_key=True, index=True)
-    load_generator_id = Column(Integer, nullable=False, comment="压测机ID")
+    load_generator_id = Column(Integer, ForeignKey("load_generators.id"), nullable=False, comment="压测机ID")
     config_name = Column(String(100), nullable=False, comment="配置名称")
     
     # Master配置
@@ -83,3 +89,6 @@ class LoadGeneratorConfig(Base):
     # 备注
     description = Column(Text, comment="配置说明")
     is_active = Column(Boolean, default=True, comment="是否启用")
+    
+    # 关联关系
+    load_generator = relationship("LoadGenerator", back_populates="configs")

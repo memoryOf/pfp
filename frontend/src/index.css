@@ -1,36 +1,49 @@
-/* 英雄联盟宇宙风格主题 */
+/* 现代暗黑风格主题 */
 :root {
-  --lol-primary: #c9aa71;       /* 英雄联盟金色 */
-  --lol-secondary: #f0e6d2;     /* 浅金色 */
-  --lol-accent: #cdbe91;        /* 古铜色 */
-  --lol-dark: #0f0f0f;          /* 深黑 */
-  --lol-darker: #000000;        /* 绝对黑 */
-  --lol-gray: #1e2328;          /* 深灰 */
-  --lol-light-gray: #2a2a2a;    /* 浅灰 */
-  --lol-text: #f0e6d2;          /* 浅金色文字 */
-  --lol-text-secondary: #c9aa71; /* 金色次要文字 */
-  --lol-border: #463714;        /* 金色边框 */
-  --lol-shadow: rgba(201, 170, 113, 0.3); /* 金色阴影 */
-  --lol-glow: rgba(201, 170, 113, 0.6); /* 金色发光 */
-  --lol-mystic: rgba(201, 170, 113, 0.1); /* 神秘光效 */
+  --primary: #6366f1;           /* 现代紫色 */
+  --primary-hover: #4f46e5;     /* 紫色悬停 */
+  --secondary: #8b5cf6;         /* 次要紫色 */
+  --accent: #06b6d4;            /* 青色强调 */
+  --success: #10b981;           /* 成功绿色 */
+  --warning: #f59e0b;           /* 警告橙色 */
+  --error: #ef4444;             /* 错误红色 */
+  
+  --bg-primary: #0f0f23;        /* 主背景 */
+  --bg-secondary: #1a1a2e;      /* 次背景 */
+  --bg-tertiary: #16213e;       /* 第三背景 */
+  --bg-card: #1e293b;           /* 卡片背景 */
+  --bg-hover: #334155;          /* 悬停背景 */
+  
+  --text-primary: #f8fafc;      /* 主文字 */
+  --text-secondary: #cbd5e1;    /* 次文字 */
+  --text-muted: #94a3b8;        /* 弱化文字 */
+  --text-disabled: #64748b;     /* 禁用文字 */
+  
+  --border: #334155;            /* 边框 */
+  --border-light: #475569;      /* 浅边框 */
+  --border-focus: #6366f1;      /* 聚焦边框 */
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 body {
   margin: 0;
-  font-family: 'Cinzel', 'Playfair Display', 'Segoe UI', 'Roboto', sans-serif;
+  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: 
-    radial-gradient(circle at 20% 80%, var(--lol-mystic) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, var(--lol-mystic) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, var(--lol-mystic) 0%, transparent 70%),
-    linear-gradient(135deg, var(--lol-darker) 0%, var(--lol-dark) 100%);
-  color: var(--lol-text);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  line-height: 1.6;
 }
 
+/* 现代背景效果 */
 body::before {
   content: '';
   position: fixed;
@@ -39,64 +52,44 @@ body::before {
   right: 0;
   bottom: 0;
   background: 
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 100px,
-      var(--lol-mystic) 100px,
-      var(--lol-mystic) 101px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 100px,
-      var(--lol-mystic) 100px,
-      var(--lol-mystic) 101px
-    );
+    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
   pointer-events: none;
   z-index: -1;
-  opacity: 0.1;
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 30% 20%, var(--lol-mystic) 0%, transparent 30%),
-    radial-gradient(circle at 70% 80%, var(--lol-mystic) 0%, transparent 30%);
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.05;
 }
 
 code {
-  font-family: 'Fira Code', 'Courier New', monospace;
-  background: var(--jinx-gray);
-  color: var(--jinx-accent);
+  font-family: 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  background: var(--bg-card);
+  color: var(--accent);
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 0.875em;
 }
 
-/* 滚动条样式 */
+/* 现代滚动条样式 */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--jinx-darker);
+  background: var(--bg-secondary);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--jinx-primary);
-  border-radius: 4px;
+  background: var(--border);
+  border-radius: 3px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--jinx-secondary);
+  background: var(--border-light);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--bg-secondary);
 }
 
 * {

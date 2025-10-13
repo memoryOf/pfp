@@ -19,6 +19,7 @@ export interface LoadGenerator {
   network_usage: number;
   locust_version?: string;
   python_version?: string;
+  os_info?: string;
   system_info?: Record<string, any>;
   created_at: string;
   updated_at: string;
@@ -125,4 +126,11 @@ export interface ConfigValidationResult {
     memory_gb: number;
     network_mbps: number;
   };
+}
+
+export interface DeploymentConfig {
+  id: number;
+  deployment_mode: 'standalone' | 'master-slave-1' | 'master-slave-2';
+  name: string;
+  description: string;
 }

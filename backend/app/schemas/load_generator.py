@@ -16,8 +16,8 @@ class LoadGeneratorBase(BaseModel):
     ssh_key_path: Optional[str] = Field(None, description="SSH密钥路径")
     
     # 硬件配置
-    cpu_cores: int = Field(..., description="CPU核心数")
-    memory_gb: float = Field(..., description="内存大小(GB)")
+    cpu_cores: Optional[int] = Field(None, description="CPU核心数")
+    memory_gb: Optional[float] = Field(None, description="内存大小(GB)")
     network_bandwidth: Optional[str] = Field(None, description="网络带宽")
     disk_space: Optional[str] = Field(None, description="磁盘空间")
     
@@ -64,6 +64,7 @@ class LoadGeneratorResponse(LoadGeneratorBase):
     # 配置信息
     locust_version: Optional[str] = Field(None, description="Locust版本")
     python_version: Optional[str] = Field(None, description="Python版本")
+    os_info: Optional[str] = Field(None, description="操作系统信息")
     system_info: Optional[Dict[str, Any]] = Field(None, description="系统信息")
     
     # 时间戳

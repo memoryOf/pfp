@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, Row, Col, Statistic, Table, Tag, Button, Typography } from 'antd';
 import { 
   CloudServerOutlined, 
@@ -21,11 +21,7 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchLoadGenerators();
-  }, []);
-
-  const fetchLoadGenerators = async () => {
+  const fetchLoadGenerators = useCallback(async () => {
     setLoading(true);
     try {
       const data = await loadGeneratorService.getLoadGenerators();
@@ -35,17 +31,22 @@ const Dashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // 统计数据
-  const stats = {
+  useEffect(() => {
+    fetchLoadGenerators();
+  }, [fetchLoadGenerators]);
+
+  // 统计数据 - 使用useMemo优化
+  const stats = useMemo(() => ({
     total: loadGenerators.length,
     online: loadGenerators.filter(g => g.status === 'online').length,
     offline: loadGenerators.filter(g => g.status === 'offline').length,
     maintenance: loadGenerators.filter(g => g.status === 'maintenance').length,
-  };
+  }), [loadGenerators]);
 
-  const getStatusTag = (status: string) => {
+  // 使用 useCallback 优化渲染函数
+  const getStatusTag = useCallback((status: string) => {
     const statusMap = {
       online: { color: 'green', text: '在线' },
       offline: { color: 'red', text: '离线' },
@@ -53,7 +54,7 @@ const Dashboard: React.FC = () => {
     };
     const config = statusMap[status as keyof typeof statusMap] || { color: 'default', text: status };
     return <Tag color={config.color}>{config.text}</Tag>;
-  };
+  }, []);
 
   const recentGenerators = loadGenerators.slice(0, 5);
 
@@ -92,12 +93,23 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div style={{ background: 'var(--lol-dark)', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh' }}>
       <div style={{ marginBottom: '32px' }}>
-        <Title level={1} className="lol-title" style={{ marginBottom: '8px' }}>
+        <Title level={1} className="modern-title" style={{ 
+          marginBottom: '8px',
+          color: 'var(--text-primary)',
+          fontSize: '32px',
+          fontWeight: 700
+        }}>
           COMMAND CENTER
         </Title>
-        <p style={{ color: 'var(--lol-text-secondary)', fontSize: '16px', margin: 0, fontFamily: 'Cinzel, sans-serif', letterSpacing: '1px' }}>
+        <p style={{ 
+          color: 'var(--text-secondary)', 
+          fontSize: '16px', 
+          margin: 0, 
+          fontFamily: 'inherit',
+          fontWeight: 500
+        }}>
           SYSTEM STATUS: READY FOR BOMBARDMENT
         </p>
       </div>
@@ -217,4 +229,5 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+// 使用 React.memo 优化组件性能，避免不必要的重渲染
+export default React.memo(Dashboard);

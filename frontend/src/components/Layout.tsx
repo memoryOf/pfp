@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Typography } from 'antd';
+import { Layout as AntLayout, Button, Avatar, Dropdown } from 'antd';
 import { 
-  DashboardOutlined, 
-  CloudServerOutlined, 
-  ExperimentOutlined,
   UserOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  CalendarOutlined,
+  CloudServerOutlined,
+  LineChartOutlined,
+  LeftOutlined,
   RocketOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-const { Title } = Typography;
 
 const { Header, Sider, Content } = AntLayout;
 
@@ -28,18 +27,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const menuItems = [
     {
       key: '/',
-      icon: <DashboardOutlined />,
-      label: 'COMMAND CENTER',
+      icon: <LineChartOutlined />,
+      label: 'Dashboard',
     },
     {
       key: '/load-generators',
       icon: <CloudServerOutlined />,
-      label: 'LOAD GENERATORS',
+      label: 'Load Generators',
     },
     {
-      key: '/test-tasks',
-      icon: <ExperimentOutlined />,
-      label: 'BOMBARDMENT',
+      key: '/test-management',
+      icon: <CalendarOutlined />,
+      label: 'Test Management',
     },
   ];
 
@@ -56,8 +55,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     },
   ];
 
-  const handleMenuClick = ({ key }: { key: string }) => {
-    navigate(key);
+  const handleMenuClick = (item: any) => {
+    navigate(item.key);
   };
 
   const handleUserMenuClick = ({ key }: { key: string }) => {
@@ -68,91 +67,213 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <AntLayout style={{ minHeight: '100vh', background: 'var(--lol-dark)' }}>
+    <AntLayout style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <Sider 
         trigger={null} 
         collapsible 
         collapsed={collapsed}
         style={{
-          background: 'var(--lol-darker)',
-          boxShadow: '2px 0 8px rgba(255, 71, 87, 0.2)',
-          borderRight: '1px solid var(--lol-border)',
+          background: '#0f0f23',
+          borderRight: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          width: collapsed ? 80 : 240,
+          minWidth: collapsed ? 80 : 240,
+          maxWidth: collapsed ? 80 : 240,
+          position: 'relative'
         }}
       >
+        {/* Logo区域 */}
         <div style={{ 
           height: 64, 
           display: 'flex', 
           alignItems: 'center', 
-          justifyContent: 'center',
-          borderBottom: '1px solid var(--lol-border)',
-          background: 'linear-gradient(90deg, var(--lol-primary), var(--lol-secondary))'
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          padding: collapsed ? '0' : '0 20px',
+          borderBottom: '1px solid #2d3748',
+          background: 'linear-gradient(135deg, #4c63d2 0%, #5a67d8 100%)'
         }}>
-          <Title level={3} style={{ 
-            margin: 0, 
-            color: 'white',
-            fontSize: collapsed ? 16 : 20,
-            transition: 'all 0.2s',
-            textShadow: '0 0 10px rgba(255,0,64,0.8)',
-            fontFamily: 'Orbitron, Exo 2, sans-serif',
-            fontWeight: 900,
-            letterSpacing: '2px'
-          }}>
-            {collapsed ? 'J' : 'JINX'}
-          </Title>
+          {collapsed ? (
+            <div style={{
+              width: 32,
+              height: 32,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <img 
+                src="/favicon.ico" 
+                alt="Platform Logo" 
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain'
+                }}
+              />
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: 32,
+                height: 32,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <img 
+                  src="/favicon.ico" 
+                  alt="Platform Logo" 
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain'
+                  }}
+                />
+              </div>
+              <span style={{
+                color: '#fff',
+                fontSize: '18px',
+                fontWeight: 600,
+                fontFamily: 'system-ui, -apple-system, sans-serif'
+              }}>
+                pfp™
+              </span>
+            </div>
+          )}
         </div>
-        <Menu
-          mode="inline"
-          selectedKeys={[location.pathname]}
-          items={menuItems}
-          onClick={handleMenuClick}
-          style={{ 
-            borderRight: 0,
-            background: 'var(--lol-darker)',
-            color: 'var(--jinx-text)'
-          }}
-          theme="dark"
-        />
-      </Sider>
-      <AntLayout>
-        <Header style={{ 
-          padding: '0 24px', 
-          background: 'var(--lol-gray)',
+
+        {/* 用户信息区域 */}
+        <div style={{
+          padding: collapsed ? '16px 8px' : '16px 20px',
+          borderBottom: '1px solid #2d3748'
+        }}>
+          {collapsed ? (
+            <div style={{
+              width: 40,
+              height: 40,
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#fff',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              margin: '0 auto'
+            }}>
+              微
+            </div>
+          ) : (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '12px',
+              background: 'transparent',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}>
+              <div style={{
+                width: 40,
+                height: 40,
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}>
+                微
+              </div>
+              <div>
+                <div style={{ color: '#fff', fontSize: '14px', fontWeight: 500 }}>admin</div>
+                <div style={{ color: '#a0aec0', fontSize: '12px' }}>pfp</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 主菜单区域 */}
+        <div style={{ padding: '16px 0', flex: 1, overflowY: 'auto' }}>
+          {menuItems.map(item => {
+            const isActive = location.pathname === item.key;
+            
+            return (
+              <div key={item.key}>
+                {/* 主菜单项 */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: collapsed ? '12px 20px' : '12px 20px',
+                    color: isActive ? '#fff' : '#a0aec0',
+                    transition: 'all 0.2s ease',
+                    background: isActive ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' : 'transparent',
+                    margin: '2px 0',
+                    borderRadius: '0 8px 8px 0',
+                    marginRight: '8px',
+                    borderLeft: isActive ? '3px solid #8b5cf6' : '3px solid transparent'
+                  }}
+                >
+                  <div 
+                    onClick={() => handleMenuClick(item)}
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      flex: 1,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <span style={{ fontSize: '16px', minWidth: '20px' }}>{item.icon}</span>
+                    {!collapsed && <span style={{ marginLeft: '12px', fontSize: '14px', fontWeight: 500 }}>{item.label}</span>}
+                  </div>
+                </div>
+
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 展开/收缩按钮 - 固定在Sider绝对最底部 */}
+        <div style={{ 
+          padding: '16px 0',
+          borderTop: '1px solid #2d3748',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          boxShadow: '0 2px 8px rgba(255, 71, 87, 0.2)',
-          borderBottom: '1px solid var(--lol-border)'
+          justifyContent: 'center',
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: '#0f0f23',
+          zIndex: 10
         }}>
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            icon={collapsed ? <MenuUnfoldOutlined /> : <LeftOutlined />}
             onClick={() => setCollapsed(!collapsed)}
-            style={{ fontSize: '16px', width: 64, height: 64 }}
+            style={{ 
+              fontSize: '14px', 
+              width: 32, 
+              height: 32,
+              color: '#a0aec0',
+              background: 'transparent',
+              border: '1px solid #374151',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
           />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <span style={{ color: 'var(--lol-text-secondary)', fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '1px' }}>BOMBARDMENT v1.0</span>
-            <Dropdown
-              menu={{ 
-                items: userMenuItems,
-                onClick: handleUserMenuClick
-              }}
-              placement="bottomRight"
-            >
-              <Avatar 
-                icon={<RocketOutlined />} 
-                style={{ 
-                  cursor: 'pointer',
-                  background: 'var(--lol-primary)',
-                  border: '2px solid var(--lol-secondary)'
-                }}
-              />
-            </Dropdown>
-          </div>
-        </Header>
+        </div>
+      </Sider>
+      <AntLayout>
         <Content style={{ 
           margin: 0, 
           minHeight: 280,
-          background: 'var(--lol-dark)',
+          background: '#0f0f23',
           padding: '24px'
         }}>
           {children}

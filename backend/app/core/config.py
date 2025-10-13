@@ -48,6 +48,17 @@ class Settings(BaseSettings):
     INFLUXDB_ORG: str = "pfp"
     INFLUXDB_BUCKET: str = "performance_metrics"
     
+    # MinIO对象存储配置
+    MINIO_ENDPOINT: str = "localhost:9000"
+    MINIO_ACCESS_KEY: str = "admin"
+    MINIO_SECRET_KEY: str = "pfp123456"
+    MINIO_BUCKET_NAME: str = "scenario-files"
+    MINIO_SECURE: bool = False  # 本地开发使用HTTP
+    
+    # 文件存储配置
+    MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
+    ALLOWED_FILE_TYPES: list = [".py", ".js", ".ts", ".java", ".go", ".rs", ".sh", ".bat", ".txt", ".json", ".yaml", ".yml"]
+    
     # Celery配置
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
