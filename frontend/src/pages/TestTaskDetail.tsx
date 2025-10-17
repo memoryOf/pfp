@@ -350,6 +350,11 @@ class QuickstartUser(HttpUser):
   };
 
   const handleCancelScenario = () => {
+    // 如果当前场景是本地创建的临时场景，从scenarios数组中移除
+    if (currentScenario && currentScenario.isNew) {
+      setScenarios(scenarios.filter(s => s.id !== currentScenario.id));
+    }
+    
     setIsCreatingScenario(false);
     setCurrentStep(0);
     setSelectedStrategy(null);
@@ -358,6 +363,7 @@ class QuickstartUser(HttpUser):
     setUploadedFiles([]);
     setSelectedFileId(null);
     setEditorContent('');
+    setCurrentScenario(null);
   };
 
   const handleSaveScenario = async () => {
@@ -395,6 +401,9 @@ class QuickstartUser(HttpUser):
       
       // 重新获取任务数据以更新数据库中的场景列表
       await fetchTestTask();
+      
+      // 清空本地scenarios数组，因为所有场景都应该从数据库获取
+      setScenarios([]);
       
       // 确保当前场景保持为刚保存的场景
       setCurrentScenario(updatedScenario);
@@ -517,16 +526,17 @@ class QuickstartUser(HttpUser):
         
         // 调用文件上传API
         const uploadedFile = await testScenarioService.uploadScenarioFile(currentScenario.id, formData);
-        
-        // 重新获取任务数据以更新文件列表
+
+        // 重新获取任务数据以更新文件列表（其中已包含新文件）
         await fetchTestTask();
-        
-        // 在fetchTestTask完成后，再次确保文件被添加到状态中
-        setScenarioFiles(prev => ({
-          ...prev,
-          [currentScenario.id]: [...(prev[currentScenario.id] || []), uploadedFile]
-        }));
-        
+
+        // 自动展开当前场景，确保用户能看到“已保存文件”列表
+        setExpandedScenarios(prev => {
+          const next = new Set(prev);
+          next.add(currentScenario.id.toString());
+          return next;
+        });
+
         message.success('脚本保存成功');
       } else {
         // 如果是新场景，先保存场景再保存文件
@@ -540,11 +550,16 @@ class QuickstartUser(HttpUser):
           
           const uploadedFile = await testScenarioService.uploadScenarioFile(currentScenario.id, formData);
           
-          // 立即更新本地文件列表状态
+          // 立即更新本地文件列表状态（并展开场景）
           setScenarioFiles(prev => ({
             ...prev,
             [currentScenario.id]: [...(prev[currentScenario.id] || []), uploadedFile]
           }));
+          setExpandedScenarios(prev => {
+            const next = new Set(prev);
+            next.add(currentScenario.id.toString());
+            return next;
+          });
           
           // 保存后立即加载脚本到编辑器
           setScriptContent(content);

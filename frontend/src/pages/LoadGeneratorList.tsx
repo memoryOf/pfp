@@ -477,21 +477,22 @@ fi
     <div style={{ background: 'var(--bg-primary)', minHeight: '100vh' }}>
       <div style={{ marginBottom: '32px' }}>
         <Title level={1} className="modern-title" style={{ 
-          marginBottom: '8px',
+          marginBottom: '50px',
           color: 'var(--text-primary)',
-          fontSize: '32px',
-          fontWeight: 700
+          fontSize: '38px',
+          fontWeight: 700,
+          fontFamily: 'Proxima Nova, sans-serif'
         }}>
-          LOAD GENERATORS
+          Load Generators
         </Title>
         <p style={{ 
           color: 'var(--text-secondary)', 
-          fontSize: '16px', 
+          fontSize: '18px', 
           margin: 0, 
-          fontFamily: 'inherit',
-          fontWeight: 500
+          fontFamily: 'Proxima Nova, sans-serif',
+          fontWeight: 700
         }}>
-          CONFIGURE YOUR LOAD GENERATOR ARMY FOR BOMBARDMENT
+          Configure Your Load Generator Army For Bombardment
         </p>
       </div>
 

@@ -5,12 +5,12 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  CalendarOutlined,
   CloudServerOutlined,
   LineChartOutlined,
   LeftOutlined,
   RocketOutlined
 } from '@ant-design/icons';
+import TaskManagementIcon from './icons/TaskManagementIcon';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Header, Sider, Content } = AntLayout;
@@ -23,10 +23,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
+  
   const menuItems = [
     {
       key: '/',
+      icon: <RocketOutlined />,
+      label: 'Get Started',
+    },
+    {
+      key: '/dashboard',
       icon: <LineChartOutlined />,
       label: 'Dashboard',
     },
@@ -37,7 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     },
     {
       key: '/test-management',
-      icon: <CalendarOutlined />,
+      icon: <TaskManagementIcon style={{ fontSize: '16px' }} />,
       label: 'Test Management',
     },
   ];
@@ -84,15 +89,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         }}
       >
         {/* Logo区域 */}
-        <div style={{ 
-          height: 64, 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: collapsed ? 'center' : 'flex-start',
-          padding: collapsed ? '0' : '0 20px',
-          borderBottom: '1px solid #2d3748',
-          background: 'linear-gradient(135deg, #4c63d2 0%, #5a67d8 100%)'
-        }}>
+        <div 
+          style={{ 
+            height: 64, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            padding: collapsed ? '0' : '0 20px',
+            borderBottom: '1px solid #2d3748',
+            background: 'linear-gradient(135deg, #4c63d2 0%, #5a67d8 100%)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          onClick={() => navigate('/')}
+        >
           {collapsed ? (
             <div style={{
               width: 32,

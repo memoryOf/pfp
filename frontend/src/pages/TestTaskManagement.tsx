@@ -19,10 +19,10 @@ import {
   EditOutlined,
   DeleteOutlined,
   SettingOutlined,
-  FileTextOutlined,
   ThunderboltOutlined,
   PlayCircleOutlined
 } from '@ant-design/icons';
+import TaskManagementIcon from '../components/icons/TaskManagementIcon';
 import { useNavigate } from 'react-router-dom';
 import { 
   testTaskService, 
@@ -171,7 +171,14 @@ const TestTaskManagement: React.FC = () => {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Title level={2}>Test Management</Title>
+      <style>
+        {`
+          .ant-statistic-title {
+            color: #8c8c8c !important;
+          }
+        `}
+      </style>
+      <Title level={2} style={{ color: '#fff', marginBottom: '24px' }}>Test Management</Title>
       
       {/* 统计卡片 */}
       <Row gutter={16} style={{ marginBottom: '24px' }}>
@@ -180,7 +187,7 @@ const TestTaskManagement: React.FC = () => {
             <Statistic
               title="Test Tasks"
               value={stats.totalTasks}
-              prefix={<FileTextOutlined />}
+              prefix={<TaskManagementIcon style={{ fontSize: '16px' }} />}
               valueStyle={{ color: '#1890ff' }}
             />
           </Card>

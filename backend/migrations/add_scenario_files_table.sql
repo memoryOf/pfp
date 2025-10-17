@@ -19,3 +19,6 @@ CREATE TABLE IF NOT EXISTS scenario_files (
     INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='场景关联文件表';
 
+
+
+
