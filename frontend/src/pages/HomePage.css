@@ -1,0 +1,57 @@
+/* 导入Proxima Nova字体 */
+@import url('https://fonts.googleapis.com/css2?family=Proxima+Nova:wght@400;600;700&display=swap');
+
+/* 首页动画效果 */
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+  }
+  50% { 
+    transform: translateY(-20px) rotate(180deg); 
+  }
+}
+
+.language-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.language-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.language-card:hover .card-background {
+  opacity: 0.5;
+}
+
+.language-card:hover .card-icon {
+  transform: scale(1.1);
+}
+
+.language-card:hover .card-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.card-background {
+  transition: opacity 0.3s ease;
+}
+
+.card-icon {
+  transition: transform 0.3s ease;
+}
+
+.card-arrow {
+  transition: all 0.3s ease;
+}
+
+/* 全局字体样式 */
+.HomePage {
+  font-family: 'Proxima Nova', sans-serif;
+}
+
+.HomePage * {
+  font-family: 'Proxima Nova', sans-serif;
+}
+
+
