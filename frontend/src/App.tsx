@@ -19,6 +19,8 @@ const LoadGeneratorList = lazy(() => import('./pages/LoadGeneratorList'));
 const LoadGeneratorDetail = lazy(() => import('./pages/LoadGeneratorDetail'));
 const TestTaskDetail = lazy(() => import('./pages/TestTaskDetail'));
 const TestTaskManagement = lazy(() => import('./pages/TestTaskManagement'));
+const ScenariosList = lazy(() => import('./pages/ScenariosList'));
+const LocustCreation = lazy(() => import('./pages/LocustCreation'));
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -50,6 +52,8 @@ const App: React.FC = () => {
                 <Route path="/load-generators/:id" element={<LoadGeneratorDetail />} />
                 <Route path="/test-tasks/:id" element={<TestTaskDetail />} />
                 <Route path="/test-management" element={<TestTaskManagement />} />
+                <Route path="/scenarios" element={<ScenariosList />} />
+                <Route path="/scenarios/locust/create" element={<LocustCreation />} />
               </Routes>
             </Suspense>
           </Layout>

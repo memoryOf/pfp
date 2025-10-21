@@ -170,7 +170,7 @@ const TestTaskManagement: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div style={{ background: '#07070D', minHeight: '100vh' }}>
       <style>
         {`
           .ant-statistic-title {
@@ -178,7 +178,26 @@ const TestTaskManagement: React.FC = () => {
           }
         `}
       </style>
-      <Title level={2} style={{ color: '#fff', marginBottom: '24px' }}>Test Management</Title>
+      <div style={{ marginBottom: '32px' }}>
+        <Title level={1} className="modern-title" style={{ 
+          marginBottom: '50px',
+          color: 'var(--text-primary)',
+          fontSize: '38px',
+          fontWeight: 700,
+          fontFamily: 'Proxima Nova, sans-serif'
+        }}>
+          Test Management
+        </Title>
+        <p style={{ 
+          color: 'var(--text-secondary)', 
+          fontSize: '18px', 
+          margin: 0, 
+          fontFamily: 'Proxima Nova, sans-serif',
+          fontWeight: 700
+        }}>
+          Manage Your Performance Testing Tasks And Strategies
+        </p>
+      </div>
       
       {/* 统计卡片 */}
       <Row gutter={16} style={{ marginBottom: '24px' }}>

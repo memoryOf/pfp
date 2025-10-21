@@ -262,7 +262,7 @@ fi
                 <p><strong>Command:</strong></p>
                 <div style={{ position: 'relative' }}>
                   <code style={{ 
-                    background: 'var(--bg-primary)', 
+                    background: '#07070D', 
                     padding: '8px', 
                     borderRadius: '4px',
                     display: 'block',
@@ -474,7 +474,7 @@ fi
   };
 
   return (
-    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh' }}>
+    <div style={{ background: '#07070D', minHeight: '100vh' }}>
       <div style={{ marginBottom: '32px' }}>
         <Title level={1} className="modern-title" style={{ 
           marginBottom: '50px',
@@ -637,7 +637,7 @@ fi
             <div style={{
               padding: '16px 20px 12px',
               borderBottom: '1px solid var(--border)',
-              background: 'var(--bg-secondary)',
+              background: '#07070D',
               borderRadius: '16px 16px 0 0',
               display: 'flex',
               justifyContent: 'space-between',
@@ -822,7 +822,7 @@ fi
             <div style={{
               padding: '16px 20px 20px',
               borderTop: '1px solid var(--border)',
-              background: 'var(--bg-secondary)',
+              background: '#07070D',
               borderRadius: '0 0 16px 16px',
               display: 'flex',
               gap: '12px',
@@ -878,12 +878,12 @@ fi
           style={{ top: 50 }}
           styles={{
             body: {
-              background: 'var(--bg-primary)',
+              background: '#07070D',
               color: 'var(--text-primary)',
               padding: '24px'
             },
             header: {
-              background: 'var(--bg-secondary)',
+              background: '#07070D',
               borderBottom: '1px solid var(--border)',
               padding: '16px 24px'
             },
@@ -893,7 +893,7 @@ fi
           }}
         >
           <div style={{ 
-            background: 'var(--bg-primary)',
+            background: '#07070D',
             color: 'var(--text-primary)'
           }}>
             <p style={{ 
@@ -947,7 +947,7 @@ fi
                   value={`ssh ${currentConnection.username}@${currentConnection.host} -p ${currentConnection.port}`}
                   readOnly
                   style={{ 
-                    background: 'var(--bg-secondary)',
+                    background: '#07070D',
                     border: '1px solid var(--border)',
                     color: 'var(--text-primary)',
                     borderRadius: '8px',
@@ -1027,7 +1027,7 @@ fi
                   readOnly
                   rows={2}
                   style={{ 
-                    background: 'var(--bg-secondary)',
+                    background: '#07070D',
                     border: '1px solid var(--border)',
                     color: 'var(--text-primary)',
                     borderRadius: '8px',

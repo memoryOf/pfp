@@ -92,7 +92,7 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh' }}>
+    <div style={{ background: '#07070D', minHeight: '100vh' }}>
       <div style={{ marginBottom: '32px' }}>
         <Title level={1} className="modern-title" style={{ 
           marginBottom: '50px',

@@ -11,7 +11,7 @@
   --bg-primary: #0f0f23;        /* 主背景 */
   --bg-secondary: #1a1a2e;      /* 次背景 */
   --bg-tertiary: #16213e;       /* 第三背景 */
-  --bg-card: #1e293b;           /* 卡片背景 */
+  --bg-card: #1a192a;           /* 卡片背景 */
   --bg-hover: #334155;          /* 悬停背景 */
   
   --text-primary: #f8fafc;      /* 主文字 */
@@ -98,4 +98,48 @@ code {
 
 html, body, #root {
   height: 100%;
+}
+
+/* 子菜单动画效果 */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+
+/* 子菜单项悬停效果 */
+.submenu-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.submenu-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.submenu-item:hover::before {
+  left: 100%;
 }

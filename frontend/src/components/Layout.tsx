@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import { Layout as AntLayout, Button, Avatar, Dropdown } from 'antd';
+import { Layout as AntLayout, Button } from 'antd';
 import { 
-  UserOutlined,
-  LogoutOutlined,
-  MenuFoldOutlined,
   MenuUnfoldOutlined,
   CloudServerOutlined,
   LineChartOutlined,
@@ -11,9 +8,10 @@ import {
   RocketOutlined
 } from '@ant-design/icons';
 import TaskManagementIcon from './icons/TaskManagementIcon';
+import ScenarioManagementIcon from './icons/ScenarioManagementIcon';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const { Header, Sider, Content } = AntLayout;
+const { Sider, Content } = AntLayout;
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -43,33 +41,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     {
       key: '/test-management',
       icon: <TaskManagementIcon style={{ fontSize: '16px' }} />,
-      label: 'Test Management',
-    },
-  ];
-
-  const userMenuItems = [
-    {
-      key: 'profile',
-      icon: <UserOutlined />,
-      label: '个人资料',
+      label: 'Tasks',
     },
     {
-      key: 'logout',
-      icon: <LogoutOutlined />,
-      label: '退出登录',
+      key: '/scenarios',
+      icon: <ScenarioManagementIcon style={{ fontSize: '16px' }} />,
+      label: 'Scenarios',
     },
   ];
+    
 
   const handleMenuClick = (item: any) => {
     navigate(item.key);
   };
 
-  const handleUserMenuClick = ({ key }: { key: string }) => {
-    if (key === 'logout') {
-      // 处理退出登录
-      console.log('退出登录');
-    }
-  };
+
 
   return (
     <AntLayout style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
@@ -97,7 +83,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             justifyContent: collapsed ? 'center' : 'flex-start',
             padding: collapsed ? '0' : '0 20px',
             borderBottom: '1px solid #2d3748',
-            background: 'linear-gradient(135deg, #4c63d2 0%, #5a67d8 100%)',
+            background: 'rgba(255,255,255,0.02)',
             cursor: 'pointer',
             transition: 'all 0.2s ease'
           }}
@@ -112,7 +98,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               justifyContent: 'center'
             }}>
               <img 
-                src="/favicon.ico" 
+                src="/logo.svg"
                 alt="Platform Logo" 
                 style={{
                   width: '100%',
@@ -131,7 +117,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 justifyContent: 'center'
               }}>
                 <img 
-                  src="/favicon.ico" 
+                  src="/logo.svg"
                   alt="Platform Logo" 
                   style={{
                     width: '100%',
@@ -143,76 +129,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <span style={{
                 color: '#fff',
                 fontSize: '18px',
-                fontWeight: 600,
-                fontFamily: 'system-ui, -apple-system, sans-serif'
+                fontWeight: 700,
+                fontFamily: 'Proxima Nova, sans-serif'
               }}>
-                pfp™
+                Jinx
               </span>
             </div>
           )}
         </div>
 
-        {/* 用户信息区域 */}
-        <div style={{
-          padding: collapsed ? '16px 8px' : '16px 20px',
-          borderBottom: '1px solid #2d3748'
-        }}>
-          {collapsed ? (
-            <div style={{
-              width: 40,
-              height: 40,
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              margin: '0 auto'
-            }}>
-              微
-            </div>
-          ) : (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '12px',
-              background: 'transparent',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}>
-              <div style={{
-                width: 40,
-                height: 40,
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontSize: '16px',
-                fontWeight: 'bold'
-              }}>
-                微
-              </div>
-              <div>
-                <div style={{ color: '#fff', fontSize: '14px', fontWeight: 500 }}>admin</div>
-                <div style={{ color: '#a0aec0', fontSize: '12px' }}>pfp</div>
-              </div>
-            </div>
-          )}
-        </div>
 
         {/* 主菜单区域 */}
-        <div style={{ padding: '16px 0', flex: 1, overflowY: 'auto' }}>
+        <div style={{ padding: '16px 0', flex: 1, overflowY: 'auto', overflowX: 'hidden', maxHeight: 'calc(100vh - 200px)' }}>
           {menuItems.map(item => {
             const isActive = location.pathname === item.key;
             
             return (
-              <div key={item.key}>
+              <div key={item.key} style={{ position: 'relative' }}>
                 {/* 主菜单项 */}
                 <div
                   style={{
@@ -225,11 +158,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     margin: '2px 0',
                     borderRadius: '0 8px 8px 0',
                     marginRight: '8px',
-                    borderLeft: isActive ? '3px solid #8b5cf6' : '3px solid transparent'
+                    borderLeft: isActive ? '3px solid #8b5cf6' : '3px solid transparent',
+                    boxShadow: 'none',
+                    cursor: 'pointer',
+                    zIndex: 10,
+                    position: 'relative'
                   }}
+                  onClick={() => handleMenuClick(item)}
                 >
                   <div 
-                    onClick={() => handleMenuClick(item)}
                     style={{ 
                       display: 'flex', 
                       alignItems: 'center', 

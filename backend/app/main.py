@@ -16,6 +16,7 @@ from .api.v1.endpoints.test_strategies import router as test_strategies_router
 from .api.v1.endpoints.test_scenarios import router as test_scenarios_router
 from .api.v1.endpoints.test_executions import router as test_executions_router
 from .api.v1.endpoints.scenario_files import router as scenario_files_router
+from .api.v1.endpoints.scenarios import router as scenarios_router
 from .api.v1.endpoints.heartbeat import router as heartbeat_router
 from .services.minio_init import init_minio
 
@@ -148,6 +149,12 @@ app.include_router(
     scenario_files_router,
     prefix=f"{settings.API_V1_STR}/scenario-files",
     tags=["场景文件管理"]
+)
+
+app.include_router(
+    scenarios_router,
+    prefix=f"{settings.API_V1_STR}/scenarios",
+    tags=["场景管理"]
 )
 
 app.include_router(

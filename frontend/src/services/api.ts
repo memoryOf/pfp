@@ -8,6 +8,7 @@ import {
   TestExecutionStartRequest, TestExecutionStopRequest,
   TestScript 
 } from '../types/testTask';
+import { Scenario, ScenarioCreate, ScenarioUpdate } from '../types/scenario';
 
 // 创建axios实例
 const api = axios.create({
@@ -283,6 +284,29 @@ export const monitoringService = {
   // 获取测试报告
   getTestReport: (executionId: number) => 
     api.get(`/monitoring/reports/${executionId}`),
+};
+
+// Scenario相关API
+export const scenarioService = {
+  // 获取Scenario列表
+  getScenarios: (params?: any): Promise<Scenario[]> =>
+    api.get('/scenarios/', { params }),
+
+  // 获取单个Scenario
+  getScenario: (id: number): Promise<Scenario> =>
+    api.get(`/scenarios/${id}/`),
+
+  // 创建Scenario
+  createScenario: (data: ScenarioCreate): Promise<Scenario> =>
+    api.post('/scenarios/', data),
+
+  // 更新Scenario
+  updateScenario: (id: number, data: ScenarioUpdate): Promise<Scenario> =>
+    api.put(`/scenarios/${id}/`, data),
+
+  // 删除Scenario
+  deleteScenario: (id: number): Promise<void> =>
+    api.delete(`/scenarios/${id}/`),
 };
 
 export default api;
