@@ -9,6 +9,8 @@ from contextlib import asynccontextmanager
 import uvicorn
 from .core.config import settings
 from .core.database import engine, Base
+# 导入所有模型以确保表被创建
+from .models import load_generator, scenario, test_management, file_management
 from .api.v1.endpoints.load_generators import router as load_generators_router
 from .api.v1.endpoints.test_tasks import router as test_tasks_router
 from .api.v1.endpoints.test_scripts import router as test_scripts_router
@@ -18,6 +20,7 @@ from .api.v1.endpoints.test_executions import router as test_executions_router
 from .api.v1.endpoints.scenario_files import router as scenario_files_router
 from .api.v1.endpoints.scenarios import router as scenarios_router
 from .api.v1.endpoints.heartbeat import router as heartbeat_router
+from .api.v1.endpoints.file_management import router as file_management_router
 from .services.minio_init import init_minio
 
 
@@ -161,6 +164,12 @@ app.include_router(
     heartbeat_router,
     prefix=f"{settings.API_V1_STR}/heartbeat",
     tags=["心跳检测"]
+)
+
+app.include_router(
+    file_management_router,
+    prefix=f"{settings.API_V1_STR}/file-management",
+    tags=["文件管理"]
 )
 
 

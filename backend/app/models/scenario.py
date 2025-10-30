@@ -24,12 +24,13 @@ class Scenario(Base):
     is_active = Column(Boolean, default=True, comment="是否启用")
     
     # 关联的文件
-    files = relationship("ScenarioFile", back_populates="scenario", cascade="all, delete-orphan")
+    files = relationship("ScenarioFileRecord", back_populates="scenario", cascade="all, delete-orphan")
 
 
-class ScenarioFile(Base):
+class ScenarioFileRecord(Base):
     """场景文件模型"""
-    __tablename__ = "scenario_files"
+    __tablename__ = "scenario_files_new"
+    __table_args__ = {'extend_existing': True}
     
     id = Column(Integer, primary_key=True, index=True)
     scenario_id = Column(Integer, ForeignKey("scenarios.id"), nullable=False, comment="场景ID")

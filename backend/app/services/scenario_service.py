@@ -71,3 +71,4 @@ class ScenarioService:
         self.db.delete(scenario)
         self.db.commit()
         return True
+

@@ -13,9 +13,18 @@ import { Scenario, ScenarioCreate, ScenarioUpdate } from '../types/scenario';
 // 创建axios实例
 const api = axios.create({
   baseURL: '/api/v1',
-  timeout: 10000,
+  timeout: 60000, // 增加到60秒
   headers: {
     'Content-Type': 'application/json',
+  },
+});
+
+// 创建专门用于文件上传的axios实例
+const uploadApi = axios.create({
+  baseURL: '/api/v1',
+  timeout: 120000, // 文件上传超时时间120秒
+  headers: {
+    'Content-Type': 'multipart/form-data',
   },
 });
 
@@ -44,6 +53,37 @@ api.interceptors.response.use(
       const { status, data } = error.response;
       if (status === 401) {
         // 处理未授权
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+      throw new Error(data.message || '请求失败');
+    }
+    throw new Error('网络错误');
+  }
+);
+
+// 为uploadApi添加相同的拦截器
+uploadApi.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+uploadApi.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    if (error.response) {
+      const { status, data } = error.response;
+      if (status === 401) {
         localStorage.removeItem('token');
         window.location.href = '/login';
       }
@@ -178,11 +218,7 @@ export const testScenarioService = {
 
   // 上传场景文件
   uploadScenarioFile: (scenarioId: number, formData: FormData): Promise<any> =>
-    api.post(`/scenario-files/scenario/${scenarioId}/files/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }),
+    uploadApi.post(`/scenario-files/scenario/${scenarioId}/files/`, formData),
 
   // 删除场景文件
   deleteScenarioFile: (fileId: number): Promise<void> =>
@@ -307,6 +343,33 @@ export const scenarioService = {
   // 删除Scenario
   deleteScenario: (id: number): Promise<void> =>
     api.delete(`/scenarios/${id}/`),
+};
+
+// Scenario文件相关API
+export const scenarioFileService = {
+  // 获取场景的所有文件
+  getScenarioFiles: (scenarioId: number): Promise<any[]> =>
+    api.get(`/scenario-files/scenarios/${scenarioId}/files`),
+
+  // 获取场景文件及其内容
+  getScenarioFile: (scenarioId: number, fileId: number): Promise<any> =>
+    api.get(`/scenario-files/scenarios/${scenarioId}/files/${fileId}`),
+
+  // 创建场景文件
+  createScenarioFile: (scenarioId: number, data: any): Promise<any> =>
+    api.post(`/scenario-files/scenarios/${scenarioId}/files`, data),
+
+  // 更新场景文件
+  updateScenarioFile: (scenarioId: number, fileId: number, data: any): Promise<any> =>
+    api.put(`/scenario-files/scenarios/${scenarioId}/files/${fileId}`, data),
+
+  // 删除场景文件
+  deleteScenarioFile: (scenarioId: number, fileId: number): Promise<void> =>
+    api.delete(`/scenario-files/scenarios/${scenarioId}/files/${fileId}`),
+
+  // 获取文件下载URL
+  getFileDownloadUrl: (scenarioId: number, fileId: number): Promise<any> =>
+    api.get(`/scenario-files/scenarios/${scenarioId}/files/${fileId}/download`),
 };
 
 export default api;

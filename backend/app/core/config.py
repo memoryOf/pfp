@@ -50,9 +50,9 @@ class Settings(BaseSettings):
     
     # MinIO对象存储配置
     MINIO_ENDPOINT: str = "localhost:9000"
-    MINIO_ACCESS_KEY: str = "admin"
-    MINIO_SECRET_KEY: str = "pfp123456"
-    MINIO_BUCKET_NAME: str = "scenario-files"
+    MINIO_ACCESS_KEY: str = "minioadmin"
+    MINIO_SECRET_KEY: str = "minioadmin"
+    MINIO_BUCKET_NAME: str = "file-management"
     MINIO_SECURE: bool = False  # 本地开发使用HTTP
     
     # 文件存储配置
@@ -73,7 +73,11 @@ class Settings(BaseSettings):
     
     # 文件上传配置
     UPLOAD_DIR: str = "uploads"
-    MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
+    MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100MB
+    
+    # 请求超时配置
+    REQUEST_TIMEOUT: int = 120  # 请求超时时间（秒）
+    UPLOAD_TIMEOUT: int = 300   # 文件上传超时时间（秒）
     
     class Config:
         env_file = ".env"

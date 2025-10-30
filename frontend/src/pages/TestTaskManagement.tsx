@@ -170,7 +170,13 @@ const TestTaskManagement: React.FC = () => {
   };
 
   return (
-    <div style={{ background: '#07070D', minHeight: '100vh' }}>
+    <div style={{ 
+      background: '#07070D', 
+      height: 'calc(100vh - 48px)',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
       <style>
         {`
           .ant-statistic-title {
@@ -178,11 +184,11 @@ const TestTaskManagement: React.FC = () => {
           }
         `}
       </style>
-      <div style={{ marginBottom: '32px' }}>
+      <div style={{ marginBottom: '24px', flexShrink: 0 }}>
         <Title level={1} className="modern-title" style={{ 
-          marginBottom: '50px',
+          marginBottom: '16px',
           color: 'var(--text-primary)',
-          fontSize: '38px',
+          fontSize: '32px',
           fontWeight: 700,
           fontFamily: 'Proxima Nova, sans-serif'
         }}>
@@ -190,17 +196,17 @@ const TestTaskManagement: React.FC = () => {
         </Title>
         <p style={{ 
           color: 'var(--text-secondary)', 
-          fontSize: '18px', 
+          fontSize: '16px', 
           margin: 0, 
           fontFamily: 'Proxima Nova, sans-serif',
-          fontWeight: 700
+          fontWeight: 500
         }}>
           Manage Your Performance Testing Tasks And Strategies
         </p>
       </div>
       
       {/* 统计卡片 */}
-      <Row gutter={16} style={{ marginBottom: '24px' }}>
+      <Row gutter={16} style={{ marginBottom: '16px', flexShrink: 0 }}>
         <Col span={6}>
           <Card>
             <Statistic
@@ -244,8 +250,8 @@ const TestTaskManagement: React.FC = () => {
       </Row>
 
       {/* 主要内容 */}
-      <Card>
-        <div style={{ marginBottom: '16px' }}>
+      <Card style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ marginBottom: '16px', flexShrink: 0 }}>
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -254,13 +260,17 @@ const TestTaskManagement: React.FC = () => {
             Create Test Task
           </Button>
         </div>
-        <Table
-          columns={taskColumns}
-          dataSource={tasks}
-          rowKey="id"
-          loading={loading}
-          pagination={{ pageSize: 10 }}
-        />
+        <div style={{ flex: 1, overflow: 'hidden' }}>
+          <Table
+            className="test-management-table"
+            columns={taskColumns}
+            dataSource={tasks}
+            rowKey="id"
+            loading={loading}
+            pagination={{ pageSize: 8 }}
+            scroll={{ y: 'calc(100vh - 400px)' }}
+          />
+        </div>
       </Card>
 
       {/* 创建/编辑测试任务模态框 */}

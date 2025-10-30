@@ -11,6 +11,7 @@ import './performance-optimized.css';
 import './modern-theme.css';
 import './antd-theme-override.css';
 import './modal-transparent.css';
+import './table-headers.css';
 
 // 懒加载页面组件以优化首屏加载性能
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -21,6 +22,9 @@ const TestTaskDetail = lazy(() => import('./pages/TestTaskDetail'));
 const TestTaskManagement = lazy(() => import('./pages/TestTaskManagement'));
 const ScenariosList = lazy(() => import('./pages/ScenariosList'));
 const LocustCreation = lazy(() => import('./pages/LocustCreation'));
+const FileManagement = lazy(() => import('./pages/FileManagement'));
+
+// Locust 独立步骤页面
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -38,8 +42,8 @@ const App: React.FC = () => {
                 display: 'flex', 
                 justifyContent: 'center', 
                 alignItems: 'center', 
-                minHeight: '100vh',
-                background: 'var(--lol-dark)'
+                height: '100vh',
+                background: 'var(--bg-primary)'
               }}>
                 <Spin size="large" tip="Loading..." />
               </div>
@@ -53,6 +57,9 @@ const App: React.FC = () => {
                 <Route path="/test-tasks/:id" element={<TestTaskDetail />} />
                 <Route path="/test-management" element={<TestTaskManagement />} />
                 <Route path="/scenarios" element={<ScenariosList />} />
+                <Route path="/file-management" element={<FileManagement />} />
+                
+                {/* Locust 创建页面 */}
                 <Route path="/scenarios/locust/create" element={<LocustCreation />} />
               </Routes>
             </Suspense>

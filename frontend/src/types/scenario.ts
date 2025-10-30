@@ -22,3 +22,4 @@ export interface ScenarioUpdate {
   scenario_type?: 'locust' | 'jmeter' | 'gatling';
   is_active?: boolean;
 }
+

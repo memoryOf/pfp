@@ -5,8 +5,6 @@ import {
   ExperimentOutlined, 
   CheckCircleOutlined,
   CloseCircleOutlined,
-  PlayCircleOutlined,
-  PauseCircleOutlined,
   RocketOutlined,
   ThunderboltOutlined
 } from '@ant-design/icons';
@@ -93,19 +91,25 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div style={{ background: '#07070D', minHeight: '100vh' }}>
-      <div style={{ marginBottom: '32px' }}>
+    <div style={{ 
+      background: '#07070D', 
+      height: 'calc(100vh - 48px)',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
+      <div style={{ marginBottom: '24px', flexShrink: 0 }}>
         <Title level={1} className="modern-title" style={{ 
           marginBottom: '8px',
           color: 'var(--text-primary)',
-          fontSize: '32px',
+          fontSize: '28px',
           fontWeight: 700
         }}>
           COMMAND CENTER
         </Title>
         <p style={{ 
           color: 'var(--text-secondary)', 
-          fontSize: '16px', 
+          fontSize: '14px', 
           margin: 0, 
           fontFamily: 'inherit',
           fontWeight: 500
@@ -115,7 +119,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* 统计卡片 */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Row gutter={[16, 16]} style={{ marginBottom: '16px', flexShrink: 0 }}>
         <Col xs={24} sm={12} lg={6}>
           <Card className="lol-card" style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}>
             <Statistic
@@ -158,12 +162,19 @@ const Dashboard: React.FC = () => {
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} style={{ flex: 1, overflow: 'hidden' }}>
         {/* 最近压测机 */}
-        <Col xs={24} lg={16}>
+        <Col xs={24} lg={16} style={{ display: 'flex', flexDirection: 'column' }}>
           <Card 
             className="lol-card"
-            style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}
+            style={{ 
+              background: 'var(--lol-gray)', 
+              border: '1px solid var(--lol-border)',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
+            }}
             title={<span style={{ color: 'var(--lol-text)', fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px' }}>LOAD GENERATORS</span>}
             extra={
               <Button 
@@ -175,25 +186,34 @@ const Dashboard: React.FC = () => {
               </Button>
             }
           >
-            <Table
-              columns={columns}
-              dataSource={recentGenerators}
-              rowKey="id"
-              loading={loading}
-              pagination={false}
-              size="small"
-            />
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <Table
+                columns={columns}
+                dataSource={recentGenerators}
+                rowKey="id"
+                loading={loading}
+                pagination={false}
+                size="small"
+                scroll={{ y: 'calc(100vh - 350px)' }}
+              />
+            </div>
           </Card>
         </Col>
 
         {/* 快速操作 */}
-        <Col xs={24} lg={8}>
+        <Col xs={24} lg={8} style={{ display: 'flex', flexDirection: 'column' }}>
           <Card 
             className="lol-card"
-            style={{ background: 'var(--lol-gray)', border: '1px solid var(--lol-border)' }}
+            style={{ 
+              background: 'var(--lol-gray)', 
+              border: '1px solid var(--lol-border)',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column'
+            }}
             title={<span style={{ color: 'var(--lol-text)', fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px' }}>QUICK ACTIONS</span>}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, justifyContent: 'center' }}>
               <Button 
                 className="lol-button"
                 icon={<CloudServerOutlined />}

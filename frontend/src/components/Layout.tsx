@@ -5,10 +5,11 @@ import {
   CloudServerOutlined,
   LineChartOutlined,
   LeftOutlined,
-  RocketOutlined
+  RocketOutlined,
+  FolderOutlined,
+  AppstoreOutlined,
+  ExperimentOutlined
 } from '@ant-design/icons';
-import TaskManagementIcon from './icons/TaskManagementIcon';
-import ScenarioManagementIcon from './icons/ScenarioManagementIcon';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Sider, Content } = AntLayout;
@@ -40,13 +41,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     },
     {
       key: '/test-management',
-      icon: <TaskManagementIcon style={{ fontSize: '16px' }} />,
+      icon: <AppstoreOutlined />,
       label: 'Tasks',
     },
     {
       key: '/scenarios',
-      icon: <ScenarioManagementIcon style={{ fontSize: '16px' }} />,
+      icon: <ExperimentOutlined />,
       label: 'Scenarios',
+    },
+    {
+      key: '/file-management',
+      icon: <FolderOutlined />,
+      label: 'Files',
     },
   ];
     
@@ -58,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 
   return (
-    <AntLayout style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+    <AntLayout style={{ height: '100vh', background: 'var(--bg-primary)', overflow: 'hidden' }}>
       <Sider 
         trigger={null} 
         collapsible 
@@ -71,7 +77,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           width: collapsed ? 80 : 240,
           minWidth: collapsed ? 80 : 240,
           maxWidth: collapsed ? 80 : 240,
-          position: 'relative'
+          position: 'relative',
+          height: '100vh',
+          overflow: 'hidden'
         }}
       >
         {/* Logo区域 */}
@@ -140,7 +148,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 
         {/* 主菜单区域 */}
-        <div style={{ padding: '16px 0', flex: 1, overflowY: 'auto', overflowX: 'hidden', maxHeight: 'calc(100vh - 200px)' }}>
+        <div style={{ 
+          padding: '16px 0', 
+          flex: 1, 
+          overflowY: 'auto', 
+          overflowX: 'hidden',
+          height: 'calc(100vh - 128px)',
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'var(--border) var(--bg-secondary)'
+        }}>
           {menuItems.map(item => {
             const isActive = location.pathname === item.key;
             
@@ -216,12 +232,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           />
         </div>
       </Sider>
-      <AntLayout>
+      <AntLayout style={{ height: '100vh', overflow: 'hidden' }}>
         <Content style={{ 
           margin: 0, 
-          minHeight: 280,
+          height: '100vh',
           background: '#0f0f23',
-          padding: '24px'
+          padding: '24px',
+          overflow: 'auto',
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'var(--border) var(--bg-secondary)'
         }}>
           {children}
         </Content>

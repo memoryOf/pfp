@@ -23,14 +23,14 @@
 
 /* 卡片样式覆盖 */
 .ant-card {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   border-radius: 3px !important;
   box-shadow: var(--shadow) !important;
 }
 
 .ant-card-head {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border-bottom: 1px solid var(--border) !important;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .ant-card-body {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   color: var(--text-primary) !important;
 }
 
@@ -73,7 +73,7 @@
 
 /* 表格样式覆盖 */
 .ant-table {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   color: var(--text-primary) !important;
 }
 
@@ -83,42 +83,55 @@
   border-bottom: 1px solid var(--border) !important;
   font-weight: 600 !important;
   font-size: 12px !important;
-  text-transform: uppercase !important;
+  text-transform: capitalize !important;
   letter-spacing: 0.5px !important;
 }
 
-/* Scenarios表格特殊样式 - 表头首字母大写 */
-.scenarios-table .ant-table-thead > tr > th {
+/* 强制所有表格标题首字母大写 - 最高优先级 */
+.ant-table-thead > tr > th,
+.ant-table-thead > tr > th .ant-table-column-title,
+.ant-table-thead > tr > th .ant-table-column-sorters,
+.ant-table-thead > tr > th .ant-table-column-sorter,
+.ant-table-thead > tr > th .ant-table-column-sorter-up,
+.ant-table-thead > tr > th .ant-table-column-sorter-down,
+.ant-table-thead > tr > th .ant-table-column-sorter-inner,
+.ant-table-thead > tr > th .ant-table-column-sorter-inner .ant-table-column-sorter-up,
+.ant-table-thead > tr > th .ant-table-column-sorter-inner .ant-table-column-sorter-down {
+  text-transform: capitalize !important;
+}
+
+/* Test Management页面表格特殊样式 - 表头首字母大写 */
+.test-management-table .ant-table-thead > tr > th {
   text-transform: capitalize !important;
 }
 
 /* Scenarios模态框样式 */
 .scenario-modal .ant-modal-content {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   border-radius: 12px !important;
 }
 
 .scenario-modal .ant-modal-header {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border-bottom: none !important;
   padding: 0 !important;
 }
 
 .scenario-modal .ant-modal-body {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   padding: 24px !important;
 }
 
 .scenario-modal .ant-modal-footer {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border-top: 1px solid var(--border) !important;
   padding: 16px 24px !important;
 }
 
 /* Scenarios下拉框样式 */
 .scenario-select .ant-select-selector {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   color: var(--text-primary) !important;
 }
@@ -146,14 +159,14 @@
 
 /* Scenarios下拉框选项列表样式 */
 .scenario-select-dropdown {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   border-radius: 8px !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 .scenario-select-dropdown .ant-select-item {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   color: var(--text-primary) !important;
 }
 
@@ -372,7 +385,7 @@ body, html {
 }
 
 .ant-table-tbody > tr > td {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   color: var(--text-primary) !important;
   border-bottom: 1px solid var(--border) !important;
 }
@@ -418,7 +431,7 @@ body, html {
 }
 
 .ant-btn-default {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   color: var(--text-primary) !important;
 }
@@ -442,7 +455,7 @@ body, html {
 
 /* 标签样式覆盖 */
 .ant-tag {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   color: var(--text-primary) !important;
   border-radius: 6px !important;
@@ -476,7 +489,7 @@ body, html {
 
 /* 输入框样式覆盖 */
 .ant-input {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   color: var(--text-primary) !important;
   border-radius: 8px !important;
@@ -485,35 +498,76 @@ body, html {
 .ant-input:focus {
   border-color: var(--primary) !important;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+  background: #07070D !important;
 }
 
 .ant-input:hover {
   border-color: var(--border-light) !important;
+  background: #07070D !important;
 }
 
 .ant-input::placeholder {
   color: var(--text-muted) !important;
 }
 
+/* 修复输入框自动完成/历史记录下拉选项的背景色 */
+.ant-input:focus-within {
+  background: #07070D !important;
+}
+
+/* 浏览器自动完成样式覆盖 */
+.ant-input:-webkit-autofill,
+.ant-input:-webkit-autofill:hover,
+.ant-input:-webkit-autofill:focus,
+.ant-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #07070D inset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  background: #07070D !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* 输入框下拉建议列表样式 */
+.ant-input-dropdown {
+  background: #07070D !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.ant-input-dropdown .ant-select-item {
+  background: #07070D !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-input-dropdown .ant-select-item:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-input-dropdown .ant-select-item-option-selected {
+  background: var(--primary) !important;
+  color: white !important;
+}
+
 .ant-input-number {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   border-radius: 8px !important;
 }
 
 .ant-input-number-input {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   color: var(--text-primary) !important;
 }
 
 .ant-input-password {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   border-radius: 8px !important;
 }
 
 .ant-input-password .ant-input {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   color: var(--text-primary) !important;
 }
 
@@ -559,7 +613,7 @@ body, html {
 }
 
 .ant-modal-content {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   border-radius: 16px !important;
   box-shadow: var(--shadow-xl) !important;
@@ -577,7 +631,7 @@ body, html {
 }
 
 .ant-modal-body {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   color: var(--text-primary) !important;
 }
 
@@ -601,7 +655,7 @@ body, html {
 }
 
 .ant-pagination-item {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   color: var(--text-primary) !important;
 }
@@ -646,14 +700,14 @@ body, html {
 
 /* 下拉菜单样式覆盖 */
 .ant-dropdown {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   border-radius: 8px !important;
   box-shadow: var(--shadow-lg) !important;
 }
 
 .ant-dropdown-menu {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border-radius: 8px !important;
 }
 
@@ -692,26 +746,30 @@ body, html {
 
 /* 工具提示样式覆盖 */
 .ant-tooltip-inner {
-  background: var(--bg-card) !important;
+  background: #1E1E1E !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border) !important;
+  font-size: 11px !important;
+  padding: 2px 6px !important;
+  line-height: 1.2 !important;
+  max-width: 120px !important;
 }
 
 .ant-tooltip-arrow::before {
-  background: var(--bg-card) !important;
+  background: #1E1E1E !important;
   border: 1px solid var(--border) !important;
 }
 
 /* 确认框样式覆盖 */
 .ant-popover {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   border: 1px solid var(--border) !important;
   border-radius: 8px !important;
   box-shadow: var(--shadow-lg) !important;
 }
 
 .ant-popover-inner {
-  background: var(--bg-card) !important;
+  background: #07070D !important;
   color: var(--text-primary) !important;
 }
 
@@ -722,4 +780,102 @@ body, html {
 
 .ant-popover-inner-content {
   color: var(--text-primary) !important;
+}
+
+/* 修复浏览器历史记录和自动完成下拉框样式 */
+input[list]::-webkit-calendar-picker-indicator {
+  display: none !important;
+}
+
+/* 覆盖浏览器默认的datalist样式 */
+input[list] + datalist {
+  background: #07070D !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+}
+
+/* 覆盖可能的浏览器自动完成下拉框 */
+input:-webkit-autofill + *,
+input[autocomplete] + * {
+  background: #07070D !important;
+  color: var(--text-primary) !important;
+}
+
+/* 确保所有输入框在获得焦点时保持深色背景 */
+input:focus,
+input:focus-visible,
+input:focus-within {
+  background: #07070D !important;
+  color: var(--text-primary) !important;
+}
+
+/* 覆盖可能的浏览器建议框 */
+input[type="text"]::-webkit-input-placeholder,
+input[type="text"]::-moz-placeholder,
+input[type="text"]:-ms-input-placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* 修复可能的浏览器历史记录下拉框 */
+input[list] option {
+  background: #07070D !important;
+  color: var(--text-primary) !important;
+}
+
+/* 覆盖浏览器默认的输入框样式 */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="url"],
+input[type="tel"],
+input[type="password"] {
+  background: #07070D !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="tel"]:focus,
+input[type="password"]:focus {
+  background: #07070D !important;
+  color: var(--text-primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* 全局表格标题首字母大写 - 最高优先级覆盖 */
+.ant-table-thead > tr > th,
+.ant-table-thead > tr > th *,
+.ant-table-thead > tr > th .ant-table-column-title,
+.ant-table-thead > tr > th .ant-table-column-sorters,
+.ant-table-thead > tr > th .ant-table-column-sorter,
+.ant-table-thead > tr > th .ant-table-column-sorter-up,
+.ant-table-thead > tr > th .ant-table-column-sorter-down,
+.ant-table-thead > tr > th .ant-table-column-sorter-inner {
+  text-transform: capitalize !important;
+}
+
+/* 确保所有Ant Design表格标题都使用首字母大写 */
+.ant-table-thead > tr > th .ant-table-column-title {
+  text-transform: capitalize !important;
+}
+
+/* 终极解决方案 - 强制所有表格标题首字母大写 */
+.ant-table .ant-table-thead > tr > th,
+.ant-table .ant-table-thead > tr > th *,
+.ant-table .ant-table-thead > tr > th .ant-table-column-title,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorters,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorter,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorter-up,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorter-down,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorter-inner,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorter-inner .ant-table-column-sorter-up,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorter-inner .ant-table-column-sorter-down,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorter-inner .ant-table-column-sorter-inner,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorter-inner .ant-table-column-sorter-inner .ant-table-column-sorter-up,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorter-inner .ant-table-column-sorter-inner .ant-table-column-sorter-down {
+  text-transform: capitalize !important;
 }

@@ -5,154 +5,223 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File,
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from ....core.database import get_db
-from ....models.test_management import ScenarioFile, TestScenario
-from ....services.file_storage_service import FileStorageService
-from ....schemas.test_management import ScenarioFileResponse, ScenarioFileCreate
+from ....schemas.scenario_file import (
+    ScenarioFileResponse, 
+    ScenarioFileCreate, 
+    ScenarioFileUpdate,
+    ScenarioFileWithContent,
+    ScenarioFileUpload
+)
+from ....services.scenario_file_service import ScenarioFileService
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 
-@router.get("/scenario/{scenario_id}/files/", response_model=List[ScenarioFileResponse])
+@router.get("/scenarios/{scenario_id}/files", response_model=List[ScenarioFileResponse])
 async def get_scenario_files(
     scenario_id: int,
     db: Session = Depends(get_db)
 ):
     """获取场景的所有文件"""
-    # 验证场景是否存在
-    scenario = db.query(TestScenario).filter(TestScenario.id == scenario_id).first()
-    if not scenario:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Test scenario not found"
-        )
-    
-    file_service = FileStorageService(db)
-    files = file_service.get_scenario_files(scenario_id)
+    service = ScenarioFileService(db)
+    files = await service.get_scenario_files(scenario_id)
     return files
 
 
-@router.post("/scenario/{scenario_id}/files/", response_model=ScenarioFileResponse)
-async def upload_scenario_file(
+@router.get("/scenarios/{scenario_id}/files/{file_id}", response_model=ScenarioFileWithContent)
+async def get_scenario_file(
     scenario_id: int,
-    file: UploadFile = File(...),
-    description: Optional[str] = Form(None),
+    file_id: int,
     db: Session = Depends(get_db)
 ):
-    """上传文件到场景"""
-    # 验证场景是否存在
-    scenario = db.query(TestScenario).filter(TestScenario.id == scenario_id).first()
-    if not scenario:
+    """获取场景文件及其内容"""
+    service = ScenarioFileService(db)
+    
+    # 验证文件是否属于该场景
+    file_record = await service.get_scenario_file(file_id)
+    if not file_record or file_record.scenario_id != scenario_id:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Test scenario not found"
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="File not found"
         )
     
-    # 验证文件类型和大小
-    from ....core.config import settings
-    file_extension = "." + file.filename.split(".")[-1].lower() if "." in file.filename else ""
-    if file_extension not in settings.ALLOWED_FILE_TYPES:
+    # 获取文件内容
+    file_content = await service.get_file_content(file_id)
+    if file_content is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"File type {file_extension} not allowed"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve file content"
         )
     
-    if file.size and file.size > settings.MAX_FILE_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"File size exceeds maximum allowed size of {settings.MAX_FILE_SIZE} bytes"
-        )
+    # 构建响应
+    file_data = ScenarioFileWithContent(
+        id=file_record.id,
+        scenario_id=file_record.scenario_id,
+        file_name=file_record.file_name,
+        file_path=file_record.file_path,
+        file_size=file_record.file_size,
+        file_type=file_record.file_type,
+        content_type=file_record.content_type,
+        created_at=file_record.created_at,
+        updated_at=file_record.updated_at,
+        file_content=file_content.decode('utf-8', errors='ignore')
+    )
     
+    return file_data
+
+
+@router.post("/scenarios/{scenario_id}/files", response_model=ScenarioFileResponse, status_code=status.HTTP_201_CREATED)
+async def create_scenario_file(
+    scenario_id: int,
+    file_data: ScenarioFileUpload,
+    db: Session = Depends(get_db)
+):
+    """创建场景文件"""
     try:
-        file_service = FileStorageService(db)
-        scenario_file = file_service.save_file(scenario_id, file, description)
-        return scenario_file
+        service = ScenarioFileService(db)
+        
+        # 转换文件内容为bytes
+        file_content_bytes = file_data.file_content.encode('utf-8')
+        
+        # 创建文件数据
+        create_data = ScenarioFileCreate(
+            file_name=file_data.file_name,
+            file_content=file_content_bytes,
+            content_type=file_data.content_type
+        )
+        
+        file_record = await service.create_scenario_file(scenario_id, create_data)
+        return file_record
+        
     except Exception as e:
+        logger.error(f"Failed to create scenario file: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to save file: {str(e)}"
+            detail=str(e)
         )
 
 
-@router.get("/files/{file_id}/", response_model=ScenarioFileResponse)
-async def get_file_info(
+@router.put("/scenarios/{scenario_id}/files/{file_id}", response_model=ScenarioFileResponse)
+async def update_scenario_file(
+    scenario_id: int,
     file_id: int,
+    file_data: ScenarioFileUpload,
     db: Session = Depends(get_db)
 ):
-    """获取文件信息"""
-    file_service = FileStorageService(db)
-    scenario_file = file_service.get_file(file_id)
-    if not scenario_file:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="File not found"
+    """更新场景文件"""
+    try:
+        service = ScenarioFileService(db)
+        
+        # 验证文件是否属于该场景
+        file_record = await service.get_scenario_file(file_id)
+        if not file_record or file_record.scenario_id != scenario_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="File not found"
+            )
+        
+        # 转换文件内容为bytes
+        file_content_bytes = file_data.file_content.encode('utf-8')
+        
+        # 创建更新数据
+        update_data = ScenarioFileUpdate(
+            file_name=file_data.file_name,
+            file_content=file_content_bytes,
+            content_type=file_data.content_type
         )
-    return scenario_file
-
-
-@router.get("/files/{file_id}/content/")
-async def get_file_content(
-    file_id: int,
-    db: Session = Depends(get_db)
-):
-    """获取文件内容"""
-    file_service = FileStorageService(db)
-    scenario_file = file_service.get_file(file_id)
-    if not scenario_file:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="File not found"
-        )
-    
-    content = file_service.get_file_content(file_id)
-    if content is None:
+        
+        updated_file = await service.update_scenario_file(file_id, update_data)
+        if not updated_file:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="File not found"
+            )
+        
+        return updated_file
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update scenario file: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to read file content"
+            detail=str(e)
         )
-    
-    return {
-        "file_id": file_id,
-        "file_name": scenario_file.file_name,
-        "content": content
-    }
 
 
-@router.put("/files/{file_id}/content/")
-async def update_file_content(
-    file_id: int,
-    content: str,
-    db: Session = Depends(get_db)
-):
-    """更新文件内容"""
-    file_service = FileStorageService(db)
-    success = file_service.update_file_content(file_id, content)
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="File not found or update failed"
-        )
-    
-    return {"message": "File content updated successfully"}
-
-
-@router.delete("/files/{file_id}/")
-async def delete_file(
+@router.delete("/scenarios/{scenario_id}/files/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_scenario_file(
+    scenario_id: int,
     file_id: int,
     db: Session = Depends(get_db)
 ):
-    """删除文件"""
-    file_service = FileStorageService(db)
-    success = file_service.delete_file(file_id)
-    if not success:
+    """删除场景文件"""
+    try:
+        service = ScenarioFileService(db)
+        
+        # 验证文件是否属于该场景
+        file_record = await service.get_scenario_file(file_id)
+        if not file_record or file_record.scenario_id != scenario_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="File not found"
+            )
+        
+        success = await service.delete_scenario_file(file_id)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to delete file"
+            )
+        
+        return {"message": "File deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to delete scenario file: {e}")
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="File not found or delete failed"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
         )
-    
-    return {"message": "File deleted successfully"}
 
 
-
-
-
-
+@router.get("/scenarios/{scenario_id}/files/{file_id}/download")
+async def download_scenario_file(
+    scenario_id: int,
+    file_id: int,
+    db: Session = Depends(get_db)
+):
+    """获取文件下载URL"""
+    try:
+        service = ScenarioFileService(db)
+        
+        # 验证文件是否属于该场景
+        file_record = await service.get_scenario_file(file_id)
+        if not file_record or file_record.scenario_id != scenario_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="File not found"
+            )
+        
+        # 获取下载URL
+        download_url = await service.get_file_url(file_id)
+        if not download_url:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to generate download URL"
+            )
+        
+        return {"download_url": download_url}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get download URL: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )

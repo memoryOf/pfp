@@ -173,10 +173,7 @@ const ScenariosList: React.FC = () => {
       key: 'name',
       sorter: (a: Scenario, b: Scenario) => a.name.localeCompare(b.name),
       render: (text: string, record: Scenario) => (
-        <Space>
-          <ExperimentOutlined style={{ color: '#1890ff' }} />
-          <span style={{ fontWeight: 500 }}>{text}</span>
-        </Space>
+        <span style={{ fontWeight: 500 }}>{text}</span>
       ),
     },
     {
@@ -291,7 +288,12 @@ const ScenariosList: React.FC = () => {
   };
 
   return (
-    <div style={{ background: '#07070D', minHeight: '100vh' }}>
+    <div style={{ 
+      background: '#07070D', 
+      height: 'calc(100vh - 48px)',
+      overflow: 'auto',
+      padding: '0'
+    }}>
       <div style={{ marginBottom: '32px' }}>
         <Title level={1} className="modern-title" style={{ 
           marginBottom: '50px',

@@ -520,7 +520,7 @@ const LoadGeneratorDetail: React.FC = () => {
         open={configModalVisible}
         onCancel={() => setConfigModalVisible(false)}
         onOk={() => form.submit()}
-        width={800}
+        width={1200}
         className="detail-modal"
       >
         <Form

@@ -2,7 +2,7 @@
 场景管理Schemas
 """
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -37,3 +37,8 @@ class ScenarioResponse(ScenarioBase):
 
     class Config:
         from_attributes = True
+
+
+class ScenarioWithFiles(ScenarioResponse):
+    """包含文件的场景响应模型"""
+    files: List[dict] = Field(default=[], description="场景文件列表")

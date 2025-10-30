@@ -10,7 +10,10 @@ from .config import settings
 engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,
-    pool_recycle=300,
+    pool_recycle=600,  # 增加到10分钟
+    pool_timeout=30,   # 连接池超时30秒
+    pool_size=20,      # 连接池大小
+    max_overflow=30,   # 最大溢出连接数
     echo=settings.DEBUG
 )
 
