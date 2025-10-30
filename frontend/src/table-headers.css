@@ -1,0 +1,47 @@
+/* 表格标题首字母大写样式 - 最高优先级 */
+/* 这个文件专门用于确保所有表格标题都使用首字母大写格式 */
+
+/* 强制所有Ant Design表格标题首字母大写 */
+.ant-table-thead > tr > th,
+.ant-table-thead > tr > th *,
+.ant-table-thead > tr > th .ant-table-column-title,
+.ant-table-thead > tr > th .ant-table-column-sorters,
+.ant-table .ant-table-thead > tr > th,
+.ant-table .ant-table-thead > tr > th *,
+.ant-table .ant-table-thead > tr > th .ant-table-column-title,
+.ant-table .ant-table-thead > tr > th .ant-table-column-sorters {
+  text-transform: capitalize !important;
+}
+
+/* 针对所有可能的表格标题元素 */
+.ant-table-thead > tr > th .ant-table-column-title,
+.ant-table-thead > tr > th .ant-table-column-sorters,
+.ant-table-thead > tr > th .ant-table-column-sorter,
+.ant-table-thead > tr > th .ant-table-column-sorter-up,
+.ant-table-thead > tr > th .ant-table-column-sorter-down,
+.ant-table-thead > tr > th .ant-table-column-sorter-inner,
+.ant-table-thead > tr > th .ant-table-column-sorter-inner .ant-table-column-sorter-up,
+.ant-table-thead > tr > th .ant-table-column-sorter-inner .ant-table-column-sorter-down {
+  text-transform: capitalize !important;
+}
+
+/* 确保所有表格标题都使用首字母大写 */
+.ant-table-thead > tr > th {
+  text-transform: capitalize !important;
+}
+
+/* 针对特定页面的表格 */
+.test-management-table .ant-table-thead > tr > th,
+.scenarios-table .ant-table-thead > tr > th,
+.file-management-table .ant-table-thead > tr > th,
+.load-generator-table .ant-table-thead > tr > th {
+  text-transform: capitalize !important;
+}
+
+/* 强制覆盖任何可能的uppercase样式 */
+.ant-table-thead > tr > th[style*="text-transform: uppercase"],
+.ant-table-thead > tr > th *[style*="text-transform: uppercase"] {
+  text-transform: capitalize !important;
+}
+
+
