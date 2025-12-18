@@ -270,3 +270,31 @@ class TestExecutionWithDetailsResponse(TestExecutionResponse):
     load_generator: Optional[Dict[str, Any]] = None
     load_generator_config: Optional[Dict[str, Any]] = None
 
+
+class TaskScenarioReferenceBase(BaseModel):
+    """任务场景关联基础模型"""
+    task_id: int = Field(..., description="任务ID")
+    scenario_id: int = Field(..., description="场景ID")
+    is_enabled: bool = Field(default=True, description="是否启用")
+
+
+class TaskScenarioReferenceCreate(BaseModel):
+    """创建任务场景关联"""
+    scenario_id: int = Field(..., description="场景ID")
+    is_enabled: bool = Field(default=True, description="是否启用")
+
+
+class TaskScenarioReferenceUpdate(BaseModel):
+    """更新任务场景关联"""
+    is_enabled: Optional[bool] = Field(None, description="是否启用")
+
+
+class TaskScenarioReferenceResponse(TaskScenarioReferenceBase):
+    """任务场景关联响应"""
+    id: int = Field(..., description="关联ID")
+    created_at: datetime = Field(..., description="创建时间")
+    updated_at: datetime = Field(..., description="更新时间")
+    
+    class Config:
+        from_attributes = True
+

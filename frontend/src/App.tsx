@@ -23,6 +23,7 @@ const TestTaskManagement = lazy(() => import('./pages/TestTaskManagement'));
 const ScenariosList = lazy(() => import('./pages/ScenariosList'));
 const LocustCreation = lazy(() => import('./pages/LocustCreation'));
 const FileManagement = lazy(() => import('./pages/FileManagement'));
+const LoadProfile = lazy(() => import('./pages/LoadProfile'));
 
 // Locust 独立步骤页面
 
@@ -61,6 +62,9 @@ const App: React.FC = () => {
                 
                 {/* Locust 创建页面 */}
                 <Route path="/scenarios/locust/create" element={<LocustCreation />} />
+                
+                {/* Load Profile 页面 */}
+                <Route path="/load-profile" element={<LoadProfile />} />
               </Routes>
             </Suspense>
           </Layout>

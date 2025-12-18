@@ -10,7 +10,8 @@ from ....schemas.scenario_file import (
     ScenarioFileCreate, 
     ScenarioFileUpdate,
     ScenarioFileWithContent,
-    ScenarioFileUpload
+    ScenarioFileUpload,
+    ScenarioFileUpdateUpload
 )
 from ....services.scenario_file_service import ScenarioFileService
 import logging
@@ -108,7 +109,7 @@ async def create_scenario_file(
 async def update_scenario_file(
     scenario_id: int,
     file_id: int,
-    file_data: ScenarioFileUpload,
+    file_data: ScenarioFileUpdateUpload,
     db: Session = Depends(get_db)
 ):
     """更新场景文件"""
@@ -126,11 +127,11 @@ async def update_scenario_file(
         # 转换文件内容为bytes
         file_content_bytes = file_data.file_content.encode('utf-8')
         
-        # 创建更新数据
+        # 创建更新数据（如果 file_name 未提供，使用现有文件名）
         update_data = ScenarioFileUpdate(
-            file_name=file_data.file_name,
+            file_name=file_data.file_name if file_data.file_name else file_record.file_name,
             file_content=file_content_bytes,
-            content_type=file_data.content_type
+            content_type=file_data.content_type if file_data.content_type else file_record.content_type
         )
         
         updated_file = await service.update_scenario_file(file_id, update_data)

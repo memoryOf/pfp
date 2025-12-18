@@ -13,7 +13,7 @@ import { Scenario, ScenarioCreate, ScenarioUpdate } from '../types/scenario';
 // 创建axios实例
 const api = axios.create({
   baseURL: '/api/v1',
-  timeout: 60000, // 增加到60秒
+  timeout: 120000, // 增加到120秒，用于SSH操作等长时间任务
   headers: {
     'Content-Type': 'application/json',
   },
@@ -165,6 +165,26 @@ export const testTaskService = {
   // 获取测试执行记录
   getExecutions: (taskId: number): Promise<TestExecution[]> =>
     api.get(`/test-tasks/${taskId}/executions/`),
+
+  // 获取任务关联的场景列表
+  getTaskScenarioReferences: (taskId: number): Promise<any[]> =>
+    api.get(`/test-tasks/${taskId}/scenario-references/`),
+
+  // 批量创建任务场景关联
+  createTaskScenarioReferences: (taskId: number, scenarioRefs: Array<{scenario_id: number, is_enabled: boolean}>): Promise<any[]> =>
+    api.post(`/test-tasks/${taskId}/scenario-references/`, scenarioRefs),
+
+  // 更新任务场景关联
+  updateTaskScenarioReference: (taskId: number, referenceId: number, data: {is_enabled?: boolean}): Promise<any> =>
+    api.put(`/test-tasks/${taskId}/scenario-references/${referenceId}/`, data),
+
+  // 删除任务场景关联
+  deleteTaskScenarioReference: (taskId: number, referenceId: number): Promise<void> =>
+    api.delete(`/test-tasks/${taskId}/scenario-references/${referenceId}/`),
+  
+  // 根据场景ID查询绑定的任务
+  getTasksByScenario: (scenarioId: number): Promise<TestTask[]> =>
+    api.get(`/test-tasks/by-scenario/${scenarioId}/`),
 };
 
 // 测试策略相关API
@@ -370,6 +390,51 @@ export const scenarioFileService = {
   // 获取文件下载URL
   getFileDownloadUrl: (scenarioId: number, fileId: number): Promise<any> =>
     api.get(`/scenario-files/scenarios/${scenarioId}/files/${fileId}/download`),
+};
+
+// 部署相关API
+export const deploymentService = {
+  // 部署脚本到压测机
+  deployScripts: (taskId: number, data: {
+    load_generator_id: number;
+    scenario_ids: number[];
+    target_dir?: string;
+    deployment_mode?: 'overwrite' | 'incremental';
+  }): Promise<any> =>
+    api.post(`/test-tasks/${taskId}/deploy/`, data),
+
+  // 获取部署状态
+  getDeploymentStatus: (taskId: number, deploymentId: string): Promise<any> =>
+    api.get(`/test-tasks/${taskId}/deployment-status/${deploymentId}/`),
+};
+
+// 调试相关API
+export const debugService = {
+  // 启动远程调试
+  startDebug: (taskId: number, data: {
+    load_generator_id: number;
+    deployment_id: string;
+    deployment_info: any;
+    debug_config: {
+      users: number;
+      duration: number;
+      host: string;
+      spawn_rate: number;
+    };
+  }): Promise<any> =>
+    api.post(`/test-tasks/${taskId}/debug/start/`, data),
+
+  // 停止远程调试
+  stopDebug: (debugId: string): Promise<any> =>
+    api.post(`/debug/${debugId}/stop/`),
+
+  // 获取调试状态
+  getDebugStatus: (debugId: string): Promise<any> =>
+    api.get(`/debug/${debugId}/status/`),
+
+  // 获取调试日志（非实时）
+  getDebugLogs: (debugId: string, limit?: number): Promise<any> =>
+    api.get(`/debug/${debugId}/logs/`, { params: { limit } }),
 };
 
 export default api;

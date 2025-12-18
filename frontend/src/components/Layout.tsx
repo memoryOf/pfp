@@ -64,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 
   return (
-    <AntLayout style={{ height: '100vh', background: 'var(--bg-primary)', overflow: 'hidden' }}>
+      <AntLayout style={{ height: '100vh', background: '#07070D', overflow: 'hidden' }}>
       <Sider 
         trigger={null} 
         collapsible 
@@ -236,7 +236,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Content style={{ 
           margin: 0, 
           height: '100vh',
-          background: '#0f0f23',
+          background: '#07070D',
           padding: '24px',
           overflow: 'auto',
           scrollbarWidth: 'thin',

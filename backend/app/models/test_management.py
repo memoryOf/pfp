@@ -1,7 +1,7 @@
 """
 测试管理数据模型
 """
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, Float, JSON, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, Float, JSON, ForeignKey, UniqueConstraint
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from ..core.database import Base
@@ -196,3 +196,26 @@ class ScenarioFile(Base):
     
     # 关联关系
     scenario = relationship("TestScenario", back_populates="files")
+
+
+class TaskScenarioReference(Base):
+    """任务场景关联模型 - 关联TestTask和Scenario"""
+    __tablename__ = "task_scenario_references"
+    __table_args__ = (
+        UniqueConstraint('task_id', 'scenario_id', name='uq_task_scenario'),
+    )
+    
+    id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(Integer, ForeignKey("test_tasks.id"), nullable=False, comment="任务ID")
+    scenario_id = Column(Integer, ForeignKey("scenarios.id"), nullable=False, comment="场景ID")
+    
+    # 额外配置
+    is_enabled = Column(Boolean, default=True, comment="是否启用")
+    
+    # 时间戳
+    created_at = Column(DateTime, default=func.now(), comment="创建时间")
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), comment="更新时间")
+    
+    # 关联关系
+    task = relationship("TestTask")
+    scenario = relationship("Scenario", foreign_keys=[scenario_id])

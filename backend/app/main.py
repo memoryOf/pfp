@@ -21,6 +21,8 @@ from .api.v1.endpoints.scenario_files import router as scenario_files_router
 from .api.v1.endpoints.scenarios import router as scenarios_router
 from .api.v1.endpoints.heartbeat import router as heartbeat_router
 from .api.v1.endpoints.file_management import router as file_management_router
+from .api.v1.endpoints.deployment import router as deployment_router
+from .api.v1.endpoints.debug import router as debug_router
 from .services.minio_init import init_minio
 
 
@@ -170,6 +172,18 @@ app.include_router(
     file_management_router,
     prefix=f"{settings.API_V1_STR}/file-management",
     tags=["文件管理"]
+)
+
+app.include_router(
+    deployment_router,
+    prefix=f"{settings.API_V1_STR}",
+    tags=["脚本部署"]
+)
+
+app.include_router(
+    debug_router,
+    prefix=f"{settings.API_V1_STR}",
+    tags=["远程调试"]
 )
 
 

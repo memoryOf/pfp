@@ -51,3 +51,10 @@ class ScenarioFileUpload(BaseModel):
     file_content: str = Field(..., description="文件内容(字符串)")
     content_type: Optional[str] = Field("text/plain", description="MIME类型")
 
+
+class ScenarioFileUpdateUpload(BaseModel):
+    """文件更新上传模型（file_name 可选）"""
+    file_name: Optional[str] = Field(None, description="文件名（可选，不提供则保持原文件名）")
+    file_content: str = Field(..., description="文件内容(字符串)")
+    content_type: Optional[str] = Field(None, description="MIME类型（可选，不提供则保持原类型）")
+

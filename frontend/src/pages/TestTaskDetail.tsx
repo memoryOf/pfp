@@ -22,10 +22,11 @@ import {
   Steps,
   Collapse,
   Tooltip,
-  Popconfirm
+  Popconfirm,
+  Switch,
+  Pagination
 } from 'antd';
 import { 
-  ArrowLeftOutlined,
   PlayCircleOutlined,
   PauseCircleOutlined,
   ReloadOutlined,
@@ -42,14 +43,19 @@ import {
   CloudServerOutlined,
   InfoCircleOutlined,
   DownOutlined,
-  SaveOutlined
+  SaveOutlined,
+  EyeOutlined,
+  FolderOpenOutlined
 } from '@ant-design/icons';
 import { 
   testTaskService, 
   testStrategyService, 
   testExecutionService,
-  loadGeneratorService 
+  loadGeneratorService,
+  deploymentService,
+  debugService
 } from '../services/api';
+import { scenarioService } from '../services/api';
 import type { 
   TestTask, 
   TestExecution, 
@@ -57,11 +63,15 @@ import type {
   TestExecutionCreate
 } from '../types/testTask';
 import type { LoadGenerator, LoadGeneratorConfig, DeploymentConfig } from '../types/loadGenerator';
+import type { Scenario } from '../types/scenario';
 import ScriptEditor from '../components/ScriptEditor';
+import LoadProfile from './LoadProfile';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
 const { Panel } = Collapse;
+
+type ScenarioRow = { id: string; name: string; enabled: boolean; referenceId?: number; scenarioId: number };
 
 const TestTaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -90,10 +100,85 @@ const TestTaskDetail: React.FC = () => {
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [editorContent, setEditorContent] = useState('');
   const [isCreatingScenario, setIsCreatingScenario] = useState(false);
+  const [activeTabKey, setActiveTabKey] = useState<string>('scenario');
+  const [scenarioRows, setScenarioRows] = useState<ScenarioRow[]>([]);
   
   // 脚本编辑器相关状态
   const [scriptContent, setScriptContent] = useState('');
   const [currentScriptFileName, setCurrentScriptFileName] = useState('locustfile.py');
+  // 场景选择弹窗
+  const [scenarioPickerVisible, setScenarioPickerVisible] = useState(false);
+  const [scenarioPickerLoading, setScenarioPickerLoading] = useState(false);
+  const [scenarioPickerData, setScenarioPickerData] = useState<Scenario[]>([]);
+  const [scenarioPickerSelectedRowKeys, setScenarioPickerSelectedRowKeys] = useState<React.Key[]>([]);
+  const [scenarioPickerPage, setScenarioPickerPage] = useState({ current: 1, pageSize: 5 });
+  
+  // 部署和调试相关状态
+  const [deploymentType, setDeploymentType] = useState<'local' | 'remote'>('remote');
+  const [selectedDeployLoadGenerator, setSelectedDeployLoadGenerator] = useState<LoadGenerator | null>(null);
+  const [deployStep, setDeployStep] = useState(0);
+  const [deploymentLoading, setDeploymentLoading] = useState(false);
+  const [deploymentResult, setDeploymentResult] = useState<any>(null);
+  const [debugId, setDebugId] = useState<string | null>(null);
+  const [debugStatus, setDebugStatus] = useState<string>('idle'); // idle, running, stopped
+  const [debugLogs, setDebugLogs] = useState<Array<{timestamp: string, level: string, message: string}>>([]);
+  const [debugWs, setDebugWs] = useState<WebSocket | null>(null);
+  const [debugConfig, setDebugConfig] = useState({ users: 1, duration: 30, host: '', spawn_rate: 1 });
+
+  // 组件卸载时关闭WebSocket连接
+  useEffect(() => {
+    return () => {
+      if (debugWs) {
+        debugWs.close();
+      }
+    };
+  }, [debugWs]);
+
+  const handleScenarioConfirm = async () => {
+    if (!id) return;
+    const selected = scenarioPickerData.filter(s => scenarioPickerSelectedRowKeys.includes(s.id));
+    try {
+      // 批量保存到服务端
+      const refs = selected.map(s => ({
+        scenario_id: s.id,
+        is_enabled: !!s.is_active
+      }));
+      await testTaskService.createTaskScenarioReferences(parseInt(id), refs);
+      message.success('Scenarios bound successfully');
+      // 重新加载
+      await loadTaskScenarioReferences();
+    } catch (error) {
+      console.error('Failed to bind scenarios:', error);
+      message.error('Failed to bind scenarios');
+    }
+    setScenarioPickerVisible(false);
+    setScenarioPickerSelectedRowKeys([]);
+  };
+
+  const loadTaskScenarioReferences = async () => {
+    if (!id) return;
+    try {
+      const references = await testTaskService.getTaskScenarioReferences(parseInt(id));
+      // 获取场景详情
+      const rows = await Promise.all(references.map(async (ref: any): Promise<ScenarioRow | null> => {
+        try {
+          const scenario = await scenarioService.getScenario(ref.scenario_id);
+          return {
+            id: String(scenario.id),
+            name: scenario.name,
+            enabled: Boolean(ref.is_enabled),
+            referenceId: Number(ref.id),
+            scenarioId: Number(scenario.id)
+          };
+        } catch (e) {
+          return null;
+        }
+      }));
+      setScenarioRows(rows.filter((r): r is ScenarioRow => r !== null));
+    } catch (error) {
+      console.error('Failed to load task scenario references:', error);
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -101,6 +186,7 @@ const TestTaskDetail: React.FC = () => {
       fetchExecutions();
       fetchStrategies();
       fetchLoadGenerators();
+      loadTaskScenarioReferences();
     }
   }, [id]);
 
@@ -744,18 +830,76 @@ const TestTaskDetail: React.FC = () => {
   return (
     <div style={{ 
       padding: '20px', 
-      background: 'linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%)',
-      minHeight: '100vh'
+      background: '#07070D',
+      height: 'calc(100vh - 48px)',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
-      {/* 页面头部和基本信息 */}
+      {/* Tabs 放置在卡片上方，底边贴合卡片上边框 */}
+      <style>{`
+        .task-detail-tabs .ant-tabs-nav { margin: 0 !important; }
+        .task-detail-tabs .ant-tabs-nav::before { border-bottom: none !important; }
+        .task-detail-tabs .ant-tabs-tab .ant-tabs-tab-btn { color: #CBD5E1 !important; }
+        .task-detail-tabs .ant-tabs-tab-active .ant-tabs-tab-btn { color: #CBD5E1 !important; }
+        .task-detail-tabs .ant-tabs-nav-list { gap: 0 !important; }
+        .task-detail-tabs .ant-tabs-tab { 
+          border: 2px solid #344156 !important; 
+          background: transparent !important; 
+          padding: 8px 16px !important; 
+          margin: 0 !important;
+          border-radius: 0 !important;
+        }
+        .task-detail-tabs .ant-tabs-tab + .ant-tabs-tab { border-left: none !important; }
+        .task-detail-tabs .ant-tabs-tab:first-of-type { border-top-left-radius: 12px !important; border-bottom-left-radius: 0 !important; }
+        /* 针对最后一个真实 Tab：Antd 会在末尾插入 ink-bar，因此这里用 nth-last-child(2) */
+        .task-detail-tabs .ant-tabs-nav-list > .ant-tabs-tab:nth-last-child(2) { 
+          border-top-right-radius: 12px !important; 
+          border-bottom-right-radius: 0 !important; 
+          overflow: hidden !important; /* 确保背景按圆角裁剪 */
+        }
+        .task-detail-tabs .ant-tabs-nav-list > .ant-tabs-tab:nth-last-child(2) .ant-tabs-tab-btn {
+          border-top-right-radius: 12px !important;
+        }
+        .task-detail-tabs .ant-tabs-nav-list > .ant-tabs-tab:nth-last-child(2).ant-tabs-tab-active {
+          border-top-right-radius: 12px !important; 
+          border-bottom-right-radius: 0 !important; 
+          overflow: hidden !important;
+        }
+        .task-detail-tabs .ant-tabs-nav-list > .ant-tabs-tab:nth-last-child(2).ant-tabs-tab-active .ant-tabs-tab-btn {
+          border-top-right-radius: 12px !important;
+        }
+        .task-detail-tabs .ant-tabs-nav-list { overflow: visible !important; }
+        /* 选中态背景色 */
+        .task-detail-tabs .ant-tabs-tab-active { background: #6366F1 !important; }
+        /* 等宽 Tab 设置 */
+        .task-detail-tabs .ant-tabs-tab { width: 130px !important; justify-content: center !important; }
+        .task-detail-tabs .ant-tabs-tab .ant-tabs-tab-btn { width: 100% !important; text-align: center !important; }
+      `}</style>
+      <div style={{ display: 'inline-flex', alignItems: 'flex-end', marginBottom: 0, marginLeft: '5px' }}>
+        <Tabs
+          className="task-detail-tabs"
+          activeKey={activeTabKey}
+          onChange={(key) => setActiveTabKey(key)}
+          items={[
+            { key: 'scenario', label: 'Scenario Config', children: <div style={{ display: 'none' }} /> },
+            { key: 'deploy', label: 'Deploy & Debug', children: <div style={{ display: 'none' }} /> },
+            { key: 'load', label: 'Load Profile', children: <div style={{ display: 'none' }} /> },
+            { key: 'results', label: 'Results', children: <div style={{ display: 'none' }} /> },
+          ]}
+        />
+      </div>
+      {/* 页面头部和基本信息（扩展至底部） */}
       <div style={{ 
-        marginBottom: '20px',
         padding: '20px',
-        background: 'rgba(255, 255, 255, 0.02)',
+        background: '#07070D',
         borderRadius: '8px',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        border: '1px solid #344156',
         backdropFilter: 'blur(10px)',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column'
       }}>
         <div style={{ 
           display: 'flex', 
@@ -764,21 +908,6 @@ const TestTaskDetail: React.FC = () => {
           marginBottom: '20px',
           flexWrap: 'wrap'
         }}>
-          <Button 
-            icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/test-management')}
-            style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#fff',
-              height: '36px',
-              borderRadius: '6px',
-              flexShrink: 0
-            }}
-          >
-            Back
-          </Button>
-          
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -842,6 +971,504 @@ const TestTaskDetail: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* 卡片主体内容区域（Scenario Config 等） */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          {activeTabKey === 'scenario' && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <Button 
+                  icon={<FolderOpenOutlined />}
+                  style={{ background: '#1A192E', border: '1px solid #344156', color: '#CBD5E1' }}
+                  onClick={async () => {
+                    setScenarioPickerVisible(true);
+                    setScenarioPickerLoading(true);
+                    try {
+                      const list = await scenarioService.getScenarios();
+                      setScenarioPickerData(list);
+                    } catch (e) {
+                      message.error('Failed to load scenarios');
+                    } finally {
+                      setScenarioPickerLoading(false);
+                    }
+                  }}
+                >
+                  Load Scenarios
+                </Button>
+              </div>
+              <Card style={{ background: '#07070D', border: '1px solid #344156' }}>
+                <Table
+                  size="middle"
+                  rowKey="id"
+                  dataSource={scenarioRows}
+                  pagination={false}
+                  columns={[
+                    {
+                      title: <span style={{ color: '#CBD5E1' }}>Scenario ID</span>,
+                      dataIndex: 'scenarioId',
+                      key: 'scenarioId',
+                      width: 120,
+                      render: (text: number) => <span style={{ color: '#CBD5E1' }}>{text}</span>
+                    },
+                    {
+                      title: <span style={{ color: '#CBD5E1' }}>Scenario Name</span>,
+                      dataIndex: 'name',
+                      key: 'name',
+                      render: (text: string) => <span style={{ color: '#FFFFFF' }}>{text}</span>
+                    },
+                    {
+                      title: <span style={{ color: '#CBD5E1' }}>Enable/Disable</span>,
+                      key: 'enabled',
+                      width: 160,
+                      render: (_: any, record: any, index: number) => (
+                        <Switch
+                          checked={record.enabled}
+                          onChange={async (checked) => {
+                            if (!id || !record.referenceId) return;
+                            try {
+                              await testTaskService.updateTaskScenarioReference(parseInt(id), record.referenceId, { is_enabled: checked });
+                              setScenarioRows(prev => prev.map((r, i) => i === index ? { ...r, enabled: checked } : r));
+                            } catch (error) {
+                              console.error('Failed to update scenario reference:', error);
+                              message.error('Failed to update scenario');
+                            }
+                          }}
+                        />
+                      )
+                    },
+                    {
+                      title: <span style={{ color: '#CBD5E1' }}>Actions</span>,
+                      key: 'action',
+                      width: 160,
+                      render: (_: any, record: any) => (
+                        <Space>
+                          <Button 
+                            type="text"
+                            shape="circle" 
+                            icon={<EyeOutlined />}
+                            onClick={async () => {
+                              try {
+                                // 获取场景详情以确定类型
+                                const scenario = await scenarioService.getScenario(record.scenarioId);
+                                // 根据场景类型跳转到对应的编辑页面
+                                if (scenario.scenario_type === 'locust') {
+                                  navigate('/scenarios/locust/create', {
+                                    state: {
+                                      scenarioData: {
+                                        name: scenario.name,
+                                        description: scenario.description,
+                                        scenario_type: scenario.scenario_type
+                                      },
+                                      scenarioId: scenario.id,
+                                      isEdit: true
+                                    }
+                                  });
+                                } else if (scenario.scenario_type === 'jmeter') {
+                                  message.info('JMeter scenario detail page coming soon!');
+                                } else if (scenario.scenario_type === 'gatling') {
+                                  message.info('Gatling scenario detail page coming soon!');
+                                } else {
+                                  message.warning('Unknown scenario type');
+                                }
+                              } catch (error) {
+                                console.error('Failed to load scenario details:', error);
+                                message.error('Failed to load scenario details');
+                              }
+                            }}
+                            style={{ color: '#8B5CF6' }}
+                          />
+                          <Button 
+                            danger 
+                            shape="circle" 
+                            icon={<DeleteOutlined />}
+                            onClick={async () => {
+                              if (!id || !record.referenceId) return;
+                              try {
+                                await testTaskService.deleteTaskScenarioReference(parseInt(id), record.referenceId);
+                                message.success('Scenario removed');
+                                await loadTaskScenarioReferences();
+                              } catch (error) {
+                                console.error('Failed to delete scenario reference:', error);
+                                message.error('Failed to remove scenario');
+                              }
+                            }}
+                          />
+                        </Space>
+                      )
+                    }
+                  ]}
+                />
+              </Card>
+            </div>
+          )}
+
+          {activeTabKey === 'deploy' && (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+              <style>{`
+                .load-generator-card-selected {
+                  background: #344156 !important;
+                }
+                .load-generator-card-selected .ant-card-body {
+                  background: #344156 !important;
+                }
+                .ant-progress-text {
+                  color: #CBD5E1 !important;
+                }
+                .ant-progress .ant-progress-text {
+                  color: #CBD5E1 !important;
+                }
+                .ant-progress-status-active .ant-progress-text {
+                  color: #CBD5E1 !important;
+                }
+                .ant-progress-show-info .ant-progress-text {
+                  color: #CBD5E1 !important;
+                }
+                .deployment-progress .ant-progress-text {
+                  color: #FFFFFF !important;
+                  font-weight: bold !important;
+                  font-size: 14px !important;
+                }
+                .deployment-progress .ant-progress-text * {
+                  color: #FFFFFF !important;
+                }
+                .ant-steps-item-title {
+                  color: #CBD5E1 !important;
+                }
+                .ant-steps-item-description {
+                  color: #CBD5E1 !important;
+                }
+                .ant-steps-item-finish .ant-steps-item-title {
+                  color: #CBD5E1 !important;
+                }
+                .ant-steps-item-finish .ant-steps-item-description {
+                  color: #CBD5E1 !important;
+                }
+                .ant-steps-item-process .ant-steps-item-title {
+                  color: #FFFFFF !important;
+                  font-weight: 600 !important;
+                }
+                .ant-steps-item-process .ant-steps-item-description {
+                  color: #CBD5E1 !important;
+                }
+                .ant-steps-item-wait .ant-steps-item-title {
+                  color: #8c8c8c !important;
+                }
+                .ant-steps-item-wait .ant-steps-item-description {
+                  color: #8c8c8c !important;
+                }
+              `}</style>
+              <Steps
+                current={deployStep}
+                items={[
+                  { title: 'Select LoadGen', description: 'Select Load Generator' },
+                  { title: 'Deploy', description: '部署脚本' },
+                  { title: 'Debug', description: '远程调试' },
+                ]}
+                style={{ marginBottom: 24 }}
+              />
+              
+              {deployStep === 0 && (
+                <Card style={{ background: '#07070D', border: '1px solid #344156', flex: 1 }}>
+                  <Title level={5} style={{ color: '#CBD5E1', marginBottom: 16 }}>Select Load Generator</Title>
+                  <Row gutter={16}>
+                    {loadGenerators.map(lg => (
+                      <Col span={4} key={lg.id}>
+                        <Card
+                          hoverable
+                          className={selectedDeployLoadGenerator?.id === lg.id ? 'load-generator-card-selected' : ''}
+                          style={{ 
+                            border: selectedDeployLoadGenerator?.id === lg.id ? '2px solid #6366F1' : '1px solid #344156',
+                            cursor: 'pointer',
+                            background: selectedDeployLoadGenerator?.id === lg.id ? '#344156' : '#07070D',
+                          }}
+                          bodyStyle={{ 
+                            padding: '16px',
+                            background: selectedDeployLoadGenerator?.id === lg.id ? '#344156' : '#07070D',
+                          }}
+                          onClick={() => {
+                            // 如果已选中，则取消选中；否则选中
+                            if (selectedDeployLoadGenerator?.id === lg.id) {
+                              setSelectedDeployLoadGenerator(null);
+                            } else {
+                              setSelectedDeployLoadGenerator(lg);
+                            }
+                          }}
+                        >
+                          <div style={{ textAlign: 'center' }}>
+                            <CloudServerOutlined style={{ fontSize: 24, color: lg.status === 'online' ? '#52c41a' : '#ff4d4f', marginBottom: 8 }} />
+                            <Title level={5} style={{ color: '#fff', margin: '0 0 8px 0' }}>{lg.name}</Title>
+                            <Text style={{ color: '#CBD5E1', display: 'block', marginBottom: '8px' }}>
+                              {lg.host}:{lg.port}
+                            </Text>
+                            <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                              <div style={{ color: lg.status === 'online' ? '#52c41a' : '#ff4d4f', marginBottom: '4px' }}>
+                                Status: {lg.status}
+                              </div>
+                              <div>
+                                CPU: {lg.cpu_cores || 'N/A'} | Memory: {lg.memory_gb || 'N/A'}GB
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
+                  <div style={{ marginTop: 24, textAlign: 'right' }}>
+                    <Button 
+                      type="primary"
+                      disabled={!selectedDeployLoadGenerator}
+                      onClick={() => {
+                        if (selectedDeployLoadGenerator) {
+                          setDeployStep(1);
+                        }
+                      }}
+                    >
+                      Next: Deploy Scripts
+                    </Button>
+                  </div>
+                </Card>
+              )}
+
+              {deployStep === 1 && (
+                <Card style={{ background: '#07070D', border: '1px solid #344156', flex: 1 }}>
+                  <Title level={5} style={{ color: '#CBD5E1', marginBottom: 16 }}>部署脚本</Title>
+                  {deploymentLoading ? (
+                    <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                      <Progress 
+                        className="deployment-progress"
+                        percent={deploymentResult?.progress || 0}
+                        format={(percent) => (
+                          <span style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: '14px' }}>{percent}%</span>
+                        )}
+                      />
+                      <Text style={{ color: '#CBD5E1', display: 'block', marginTop: 16 }}>Deploying scripts...</Text>
+                      <div style={{ marginTop: 16, textAlign: 'left', background: '#1A192E', padding: '12px', borderRadius: '4px', maxHeight: '200px', overflowY: 'auto' }}>
+                        {deploymentResult?.logs?.map((log: string, idx: number) => (
+                          <div key={idx} style={{ color: '#CBD5E1', fontSize: '12px', marginBottom: '4px' }}>{log}</div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ marginBottom: 16 }}>
+                        <Text style={{ color: '#CBD5E1' }}>Selected Load Generator: </Text>
+                        <Text strong style={{ color: '#fff' }}>{selectedDeployLoadGenerator?.name}</Text>
+                      </div>
+                      <div style={{ marginBottom: 16 }}>
+                        <Text style={{ color: '#CBD5E1' }}>Scenarios to deploy: </Text>
+                        <Text style={{ color: '#fff' }}>{scenarioRows.filter(r => r.enabled).length} enabled</Text>
+                      </div>
+                      <div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between' }}>
+                        <Button onClick={() => setDeployStep(0)}>Back</Button>
+                        <Button 
+                          type="primary"
+                          disabled={!selectedDeployLoadGenerator || scenarioRows.filter(r => r.enabled).length === 0}
+                          onClick={async () => {
+                            if (!id || !selectedDeployLoadGenerator) return;
+                            setDeploymentLoading(true);
+                            setDeploymentResult({ progress: 0, logs: [] });
+                            try {
+                              const scenarioIds = scenarioRows.filter(r => r.enabled).map(r => r.scenarioId);
+                              const result = await deploymentService.deployScripts(parseInt(id), {
+                                load_generator_id: selectedDeployLoadGenerator.id,
+                                scenario_ids: scenarioIds,
+                                deployment_mode: 'overwrite'
+                              });
+                              setDeploymentResult(result);
+                              message.success('Scripts deployed successfully');
+                              setDeployStep(2);
+                            } catch (error: any) {
+                              message.error(`Deployment failed: ${error.message || 'Unknown error'}`);
+                              console.error('Deployment error:', error);
+                            } finally {
+                              setDeploymentLoading(false);
+                            }
+                          }}
+                        >
+                          Deploy Scripts
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </Card>
+              )}
+
+              {deployStep === 2 && (
+                <Card style={{ background: '#07070D', border: '1px solid #344156', flex: 1 }}>
+                  <Title level={5} style={{ color: '#CBD5E1', marginBottom: 16 }}>远程调试</Title>
+                  <Form layout="vertical" style={{ marginBottom: 16 }}>
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <Form.Item label={<span style={{ color: '#CBD5E1' }}>Users</span>}>
+                          <Input 
+                            type="number" 
+                            value={debugConfig.users} 
+                            onChange={(e) => setDebugConfig({...debugConfig, users: parseInt(e.target.value) || 1})}
+                            style={{ background: '#1A192E', border: '1px solid #344156', color: '#CBD5E1' }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item label={<span style={{ color: '#CBD5E1' }}>Duration (seconds)</span>}>
+                          <Input 
+                            type="number" 
+                            value={debugConfig.duration} 
+                            onChange={(e) => setDebugConfig({...debugConfig, duration: parseInt(e.target.value) || 30})}
+                            style={{ background: '#1A192E', border: '1px solid #344156', color: '#CBD5E1' }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item label={<span style={{ color: '#CBD5E1' }}>Host</span>}>
+                          <Input 
+                            value={debugConfig.host || testTask?.target_host || ''} 
+                            onChange={(e) => setDebugConfig({...debugConfig, host: e.target.value})}
+                            placeholder="https://api.example.com"
+                            style={{ background: '#1A192E', border: '1px solid #344156', color: '#CBD5E1' }}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Form>
+                  
+                  <div style={{ marginBottom: 16 }}>
+                    <Space>
+                      <Button 
+                        type="primary"
+                        icon={<PlayCircleOutlined />}
+                        disabled={debugStatus === 'running' || !deploymentResult}
+                        onClick={async () => {
+                          if (!id || !selectedDeployLoadGenerator || !deploymentResult) return;
+                          try {
+                            const result = await debugService.startDebug(parseInt(id), {
+                              load_generator_id: selectedDeployLoadGenerator.id,
+                              deployment_id: deploymentResult.deployment_id,
+                              deployment_info: deploymentResult,
+                              debug_config: {
+                                users: debugConfig.users,
+                                duration: debugConfig.duration,
+                                host: debugConfig.host || testTask?.target_host || 'http://localhost',
+                                spawn_rate: debugConfig.spawn_rate
+                              }
+                            });
+                            setDebugId(result.debug_id);
+                            setDebugStatus('running');
+                            setDebugLogs([]);
+                            
+                            // 建立WebSocket连接
+                            // 使用相对路径，通过代理转发
+                            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                            const wsHost = window.location.host;
+                            const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/debug/${result.debug_id}/logs`;
+                            const ws = new WebSocket(wsUrl);
+                            
+                            ws.onmessage = (event) => {
+                              const logEntry = JSON.parse(event.data);
+                              setDebugLogs(prev => [...prev, logEntry]);
+                            };
+                            
+                            ws.onerror = (error) => {
+                              console.error('WebSocket error:', error);
+                            };
+                            
+                            ws.onclose = () => {
+                              setDebugStatus('stopped');
+                            };
+                            
+                            setDebugWs(ws);
+                            message.success('Debug started');
+                          } catch (error: any) {
+                            message.error(`Failed to start debug: ${error.message || 'Unknown error'}`);
+                            console.error('Debug start error:', error);
+                          }
+                        }}
+                      >
+                        Start Debug
+                      </Button>
+                      <Button 
+                        danger
+                        icon={<PauseCircleOutlined />}
+                        disabled={debugStatus !== 'running'}
+                        onClick={async () => {
+                          if (!debugId) return;
+                          try {
+                            await debugService.stopDebug(debugId);
+                            debugWs?.close();
+                            setDebugWs(null);
+                            setDebugStatus('stopped');
+                            message.success('Debug stopped');
+                          } catch (error: any) {
+                            message.error(`Failed to stop debug: ${error.message || 'Unknown error'}`);
+                          }
+                        }}
+                      >
+                        Stop Debug
+                      </Button>
+                    </Space>
+                  </div>
+                  
+                  <div style={{ 
+                    background: '#1A192E', 
+                    padding: '16px', 
+                    borderRadius: '4px',
+                    height: '400px',
+                    overflowY: 'auto',
+                    fontFamily: 'monospace',
+                    fontSize: '12px'
+                  }}>
+                    {debugLogs.length === 0 ? (
+                      <Text style={{ color: '#8c8c8c' }}>Debug logs will appear here...</Text>
+                    ) : (
+                      debugLogs.map((log, idx) => (
+                        <div 
+                          key={idx} 
+                          style={{ 
+                            color: log.level === 'ERROR' ? '#ff4d4f' : log.level === 'WARNING' ? '#faad14' : '#CBD5E1',
+                            marginBottom: '4px'
+                          }}
+                        >
+                          <span style={{ color: '#8c8c8c' }}>[{log.timestamp}]</span> {log.message}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  
+                  <div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between' }}>
+                    <Button onClick={() => setDeployStep(1)}>Back</Button>
+                    <Button 
+                      type="primary"
+                      disabled={debugStatus === 'running'}
+                      onClick={() => {
+                        message.info('Please complete debug before proceeding to load profile configuration');
+                      }}
+                    >
+                      Debug Complete, Next Step
+                    </Button>
+                  </div>
+                </Card>
+              )}
+            </div>
+          )}
+
+          {activeTabKey === 'load' && (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+              <LoadProfile />
+            </div>
+          )}
+
+          {activeTabKey === 'results' && (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+              <Card style={{ background: '#07070D', border: '1px solid #344156' }}>
+                <Title level={4} style={{ color: '#fff', marginBottom: 16 }}>
+                  Test Results
+                </Title>
+                <Text style={{ color: '#8c8c8c' }}>
+                  Results will be displayed here after test execution.
+                </Text>
+              </Card>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 脚本编辑器模态框 */}
@@ -851,7 +1478,7 @@ const TestTaskDetail: React.FC = () => {
         onCancel={() => setEditorModalVisible(false)}
         footer={null}
         width={1000}
-        style={{ top: 20 }}
+        style={{ top: 300 }}
       >
         <div style={{ marginBottom: 16 }}>
           <Text>Edit your Locust script below:</Text>
@@ -872,6 +1499,83 @@ const TestTaskDetail: React.FC = () => {
               Save Script
             </Button>
           </Space>
+        </div>
+      </Modal>
+
+      {/* 场景列表弹窗 */}
+      <Modal
+        title={null}
+        open={scenarioPickerVisible}
+        onCancel={() => setScenarioPickerVisible(false)}
+        footer={null}
+        width={950}
+        centered={false}
+        bodyStyle={{ background: '#07070D', padding: 0, maxHeight: '44vh', overflowY: 'auto' }}
+        wrapClassName="scenario-picker-modal-wrap"
+      >
+        <style>{`
+          /* 强制设置弹窗位置 */
+          .scenario-picker-modal-wrap .ant-modal {
+            top: 15% !important;
+            left: 36% !important;
+            transform: translateX(-50%) !important;
+          }
+          /* 统一分页所在行背景以及其父容器背景为 #1A192E；去掉外层边框 */
+          .scenario-picker-wrap { background: #1A192E !important; border: none !important; border-radius: 0 !important; }
+          .scenario-picker-wrap .ant-table-wrapper { background: #1A192E !important; }
+          .scenario-picker-wrap .ant-spin-nested-loading { background: #1A192E !important; }
+          .scenario-picker-wrap .ant-spin-container { background: #1A192E !important; }
+          .scenario-picker-wrap .ant-table { background: transparent !important; }
+          .scenario-picker-wrap .ant-table-pagination { 
+            background: #1A192E !important; 
+            margin: 0 !important; 
+            padding: 12px 16px !important; 
+            border-top: 1px solid #344156 !important;
+          }
+          .scenario-picker-wrap .ant-pagination { background: transparent !important; }
+        `}</style>
+        <div className="scenario-picker-wrap" style={{ padding: '16px' }}>
+          <Table
+            loading={scenarioPickerLoading}
+            rowKey="id"
+            dataSource={scenarioPickerData.slice((scenarioPickerPage.current - 1) * scenarioPickerPage.pageSize, scenarioPickerPage.current * scenarioPickerPage.pageSize)}
+            pagination={false}
+            rowSelection={{
+              selectedRowKeys: scenarioPickerSelectedRowKeys,
+              onChange: setScenarioPickerSelectedRowKeys,
+            }}
+            columns={[
+              { title: 'ID', dataIndex: 'id', width: 120 },
+              { title: 'Name', dataIndex: 'name' },
+              { title: 'Type', dataIndex: 'scenario_type', width: 140, render: (t: string) => t || '-' },
+              { title: 'Status', dataIndex: 'is_active', width: 140, render: (v: boolean) => (v ? 'Active' : 'Inactive') },
+              { title: 'Updated', dataIndex: 'updated_at', width: 220, render: (t: string) => new Date(t).toLocaleString() },
+            ]}
+          />
+          {/* 合并区域：分页 + 操作按钮 */}
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: 8,
+            background: '#1A192E', 
+            padding: '12px 16px'
+          }}>
+            <Pagination
+              size="small"
+              current={scenarioPickerPage.current}
+              pageSize={scenarioPickerPage.pageSize}
+              total={scenarioPickerData.length}
+              showSizeChanger
+              pageSizeOptions={['5','10','20']}
+              onChange={(page, pageSize) => setScenarioPickerPage({ current: page, pageSize })}
+              style={{ background: 'transparent', fontSize: 12, marginRight: 200 }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, width: '100%' }}>
+              <Button onClick={() => setScenarioPickerVisible(false)} style={{ background: '#1A192E', border: '1px solid #344156', color: '#CBD5E1' }}>Cancel</Button>
+              <Button type="primary" onClick={handleScenarioConfirm} style={{ background: '#6366F1', borderColor: '#6366F1' }}>Confirm</Button>
+            </div>
+          </div>
         </div>
       </Modal>
 

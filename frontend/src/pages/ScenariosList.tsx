@@ -27,7 +27,7 @@ import {
   RocketOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { scenarioService } from '../services/api';
+import { scenarioService, testTaskService } from '../services/api';
 import type { Scenario } from '../types/scenario';
 
 const { Title } = Typography;
@@ -88,11 +88,65 @@ const ScenariosList: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
+      // 校验是否被任务绑定
+      const tasks = await testTaskService.getTasksByScenario(id);
+      if (tasks && tasks.length > 0) {
+        const modal = Modal.warning({
+          title: 'Delete Failed',
+          content: (
+            <div style={{ color: '#E5E7EB' }}>
+              <p style={{ marginBottom: 8 }}>
+                This scenario is bound to {tasks.length === 1 ? (
+                  <a 
+                    href={`/test-tasks/${tasks[0].id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // 关闭 Modal 并在当前页跳转
+                      modal.destroy();
+                      navigate(`/test-tasks/${tasks[0].id}`);
+                    }} 
+                    style={{ color: '#8B5CF6', cursor: 'pointer' }}
+                  >
+                    {tasks[0].name}
+                  </a>
+                ) : 'the following task(s)'}.
+              </p>
+              {tasks.length > 1 && (
+                <ul style={{ paddingLeft: 18, margin: 0 }}>
+                  {tasks.map((t) => (
+                    <li key={t.id}>
+                      <a 
+                        href={`/test-tasks/${t.id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          // 关闭 Modal 并在当前页跳转
+                          modal.destroy();
+                          navigate(`/test-tasks/${t.id}`);
+                        }} 
+                        style={{ color: '#8B5CF6', cursor: 'pointer' }}
+                      >
+                        {t.name} (ID: {t.id})
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ),
+          okText: 'OK',
+          className: 'bound-warning-modal',
+          width: 380
+        });
+        return;
+      }
+      // 未绑定则允许删除
       await scenarioService.deleteScenario(id);
       message.success('Scenario deleted successfully');
       fetchScenarios();
     } catch (error) {
-      message.error('Failed to delete scenario');
+      message.error('Failed to verify or delete scenario');
     }
   };
 
@@ -294,6 +348,32 @@ const ScenariosList: React.FC = () => {
       overflow: 'auto',
       padding: '0'
     }}>
+      <style>{`
+        .bound-warning-modal .ant-modal-content {
+          background: #1A192A !important;
+          border: 2px solid #ff4d4f !important; /* 红色边框 */
+          color: #E5E7EB !important;
+        }
+        .bound-warning-modal .ant-modal {
+          width: 380px !important;
+        }
+        .bound-warning-modal .ant-modal-header, 
+        .bound-warning-modal .ant-modal-title {
+          background: #1A192A !important;
+          color: #E5E7EB !important;
+          border-bottom: 1px solid #344156 !important;
+        }
+        .bound-warning-modal .ant-modal-footer {
+          background: #1A192A !important;
+          border-top: 1px solid #344156 !important;
+        }
+        .bound-warning-modal .ant-modal-confirm-title {
+          color: #E5E7EB !important;
+        }
+        .bound-warning-modal .ant-modal-confirm-content {
+          color: #E5E7EB !important;
+        }
+      `}</style>
       <div style={{ marginBottom: '32px' }}>
         <Title level={1} className="modern-title" style={{ 
           marginBottom: '50px',

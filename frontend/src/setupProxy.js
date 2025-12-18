@@ -10,6 +10,7 @@ module.exports = function(app) {
       logLevel: 'debug',
       timeout: 120000, // 120秒超时
       proxyTimeout: 120000, // 代理超时
+      ws: true, // 启用WebSocket代理
       onError: (err, req, res) => {
         console.error('Proxy error:', err);
         res.writeHead(500, {

@@ -377,3 +377,33 @@ class LoadGeneratorService:
                 "network_mbps": total_network_mbps
             }
         }
+    
+    def _get_ssh_client(self, load_generator: LoadGenerator) -> paramiko.SSHClient:
+        """
+        创建SSH客户端连接
+        
+        Args:
+            load_generator: 压测机对象
+            
+        Returns:
+            paramiko.SSHClient: SSH客户端
+        """
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        
+        connect_kwargs = {
+            "hostname": load_generator.host,
+            "port": load_generator.port,
+            "username": load_generator.username,
+            "timeout": 30
+        }
+        
+        if load_generator.ssh_key_path:
+            connect_kwargs["key_filename"] = load_generator.ssh_key_path
+        elif load_generator.password:
+            connect_kwargs["password"] = load_generator.password
+        else:
+            raise Exception("No authentication method configured (password or SSH key required)")
+        
+        ssh.connect(**connect_kwargs)
+        return ssh
