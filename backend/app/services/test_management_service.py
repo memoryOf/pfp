@@ -7,8 +7,8 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 import json
 import asyncio
-from app.models.test_management import TestTask, TestExecution, TestScript
-from app.schemas.test_management import (
+from ..models.test_management import TestTask, TestExecution, TestScript
+from ..schemas.test_management import (
     TestTaskCreate, TestTaskUpdate, TestExecutionCreate, TestExecutionUpdate,
     TestScriptCreate, TestScriptUpdate
 )
@@ -142,45 +142,7 @@ class TestTaskService:
         return {"success": True, "message": "测试任务停止成功"}
 
 
-class TestExecutionService:
-    """测试执行服务"""
-    
-    def __init__(self, db: Session):
-        self.db = db
-    
-    async def get_executions(self, task_id: int) -> List[TestExecution]:
-        """获取测试执行记录"""
-        return self.db.query(TestExecution).filter(
-            TestExecution.task_id == task_id
-        ).order_by(TestExecution.created_at.desc()).all()
-    
-    async def get_execution(self, execution_id: int) -> Optional[TestExecution]:
-        """获取单个执行记录"""
-        return self.db.query(TestExecution).filter(
-            TestExecution.id == execution_id
-        ).first()
-    
-    async def create_execution(self, execution_data: TestExecutionCreate) -> TestExecution:
-        """创建执行记录"""
-        execution = TestExecution(**execution_data.dict())
-        self.db.add(execution)
-        self.db.commit()
-        self.db.refresh(execution)
-        return execution
-    
-    async def update_execution(self, execution_id: int, execution_data: TestExecutionUpdate) -> Optional[TestExecution]:
-        """更新执行记录"""
-        execution = await self.get_execution(execution_id)
-        if not execution:
-            return None
-        
-        update_data = execution_data.dict(exclude_unset=True)
-        for field, value in update_data.items():
-            setattr(execution, field, value)
-        
-        self.db.commit()
-        self.db.refresh(execution)
-        return execution
+# TestExecutionService已移至test_execution_service.py，此处删除重复定义
 
 
 class TestScriptService:

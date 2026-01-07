@@ -11,7 +11,7 @@ class TestTaskBase(BaseModel):
     name: str = Field(..., description="任务名称")
     description: Optional[str] = Field(None, description="任务描述")
     scenario_type: str = Field(default="single", description="场景类型: single/multi")
-    target_host: str = Field(..., description="目标主机")
+    target_host: Optional[str] = Field(None, description="目标主机")
     script_id: Optional[int] = Field(None, description="测试脚本ID")
 
 

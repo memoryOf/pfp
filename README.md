@@ -99,24 +99,9 @@ cd pfp
 - 后端API: http://localhost:8000
 - API文档: http://localhost:8000/docs
 - InfluxDB: http://localhost:8086
+- MinIO管理界面: http://localhost:9001
 
-### 手动启动
-
-1. 配置环境变量
-```bash
-cp env.example .env
-# 编辑 .env 文件配置相关参数
-```
-
-2. 启动服务
-```bash
-docker-compose up -d
-```
-
-3. 查看服务状态
-```bash
-docker-compose ps
-```
+> 📖 详细的部署和启动说明请参考 [部署指南](DEPLOYMENT.md)
 
 ## 📋 使用指南
 
@@ -167,37 +152,11 @@ docker-compose ps
 docker-compose down
 ```
 
-## 📊 监控和日志
+> 📖 更多服务管理、监控和故障排除信息请参考 [部署指南](DEPLOYMENT.md)
 
-```bash
-# 查看所有服务日志
-docker-compose logs -f
+## 📚 相关文档
 
-# 查看特定服务日志
-docker-compose logs -f backend
-docker-compose logs -f frontend
-```
-
-## 🔍 故障排除
-
-### 常见问题
-1. **端口冲突**: 检查3306、6379、8086、8000、3000端口是否被占用
-2. **内存不足**: 确保系统有足够内存运行所有服务
-3. **权限问题**: 确保Docker有足够权限访问项目目录
-
-### 重置数据
-```bash
-docker-compose down -v
-docker-compose up -d
-```
-
-## 📚 开发指南
-
-详细的开发指南请参考：
-- [需求文档v1.0](需求文档_v1.0.md)
-- [AI智能脚本生成功能设计](AI智能脚本生成功能设计.md)
-- [压测机资源管理功能设计](压测机资源管理功能设计.md)
-- [压测机配置约束规则设计](压测机配置约束规则设计.md)
+- [部署和启动指南](DEPLOYMENT.md) - 详细的部署、配置和故障排除指南
 
 ## 📄 许可证
 

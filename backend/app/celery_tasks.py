@@ -1,14 +1,13 @@
 
 """
-Celery定时任务
+Celery应用和定时任务
 """
 from celery import Celery
-from celery.schedules import crontab
 from .core.config import settings
 from .services.heartbeat_service import heartbeat_check_task
 # 导入所有模型以确保SQLAlchemy关系正确初始化
-from .models.load_generator import LoadGenerator, LoadGeneratorConfig
-from .models.test_management import TestTask, TestScript, TestExecution
+from .models.load_generator import LoadGenerator, LoadGeneratorConfig  # noqa: F401
+from .models.test_management import TestTask, TestScript, TestExecution  # noqa: F401
 import asyncio
 import logging
 

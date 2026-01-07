@@ -245,27 +245,34 @@ class HeartbeatService:
             return 0
 
 
+    async def heartbeat_check_task(self) -> Dict[str, Any]:
+        """心跳检测任务（供Celery使用）"""
+        try:
+            result = await self.check_all_load_generators()
+            
+            # 同时检查长时间没有心跳的压测机
+            stale_count = await self.mark_stale_as_offline()
+            
+            logger.info(f"Heartbeat check completed: {result['successful']} online, {result['failed']} offline, {stale_count} stale marked offline")
+            
+            return {
+                "heartbeat_result": result,
+                "stale_marked_offline": stale_count
+            }
+            
+        except Exception as e:
+            logger.error(f"Heartbeat check task failed: {str(e)}")
+            return {"error": str(e)}
+
+
 # 全局心跳检测函数，供Celery任务使用
 async def heartbeat_check_task():
-    """心跳检测任务"""
+    """心跳检测任务（全局函数，供Celery调用）"""
+    from ..core.database import get_db
     db = next(get_db())
     try:
         service = HeartbeatService(db)
-        result = await service.check_all_load_generators()
-        
-        # 同时检查长时间没有心跳的压测机
-        stale_count = await service.mark_stale_as_offline()
-        
-        logger.info(f"Heartbeat check completed: {result['successful']} online, {result['failed']} offline, {stale_count} stale marked offline")
-        
-        return {
-            "heartbeat_result": result,
-            "stale_marked_offline": stale_count
-        }
-        
-    except Exception as e:
-        logger.error(f"Heartbeat check task failed: {str(e)}")
-        return {"error": str(e)}
+        return await service.heartbeat_check_task()
     finally:
         db.close()
 

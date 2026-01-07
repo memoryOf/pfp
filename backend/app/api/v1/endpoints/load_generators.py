@@ -4,13 +4,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from app.core.database import get_db
-from app.models.load_generator import LoadGenerator, LoadGeneratorConfig
-from app.schemas.load_generator import (
+from ....core.database import get_db
+from ....models.load_generator import LoadGenerator, LoadGeneratorConfig
+from ....schemas.load_generator import (
     LoadGeneratorCreate, LoadGeneratorUpdate, LoadGeneratorResponse,
     LoadGeneratorConfigCreate, LoadGeneratorConfigUpdate, LoadGeneratorConfigResponse
 )
-from app.services.load_generator_service import LoadGeneratorService
+from ....services.load_generator_service import LoadGeneratorService
 
 router = APIRouter()
 

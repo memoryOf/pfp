@@ -13,10 +13,17 @@ module.exports = function(app) {
       ws: true, // 启用WebSocket代理
       onError: (err, req, res) => {
         console.error('Proxy error:', err);
-        res.writeHead(500, {
-          'Content-Type': 'text/plain',
-        });
-        res.end('Proxy error: ' + err.message);
+        if (res && !res.headersSent) {
+          if (res.writeHead) {
+            res.writeHead(500, {
+              'Content-Type': 'text/plain',
+            });
+            res.end('Proxy error: ' + err.message);
+          } else {
+            // WebSocket 连接错误，不需要响应
+            console.error('WebSocket proxy error:', err.message);
+          }
+        }
       }
     })
   );

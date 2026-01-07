@@ -11,7 +11,7 @@ from ....schemas.file_management import (
     FileListResponse
 )
 from ....services.file_management_service import FileManagementService
-from ....core.minio_client import MinIOClient
+from ....services.minio_service import minio_service
 import logging
 import uuid
 from datetime import datetime
@@ -19,9 +19,6 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
-# MinIO客户端实例
-minio_client = MinIOClient()
 
 @router.post("/upload", response_model=FileUploadResponse)
 async def upload_file(
@@ -51,12 +48,11 @@ async def upload_file(
         
         # 上传到MinIO
         file_content = await file.read()
-        from ....core.config import settings
-        minio_client.upload_file(
-            bucket_name=settings.MINIO_BUCKET_NAME,
-            object_name=object_path,
-            file_data=file_content,
-            content_type=file.content_type
+        minio_service.upload_file(
+            file_content=file_content,
+            file_name=unique_filename,
+            content_type=file.content_type,
+            object_name=object_path
         )
         
         # 保存文件信息到数据库
@@ -180,10 +176,8 @@ async def download_file(
             )
         
         # 从MinIO获取文件
-        from ....core.config import settings
-        file_data = minio_client.get_file(
-            bucket_name=settings.MINIO_BUCKET_NAME,
-            object_name=file_item.object_path
+        file_data = minio_service.download_file(
+            object_path=file_item.object_path
         )
         
         from fastapi.responses import StreamingResponse
@@ -229,10 +223,8 @@ async def delete_file(
             )
         
         # 从MinIO删除文件
-        from ....core.config import settings
-        minio_client.delete_file(
-            bucket_name=settings.MINIO_BUCKET_NAME,
-            object_name=file_item.object_path
+        minio_service.delete_file(
+            object_path=file_item.object_path
         )
         
         # 从数据库删除记录

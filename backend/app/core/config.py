@@ -56,7 +56,8 @@ class Settings(BaseSettings):
     MINIO_SECURE: bool = False  # 本地开发使用HTTP
     
     # 文件存储配置
-    MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
+    UPLOAD_DIR: str = "uploads"
+    MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100MB
     ALLOWED_FILE_TYPES: list = [".py", ".js", ".ts", ".java", ".go", ".rs", ".sh", ".bat", ".txt", ".json", ".yaml", ".yml"]
     
     # Celery配置
@@ -70,10 +71,6 @@ class Settings(BaseSettings):
     # Locust配置
     LOCUST_MASTER_PORT: int = 5557
     LOCUST_WEB_PORT: int = 8089
-    
-    # 文件上传配置
-    UPLOAD_DIR: str = "uploads"
-    MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100MB
     
     # 请求超时配置
     REQUEST_TIMEOUT: int = 120  # 请求超时时间（秒）

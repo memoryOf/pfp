@@ -4,12 +4,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from app.core.database import get_db
-from app.models.test_management import TestScript
-from app.schemas.test_management import (
+from ....core.database import get_db
+from ....models.test_management import TestScript
+from ....schemas.test_management import (
     TestScriptCreate, TestScriptUpdate, TestScriptResponse
 )
-from app.services.test_management_service import TestScriptService
+from ....services.test_management_service import TestScriptService
 
 router = APIRouter()
 

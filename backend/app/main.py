@@ -23,7 +23,7 @@ from .api.v1.endpoints.heartbeat import router as heartbeat_router
 from .api.v1.endpoints.file_management import router as file_management_router
 from .api.v1.endpoints.deployment import router as deployment_router
 from .api.v1.endpoints.debug import router as debug_router
-from .services.minio_init import init_minio
+from .services.minio_service import minio_service
 
 
 @asynccontextmanager
@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
     print("✅ 数据库表创建完成")
     
     # 初始化MinIO
-    if init_minio():
+    if minio_service.init_minio():
         print("✅ MinIO初始化完成")
     else:
         print("❌ MinIO初始化失败")
