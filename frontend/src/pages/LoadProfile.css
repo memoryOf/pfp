@@ -1,0 +1,66 @@
+/* Load Profile 页面样式 */
+
+.load-profile-radio-group .ant-radio-button-wrapper {
+  flex: 1;
+  text-align: center;
+  background: #0A0A0F !important;
+  border-color: #1E1E2E !important;
+  color: #8B8B9C !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+.load-profile-radio-group .ant-radio-button-wrapper:first-child {
+  border-top-left-radius: 6px !important;
+  border-bottom-left-radius: 6px !important;
+  border-right: none !important;
+}
+
+.load-profile-radio-group .ant-radio-button-wrapper:last-child {
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
+  border-left: none !important;
+}
+
+.load-profile-radio-group .ant-radio-button-wrapper-checked {
+  background: #6366F1 !important;
+  border-color: #6366F1 !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+
+.load-profile-radio-group .ant-radio-button-wrapper:hover {
+  color: #FFFFFF !important;
+}
+
+/* InputNumber 样式优化 */
+.ant-input-number {
+  border-radius: 6px !important;
+}
+
+.ant-input-number:hover {
+  border-color: #6366F1 !important;
+}
+
+.ant-input-number-focused {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Select 样式优化 */
+.ant-select-selector {
+  border-radius: 6px !important;
+}
+
+.ant-select-focused .ant-select-selector {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Switch 样式优化 */
+.ant-switch-checked {
+  background-color: #6366F1 !important;
+}
+
+
+
