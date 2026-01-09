@@ -390,6 +390,14 @@ export const scenarioFileService = {
   // 获取文件下载URL
   getFileDownloadUrl: (scenarioId: number, fileId: number): Promise<any> =>
     api.get(`/scenario-files/scenarios/${scenarioId}/files/${fileId}/download`),
+
+  // 运行Karate测试文件
+  runKarateFile: (scenarioId: number, fileId: number): Promise<any> =>
+    api.post(`/scenario-files/scenarios/${scenarioId}/files/${fileId}/run`),
+
+  // 运行Karate测试内容（不需要保存文件）
+  runKarateContent: (scenarioId: number, data: { file_content: string; file_name?: string }): Promise<any> =>
+    api.post(`/scenario-files/scenarios/${scenarioId}/files/run-content`, data),
 };
 
 // 部署相关API

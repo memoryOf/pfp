@@ -208,30 +208,55 @@ const LocustCreation = () => {
 
   // 保存文件内容
   const handleSaveFile = useCallback(async () => {
-    if (selectedFile && scenarioId) {
+    if (!selectedFile) return;
+    
+    const currentFile = files.find(f => f.id === selectedFile);
+    if (!currentFile) return;
+    
+    if (scenarioId) {
       try {
-        // 更新服务器上的文件
-        await scenarioFileService.updateScenarioFile(scenarioId, selectedFile, {
-          file_content: fileContent,
-          content_type: 'text/plain'
-        });
+        // 检查是否是临时ID（大于1000000000000的数字通常是Date.now()生成的临时ID）
+        const isTemporaryId = selectedFile > 1000000000000;
         
-        // 更新本地状态
-        setFiles(prev => prev.map(f =>
-          f.id === selectedFile ? { ...f, content: fileContent } : f
-        ));
-        message.success('File saved successfully');
+        if (isTemporaryId) {
+          // 临时ID，需要先创建文件
+          const savedFile = await scenarioFileService.createScenarioFile(scenarioId, {
+            file_name: currentFile.name,
+            file_content: fileContent,
+            content_type: 'text/plain'
+          });
+          
+          // 更新本地状态，使用真实ID替换临时ID
+          setFiles(prev => prev.map(f =>
+            f.id === selectedFile ? { ...f, id: savedFile.id, content: fileContent } : f
+          ));
+          setSelectedFile(savedFile.id);
+          message.success('File created and saved successfully');
+        } else {
+          // 真实ID，更新文件
+          await scenarioFileService.updateScenarioFile(scenarioId, selectedFile, {
+            file_content: fileContent,
+            content_type: 'text/plain'
+          });
+          
+          // 更新本地状态
+          setFiles(prev => prev.map(f =>
+            f.id === selectedFile ? { ...f, content: fileContent } : f
+          ));
+          message.success('File saved successfully');
+        }
       } catch (error) {
+        console.error('Failed to save file:', error);
         message.error('Failed to save file to server');
       }
     } else {
-      // 本地保存
+      // 本地保存（没有scenarioId时）
       setFiles(prev => prev.map(f =>
         f.id === selectedFile ? { ...f, content: fileContent } : f
       ));
       message.success('File saved successfully');
     }
-  }, [selectedFile, fileContent, scenarioId]);
+  }, [selectedFile, fileContent, scenarioId, files]);
 
   const steps = [
     {

@@ -10,7 +10,7 @@ class ScenarioBase(BaseModel):
     """场景基础模型"""
     name: str = Field(..., description="场景名称", max_length=200)
     description: Optional[str] = Field(None, description="场景描述")
-    scenario_type: str = Field(..., description="场景类型: locust/jmeter/gatling")
+    scenario_type: str = Field(..., description="场景类型: locust/jmeter/gatling/karate")
     is_active: bool = Field(default=True, description="是否启用")
 
 
@@ -18,7 +18,7 @@ class ScenarioCreate(BaseModel):
     """创建场景模型"""
     name: str = Field(..., description="场景名称", max_length=200)
     description: Optional[str] = Field(None, description="场景描述")
-    scenario_type: str = Field(..., description="场景类型: locust/jmeter/gatling")
+    scenario_type: str = Field(..., description="场景类型: locust/jmeter/gatling/karate")
 
 
 class ScenarioUpdate(BaseModel):

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Row, Col, Typography } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
 
 const { Title } = Typography;
@@ -8,15 +9,18 @@ interface LanguageCardProps {
   name: string;
   icon: React.ReactNode;
   color: string;
+  onClick?: () => void;
 }
 
 const LanguageCard: React.FC<LanguageCardProps> = ({ 
   name, 
   icon, 
-  color
+  color,
+  onClick
 }) => (
   <Card
     className="modern-card language-card"
+    onClick={onClick}
     style={{
       background: 'var(--bg-card)',
       border: '1px solid var(--border)',
@@ -27,7 +31,9 @@ const LanguageCard: React.FC<LanguageCardProps> = ({
       flexDirection: 'column',
       justifyContent: 'space-between',
       alignItems: 'center',
-      textAlign: 'center'
+      textAlign: 'center',
+      cursor: onClick ? 'pointer' : 'default',
+      transition: 'all 0.3s ease'
     }}
     bodyStyle={{
       padding: '16px',
@@ -72,22 +78,32 @@ const LanguageCard: React.FC<LanguageCardProps> = ({
 );
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
 
   const languages = [
     {
       name: 'Gatling',
       icon: <img src="/gatling.svg" alt="Gatling" style={{ width: '60px', height: '60px' }} />,
-      color: '#dbdbdb'
+      color: '#dbdbdb',
+      path: null // 暂时没有Gatling创建页面
     },
     {
       name: 'Locust',
       icon: <img src="/fi-rr-locust.svg" alt="Locust" style={{ width: '60px', height: '60px' }} />,
-      color: '#68a063'
+      color: '#68a063',
+      path: '/scenarios/locust/create'
     },
     {
       name: 'JMeter',
       icon: <img src="/jmeter.svg" alt="JMeter" style={{ width: '70px', height: '70px' }} />,
-      color: '#00add8'
+      color: '#00add8',
+      path: null // 暂时没有JMeter创建页面
+    },
+    {
+      name: 'Karate',
+      icon: <img src="/karate.svg" alt="Karate" style={{ width: '60px', height: '60px' }} />,
+      color: '#ff6b35',
+      path: '/scenarios/karate/create'
     }
   ];
 
@@ -128,6 +144,7 @@ const HomePage: React.FC = () => {
                 name={language.name}
                 icon={language.icon}
                 color={language.color}
+                onClick={language.path ? () => navigate(language.path!) : undefined}
               />
             </div>
           ))}

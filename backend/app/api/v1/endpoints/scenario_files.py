@@ -14,9 +14,17 @@ from ....schemas.scenario_file import (
     ScenarioFileUpdateUpload
 )
 from ....services.scenario_file_service import ScenarioFileService
+from ....services.karate_service import KarateService
+from pydantic import BaseModel
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class KarateRunRequest(BaseModel):
+    """Karate运行请求"""
+    file_content: str
+    file_name: Optional[str] = None
 
 router = APIRouter()
 
@@ -222,6 +230,96 @@ async def download_scenario_file(
         raise
     except Exception as e:
         logger.error(f"Failed to get download URL: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+
+@router.post("/scenarios/{scenario_id}/files/{file_id}/run")
+async def run_karate_file(
+    scenario_id: int,
+    file_id: int,
+    db: Session = Depends(get_db)
+):
+    """运行Karate测试文件"""
+    try:
+        service = ScenarioFileService(db)
+        karate_service = KarateService()
+        
+        # 验证文件是否属于该场景
+        file_record = await service.get_scenario_file(file_id)
+        if not file_record or file_record.scenario_id != scenario_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="File not found"
+            )
+        
+        # 检查文件类型
+        if file_record.file_type != "feature":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only .feature files can be run"
+            )
+        
+        # 获取文件内容
+        file_content_bytes = await service.get_file_content(file_id)
+        if file_content_bytes is None:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to retrieve file content"
+            )
+        
+        file_content = file_content_bytes.decode('utf-8', errors='ignore')
+        
+        # 运行Karate测试
+        result = await karate_service.run_karate_test(
+            feature_content=file_content,
+            feature_name=file_record.file_name
+        )
+        
+        return {
+            "success": result["success"],
+            "output": result["output"],
+            "error": result["error"],
+            "exit_code": result["exit_code"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to run Karate test: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+
+@router.post("/scenarios/{scenario_id}/files/run-content")
+async def run_karate_content(
+    scenario_id: int,
+    request: KarateRunRequest,
+    db: Session = Depends(get_db)
+):
+    """直接运行Karate测试内容（不需要保存文件）"""
+    try:
+        karate_service = KarateService()
+        
+        # 运行Karate测试
+        result = await karate_service.run_karate_test(
+            feature_content=request.file_content,
+            feature_name=request.file_name or "test.feature"
+        )
+        
+        return {
+            "success": result["success"],
+            "output": result["output"],
+            "error": result["error"],
+            "exit_code": result["exit_code"]
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to run Karate test: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)

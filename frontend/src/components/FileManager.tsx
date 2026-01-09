@@ -228,6 +228,8 @@ const FileManager: React.FC<FileManagerProps> = ({
         return 'shell';
       case 'csv':
         return 'csv';
+      case 'feature':
+        return 'gherkin';
       default:
         return 'plaintext';
     }
@@ -424,6 +426,72 @@ const FileManager: React.FC<FileManagerProps> = ({
                 }}
                 language={getLanguageFromFileName(files.find(f => f.id === selectedFile)?.name || '')}
                 theme="vs-dark"
+                beforeMount={(monaco) => {
+                  // 注册 Gherkin 语言支持（Karate feature 文件）
+                  monaco.languages.register({ id: 'gherkin' });
+                  
+                  // 配置 Gherkin 语法高亮
+                  monaco.languages.setMonarchTokensProvider('gherkin', {
+                    tokenizer: {
+                      root: [
+                        // Feature 关键字
+                        [/^\s*Feature:/, 'keyword.feature'],
+                        // Scenario 关键字
+                        [/^\s*Scenario:/, 'keyword.scenario'],
+                        [/^\s*Scenario Outline:/, 'keyword.scenario'],
+                        [/^\s*Background:/, 'keyword.background'],
+                        // Given/When/Then/And/But
+                        [/^\s*(Given|When|Then|And|But)\s+/, 'keyword.step'],
+                        // 注释
+                        [/^\s*#.*$/, 'comment'],
+                        // 字符串
+                        [/["'][^"']*["']/, 'string'],
+                        // 数字
+                        [/\d+/, 'number'],
+                        // 变量
+                        [/<[^>]+>/, 'variable'],
+                        // 表格
+                        [/^\s*\|/, 'keyword.table'],
+                        // 标签
+                        [/@\w+/, 'tag'],
+                        // 文档字符串
+                        [/^\s*"""/, 'string.multiline', '@multiline'],
+                        // 其他文本
+                        [/[^\s]+/, 'text']
+                      ],
+                      multiline: [
+                        [/"""/, 'string.multiline', '@pop'],
+                        [/.*/, 'string.multiline']
+                      ]
+                    }
+                  });
+                  
+                  // 设置 Gherkin 语言配置
+                  monaco.languages.setLanguageConfiguration('gherkin', {
+                    comments: {
+                      lineComment: '#'
+                    },
+                    brackets: [
+                      ['{', '}'],
+                      ['[', ']'],
+                      ['(', ')']
+                    ],
+                    autoClosingPairs: [
+                      { open: '{', close: '}' },
+                      { open: '[', close: ']' },
+                      { open: '(', close: ')' },
+                      { open: '"', close: '"' },
+                      { open: "'", close: "'" }
+                    ],
+                    surroundingPairs: [
+                      { open: '{', close: '}' },
+                      { open: '[', close: ']' },
+                      { open: '(', close: ')' },
+                      { open: '"', close: '"' },
+                      { open: "'", close: "'" }
+                    ]
+                  });
+                }}
                 options={{
                   fontSize: 14,
                   fontFamily: '"Fira Code", "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Consolas", "Courier New", monospace',

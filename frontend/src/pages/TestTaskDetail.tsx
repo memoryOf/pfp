@@ -45,7 +45,8 @@ import {
   DownOutlined,
   SaveOutlined,
   EyeOutlined,
-  FolderOpenOutlined
+  FolderOpenOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import { 
   testTaskService, 
@@ -119,6 +120,14 @@ const TestTaskDetail: React.FC = () => {
   const [deployStep, setDeployStep] = useState(0);
   const [deploymentLoading, setDeploymentLoading] = useState(false);
   const [deploymentResult, setDeploymentResult] = useState<any>(null);
+  // 部署步骤状态
+  const [deploymentSteps, setDeploymentSteps] = useState([
+    { id: 'venv', name: 'Preparing virtual environment', status: 'waiting' as 'waiting' | 'processing' | 'success' | 'error' },
+    { id: 'directory', name: 'Creating target directory', status: 'waiting' as 'waiting' | 'processing' | 'success' | 'error' },
+    { id: 'cleanup', name: 'Cleaning old files', status: 'waiting' as 'waiting' | 'processing' | 'success' | 'error' },
+    { id: 'upload', name: 'Uploading script files', status: 'waiting' as 'waiting' | 'processing' | 'success' | 'error' },
+    { id: 'validate', name: 'Validating script syntax', status: 'waiting' as 'waiting' | 'processing' | 'success' | 'error' },
+  ]);
   const [debugId, setDebugId] = useState<string | null>(null);
   const [debugStatus, setDebugStatus] = useState<string>('idle'); // idle, running, stopped
   const [debugLogs, setDebugLogs] = useState<Array<{timestamp: string, level: string, message: string}>>([]);
@@ -1231,65 +1240,221 @@ const TestTaskDetail: React.FC = () => {
 
               {deployStep === 1 && (
                 <Card style={{ background: '#07070D', border: '1px solid #344156', flex: 1 }}>
-                  <Title level={5} style={{ color: '#CBD5E1', marginBottom: 16 }}>部署脚本</Title>
-                  {deploymentLoading ? (
-                    <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                      <Progress 
-                        className="deployment-progress"
-                        percent={deploymentResult?.progress || 0}
-                        format={(percent) => (
-                          <span style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: '14px' }}>{percent}%</span>
-                        )}
-                      />
-                      <Text style={{ color: '#CBD5E1', display: 'block', marginTop: 16 }}>Deploying scripts...</Text>
-                      <div style={{ marginTop: 16, textAlign: 'left', background: '#1A192E', padding: '12px', borderRadius: '4px', maxHeight: '200px', overflowY: 'auto' }}>
-                        {deploymentResult?.logs?.map((log: string, idx: number) => (
-                          <div key={idx} style={{ color: '#CBD5E1', fontSize: '12px', marginBottom: '4px' }}>{log}</div>
-                        ))}
-                      </div>
+                  <Title level={5} style={{ color: '#CBD5E1', marginBottom: 16 }}>Deploy Scripts</Title>
+                  
+                  {/* 部署信息 */}
+                  <div style={{ marginBottom: 24 }}>
+                    <div style={{ marginBottom: 12 }}>
+                      <Text style={{ color: '#CBD5E1' }}>Selected Load Generator: </Text>
+                      <Text strong style={{ color: '#fff' }}>{selectedDeployLoadGenerator?.name}</Text>
                     </div>
-                  ) : (
-                    <>
-                      <div style={{ marginBottom: 16 }}>
-                        <Text style={{ color: '#CBD5E1' }}>Selected Load Generator: </Text>
-                        <Text strong style={{ color: '#fff' }}>{selectedDeployLoadGenerator?.name}</Text>
+                    <div style={{ marginBottom: 12 }}>
+                      <Text style={{ color: '#CBD5E1' }}>Scenarios to deploy: </Text>
+                      <Text style={{ color: '#fff' }}>{scenarioRows.filter(r => r.enabled).length} enabled</Text>
+                    </div>
+                  </div>
+
+                  {/* 部署步骤列表 - 始终显示 */}
+                  <div style={{ marginBottom: 24, background: '#1A192E', padding: '16px', borderRadius: '4px' }}>
+                    <Text style={{ color: '#CBD5E1', fontSize: '14px', fontWeight: 'bold', marginBottom: '16px', display: 'block' }}>
+                      Deployment Steps:
+                    </Text>
+                    {deploymentSteps.map((step, index) => (
+                      <div 
+                        key={step.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '12px 0',
+                          borderBottom: index < deploymentSteps.length - 1 ? '1px solid #344156' : 'none'
+                        }}
+                      >
+                        <div style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginRight: '12px',
+                          flexShrink: 0,
+                          background: step.status === 'success' ? '#52c41a' : 
+                                     step.status === 'processing' ? '#1890ff' : 
+                                     step.status === 'error' ? '#ff4d4f' : '#344156',
+                          border: step.status === 'waiting' ? '2px solid #555' : 'none'
+                        }}>
+                          {step.status === 'success' && (
+                            <CheckCircleOutlined style={{ color: '#fff', fontSize: '16px' }} />
+                          )}
+                          {step.status === 'processing' && (
+                            <LoadingOutlined style={{ color: '#fff', fontSize: '16px' }} />
+                          )}
+                          {step.status === 'error' && (
+                            <CloseCircleOutlined style={{ color: '#fff', fontSize: '16px' }} />
+                          )}
+                          {step.status === 'waiting' && (
+                            <span style={{ color: '#8c8c8c', fontSize: '12px', fontWeight: 'bold' }}>{index + 1}</span>
+                          )}
+                        </div>
+                        <Text style={{ 
+                          color: step.status === 'success' ? '#52c41a' : 
+                                 step.status === 'processing' ? '#1890ff' : 
+                                 step.status === 'error' ? '#ff4d4f' : '#CBD5E1',
+                          fontSize: '14px'
+                        }}>
+                          {step.name}
+                        </Text>
                       </div>
-                      <div style={{ marginBottom: 16 }}>
-                        <Text style={{ color: '#CBD5E1' }}>Scenarios to deploy: </Text>
-                        <Text style={{ color: '#fff' }}>{scenarioRows.filter(r => r.enabled).length} enabled</Text>
-                      </div>
-                      <div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between' }}>
-                        <Button onClick={() => setDeployStep(0)}>Back</Button>
-                        <Button 
-                          type="primary"
-                          disabled={!selectedDeployLoadGenerator || scenarioRows.filter(r => r.enabled).length === 0}
-                          onClick={async () => {
-                            if (!id || !selectedDeployLoadGenerator) return;
-                            setDeploymentLoading(true);
-                            setDeploymentResult({ progress: 0, logs: [] });
-                            try {
-                              const scenarioIds = scenarioRows.filter(r => r.enabled).map(r => r.scenarioId);
-                              const result = await deploymentService.deployScripts(parseInt(id), {
-                                load_generator_id: selectedDeployLoadGenerator.id,
-                                scenario_ids: scenarioIds,
-                                deployment_mode: 'overwrite'
-                              });
-                              setDeploymentResult(result);
-                              message.success('Scripts deployed successfully');
-                              setDeployStep(2);
-                            } catch (error: any) {
-                              message.error(`Deployment failed: ${error.message || 'Unknown error'}`);
-                              console.error('Deployment error:', error);
-                            } finally {
-                              setDeploymentLoading(false);
-                            }
-                          }}
-                        >
-                          Deploy Scripts
-                        </Button>
-                      </div>
-                    </>
+                    ))}
+                  </div>
+
+                  {/* 部署日志 - 仅在部署过程中显示 */}
+                  {deploymentLoading && deploymentResult?.logs && deploymentResult.logs.length > 0 && (
+                    <div style={{ marginBottom: 24, textAlign: 'left', background: '#1A192E', padding: '12px', borderRadius: '4px', maxHeight: '200px', overflowY: 'auto' }}>
+                      <Text style={{ color: '#CBD5E1', fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
+                        Deployment Logs:
+                      </Text>
+                      {deploymentResult.logs.map((log: string, idx: number) => (
+                        <div key={idx} style={{ color: '#CBD5E1', fontSize: '12px', marginBottom: '4px' }}>{log}</div>
+                      ))}
+                    </div>
                   )}
+
+                  {/* 操作按钮 */}
+                  <div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between' }}>
+                    <Button 
+                      onClick={() => setDeployStep(0)}
+                      disabled={deploymentLoading}
+                    >
+                      Back
+                    </Button>
+                    <Button 
+                      type="primary"
+                      disabled={!selectedDeployLoadGenerator || scenarioRows.filter(r => r.enabled).length === 0 || deploymentLoading}
+                      loading={deploymentLoading}
+                      onClick={async () => {
+                        if (!id || !selectedDeployLoadGenerator) return;
+                        
+                        // 重置步骤状态为等待
+                        setDeploymentSteps([
+                          { id: 'venv', name: 'Preparing virtual environment', status: 'waiting' },
+                          { id: 'directory', name: 'Creating target directory', status: 'waiting' },
+                          { id: 'cleanup', name: 'Cleaning old files', status: 'waiting' },
+                          { id: 'upload', name: 'Uploading script files', status: 'waiting' },
+                          { id: 'validate', name: 'Validating script syntax', status: 'waiting' },
+                        ]);
+                        
+                        setDeploymentLoading(true);
+                        setDeploymentResult({ progress: 0, logs: [] });
+                        
+                        try {
+                          const scenarioIds = scenarioRows.filter(r => r.enabled).map(r => r.scenarioId);
+                          
+                          // 更新步骤状态的函数
+                          const updateStep = (stepId: string, status: 'waiting' | 'processing' | 'success' | 'error') => {
+                            setDeploymentSteps(prev => prev.map(step => 
+                              step.id === stepId ? { ...step, status } : step
+                            ));
+                          };
+                          
+                          // 步骤1: 准备虚拟环境
+                          updateStep('venv', 'processing');
+                          await new Promise(resolve => setTimeout(resolve, 500));
+                          
+                          const result = await deploymentService.deployScripts(parseInt(id), {
+                            load_generator_id: selectedDeployLoadGenerator.id,
+                            scenario_ids: scenarioIds,
+                            deployment_mode: 'overwrite'
+                          });
+                          
+                          // 根据返回结果更新步骤状态
+                          if (result.venv_status?.status === 'ok' || result.venv_status?.status === 'created') {
+                            updateStep('venv', 'success');
+                          } else {
+                            updateStep('venv', 'error');
+                          }
+                          
+                          // 步骤2: 创建目标目录
+                          updateStep('directory', 'processing');
+                          const logs = result.logs || [];
+                          if (logs.some((log: string) => log.includes('Created directory'))) {
+                            await new Promise(resolve => setTimeout(resolve, 300));
+                            updateStep('directory', 'success');
+                          } else {
+                            updateStep('directory', 'error');
+                          }
+                          
+                          // 步骤3: 清理旧文件
+                          updateStep('cleanup', 'processing');
+                          if (logs.some((log: string) => log.includes('Cleared existing scripts') || log.includes('overwrite mode'))) {
+                            await new Promise(resolve => setTimeout(resolve, 300));
+                            updateStep('cleanup', 'success');
+                          } else {
+                            // 如果没有清理日志，可能是增量模式，也标记为成功
+                            await new Promise(resolve => setTimeout(resolve, 200));
+                            updateStep('cleanup', 'success');
+                          }
+                          
+                          // 步骤4: 上传文件
+                          updateStep('upload', 'processing');
+                          const uploadedFiles = logs.filter((log: string) => log.includes('Uploaded'));
+                          if (uploadedFiles.length > 0) {
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                            updateStep('upload', 'success');
+                          } else {
+                            updateStep('upload', 'error');
+                          }
+                          
+                          // 步骤5: 验证脚本
+                          updateStep('validate', 'processing');
+                          if (result.validation) {
+                            await new Promise(resolve => setTimeout(resolve, 300));
+                            if (result.validation.valid) {
+                              updateStep('validate', 'success');
+                            } else if (result.validation.error_count > 0) {
+                              updateStep('validate', 'error');
+                            } else {
+                              updateStep('validate', 'success');
+                            }
+                          } else {
+                            // 如果没有验证结果，检查日志中是否有验证信息
+                            const validationLogs = logs.filter((log: string) => 
+                              log.includes('valid') || log.includes('Validating') || log.includes('OK:')
+                            );
+                            if (validationLogs.length > 0) {
+                              await new Promise(resolve => setTimeout(resolve, 300));
+                              updateStep('validate', 'success');
+                            } else {
+                              updateStep('validate', 'error');
+                            }
+                          }
+                          
+                          setDeploymentResult(result);
+                          
+                          // 检查是否有错误
+                          const hasError = deploymentSteps.some(step => step.status === 'error');
+                          if (!hasError) {
+                            message.success('Scripts deployed successfully');
+                            // 部署完成后停留在当前页面，不自动跳转
+                            // 用户可以手动点击步骤2进入远程调试页面
+                          } else {
+                            message.warning('Deployment completed with some errors');
+                          }
+                        } catch (error: any) {
+                          // 标记当前进行中的步骤为错误
+                          setDeploymentSteps(prev => prev.map(step => 
+                            step.status === 'processing' ? { ...step, status: 'error' } : step
+                          ));
+                          message.error(`Deployment failed: ${error.message || 'Unknown error'}`);
+                          console.error('Deployment error:', error);
+                        } finally {
+                          setDeploymentLoading(false);
+                        }
+                      }}
+                    >
+                      {deploymentLoading ? 'Deploying...' : 'Deploy Scripts'}
+                    </Button>
+                  </div>
                 </Card>
               )}
 
@@ -1339,6 +1504,14 @@ const TestTaskDetail: React.FC = () => {
                         disabled={debugStatus === 'running' || !deploymentResult}
                         onClick={async () => {
                           if (!id || !selectedDeployLoadGenerator || !deploymentResult) return;
+                          
+                          // 立即清空日志和关闭之前的WebSocket连接
+                          setDebugLogs([]);
+                          if (debugWs) {
+                            debugWs.close();
+                            setDebugWs(null);
+                          }
+                          
                           try {
                             const result = await debugService.startDebug(parseInt(id), {
                               load_generator_id: selectedDeployLoadGenerator.id,
@@ -1353,7 +1526,6 @@ const TestTaskDetail: React.FC = () => {
                             });
                             setDebugId(result.debug_id);
                             setDebugStatus('running');
-                            setDebugLogs([]);
                             
                             // 建立WebSocket连接
                             // 使用相对路径，通过代理转发

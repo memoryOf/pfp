@@ -4,7 +4,7 @@ export interface Scenario {
   id: number;
   name: string;
   description?: string;
-  scenario_type: 'locust' | 'jmeter' | 'gatling';
+  scenario_type: 'locust' | 'jmeter' | 'gatling' | 'karate';
   created_at: string;
   updated_at: string;
   is_active: boolean;
@@ -13,7 +13,7 @@ export interface Scenario {
 export interface ScenarioCreate {
   name: string;
   description?: string;
-  scenario_type: 'locust' | 'jmeter' | 'gatling';
+  scenario_type: 'locust' | 'jmeter' | 'gatling' | 'karate';
 }
 
 export interface ScenarioUpdate {

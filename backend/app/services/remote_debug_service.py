@@ -190,7 +190,104 @@ class RemoteDebugService:
                     "debug_id": debug_id
                 }
             
-            # 保存会话信息
+            # 等待一下确保进程启动
+            await asyncio.sleep(2)
+            
+            # 多次检查进程状态，确保进程稳定运行
+            process_running = False
+            for attempt in range(3):
+                check_cmd = f"ps -p {process_id} > /dev/null 2>&1 && echo 'running' || echo 'stopped'"
+                try:
+                    status_check, _ = await self._exec_ssh_command(ssh_client, check_cmd, timeout=10)
+                    status_check = status_check.strip()
+                    
+                    if status_check == "running":
+                        process_running = True
+                        break
+                    else:
+                        # 如果进程停止，等待一下再检查（可能是启动延迟）
+                        if attempt < 2:
+                            await asyncio.sleep(1)
+                            continue
+                except Exception as e:
+                    logger.warning(f"Failed to check process status (attempt {attempt + 1}): {str(e)}")
+                    if attempt < 2:
+                        await asyncio.sleep(1)
+                        continue
+            
+            if not process_running:
+                # 读取输出日志以判断是成功完成还是失败
+                error_details = ""
+                test_completed = False
+                try:
+                    read_error_cmd = f"cat {out_file} 2>/dev/null | head -200 || echo ''"
+                    error_output, _ = await self._exec_ssh_command(ssh_client, read_error_cmd, timeout=10)
+                    if error_output and error_output.strip():
+                        # 检查输出中是否包含Locust成功完成的标志
+                        output_lower = error_output.lower()
+                        # 如果包含统计信息、聚合数据或响应时间百分位数，说明测试成功完成
+                        if any(keyword in output_lower for keyword in [
+                            "aggregated", "response time percentiles", 
+                            "# reqs", "req/s", "failures/s", "percentiles"
+                        ]):
+                            test_completed = True
+                            logger.info(f"Debug test completed successfully: {debug_id}")
+                        else:
+                            error_details = f"\n错误详情:\n{error_output.strip()}"
+                    else:
+                        # 也尝试读取日志文件
+                        read_log_cmd = f"cat {log_file} 2>/dev/null | head -200 || echo ''"
+                        log_output, _ = await self._exec_ssh_command(ssh_client, read_log_cmd, timeout=10)
+                        if log_output and log_output.strip():
+                            log_lower = log_output.lower()
+                            if any(keyword in log_lower for keyword in [
+                                "aggregated", "response time percentiles",
+                                "# reqs", "req/s", "failures/s"
+                            ]):
+                                test_completed = True
+                                logger.info(f"Debug test completed successfully (from log): {debug_id}")
+                            else:
+                                error_details = f"\n日志详情:\n{log_output.strip()}"
+                except Exception as read_error:
+                    logger.warning(f"Failed to read error logs: {str(read_error)}")
+                    error_details = f"\n无法读取错误日志: {str(read_error)}"
+                
+                # 如果测试成功完成，返回成功状态（即使进程已退出）
+                if test_completed:
+                    # 保存会话信息（标记为已完成）
+                    self.active_debug_sessions[debug_id] = {
+                        "ssh_client": ssh_client,
+                        "process_id": process_id,
+                        "log_file": log_file,
+                        "out_file": out_file,
+                        "load_generator_id": load_generator_id,
+                        "start_time": datetime.now(),
+                        "status": "completed"
+                    }
+                    return {
+                        "debug_id": debug_id,
+                        "status": "completed",
+                        "process_id": process_id,
+                        "log_file": log_file,
+                        "out_file": out_file,
+                        "message": "Debug test completed successfully"
+                    }
+                
+                # 如果测试未成功完成，返回错误
+                # 清理会话
+                if ssh_client:
+                    ssh_client.close()
+                
+                error_msg = f"Failed to start debug session. Process stopped immediately.{error_details}"
+                logger.error(f"Debug process stopped immediately: {error_msg}")
+                return {
+                    "error": error_msg,
+                    "debug_id": debug_id,
+                    "out_file": out_file,
+                    "log_file": log_file
+                }
+            
+            # 保存会话信息（只有在进程确认运行后才保存）
             self.active_debug_sessions[debug_id] = {
                 "ssh_client": ssh_client,
                 "process_id": process_id,
@@ -200,29 +297,6 @@ class RemoteDebugService:
                 "start_time": datetime.now(),
                 "status": "running"
             }
-            
-            # 等待一下确保进程启动
-            await asyncio.sleep(1)
-            
-            # 检查进程是否还在运行
-            check_cmd = f"ps -p {process_id} > /dev/null 2>&1 && echo 'running' || echo 'stopped'"
-            try:
-                status_check, _ = await self._exec_ssh_command(ssh_client, check_cmd, timeout=10)
-                status_check = status_check.strip()
-                
-                if status_check == "stopped":
-                    # 清理会话
-                    if debug_id in self.active_debug_sessions:
-                        del self.active_debug_sessions[debug_id]
-                    if ssh_client:
-                        ssh_client.close()
-                    return {
-                        "error": "Failed to start debug session. Process stopped immediately. Check logs for details.",
-                        "debug_id": debug_id
-                    }
-            except Exception as e:
-                logger.warning(f"Failed to check process status: {str(e)}")
-                # 即使检查失败，也继续，因为进程可能已经启动
             
             return {
                 "debug_id": debug_id,
@@ -462,16 +536,71 @@ class RemoteDebugService:
         try:
             # 杀死进程及其子进程
             if process_id:
-                # 杀死进程组（使用异步方法，但不等待结果）
-                try:
-                    await self._exec_ssh_command(ssh_client, f"pkill -P {process_id} || true", timeout=5)
-                except:
-                    pass
-                try:
-                    await self._exec_ssh_command(ssh_client, f"kill {process_id} || true", timeout=5)
-                except:
-                    pass
-                await asyncio.sleep(0.5)
+                # 首先检查进程是否还在运行
+                is_running = await self._is_process_running(ssh_client, process_id)
+                
+                if is_running:
+                    # 方法1: 尝试获取进程组ID并杀死整个进程组
+                    try:
+                        # 获取进程组ID (PGID)
+                        pgid_cmd = f"ps -o pgid= -p {process_id} 2>/dev/null | tr -d ' ' || echo ''"
+                        pgid_output, _ = await self._exec_ssh_command(ssh_client, pgid_cmd, timeout=5)
+                        pgid = pgid_output.strip()
+                        
+                        if pgid and pgid.isdigit():
+                            # 使用进程组ID杀死整个进程组（更可靠）
+                            logger.info(f"Killing process group {pgid} for process {process_id}")
+                            await self._exec_ssh_command(ssh_client, f"kill -TERM -{pgid} 2>/dev/null || true", timeout=5)
+                            await asyncio.sleep(1)
+                            
+                            # 检查是否还在运行，如果是则强制杀死
+                            if await self._is_process_running(ssh_client, process_id):
+                                logger.warning(f"Process {process_id} still running, using SIGKILL")
+                                await self._exec_ssh_command(ssh_client, f"kill -KILL -{pgid} 2>/dev/null || true", timeout=5)
+                                await asyncio.sleep(0.5)
+                    except Exception as pgid_error:
+                        logger.warning(f"Failed to kill by process group: {str(pgid_error)}, trying alternative methods")
+                    
+                    # 方法2: 杀死所有子进程
+                    try:
+                        # 使用 pkill 杀死所有子进程
+                        await self._exec_ssh_command(ssh_client, f"pkill -P {process_id} 2>/dev/null || true", timeout=5)
+                        await asyncio.sleep(0.5)
+                    except Exception as pkill_error:
+                        logger.warning(f"Failed to kill child processes: {str(pkill_error)}")
+                    
+                    # 方法3: 直接杀死主进程
+                    try:
+                        # 先尝试 SIGTERM（优雅停止）
+                        await self._exec_ssh_command(ssh_client, f"kill -TERM {process_id} 2>/dev/null || true", timeout=5)
+                        await asyncio.sleep(1)
+                        
+                        # 如果还在运行，使用 SIGKILL（强制停止）
+                        if await self._is_process_running(ssh_client, process_id):
+                            logger.warning(f"Process {process_id} still running after SIGTERM, using SIGKILL")
+                            await self._exec_ssh_command(ssh_client, f"kill -KILL {process_id} 2>/dev/null || true", timeout=5)
+                            await asyncio.sleep(0.5)
+                    except Exception as kill_error:
+                        logger.warning(f"Failed to kill main process: {str(kill_error)}")
+                    
+                    # 方法4: 使用 killall 作为最后手段（针对 locust 进程）
+                    try:
+                        # 查找所有相关的 locust 进程并杀死
+                        killall_cmd = f"ps aux | grep -E 'locust.*{process_id}|bash.*locust.*{process_id}' | grep -v grep | awk '{{print $2}}' | xargs -r kill -9 2>/dev/null || true"
+                        await self._exec_ssh_command(ssh_client, killall_cmd, timeout=5)
+                        await asyncio.sleep(0.5)
+                    except Exception as killall_error:
+                        logger.warning(f"Failed to killall: {str(killall_error)}")
+                    
+                    # 最终验证进程是否已停止
+                    final_check = await self._is_process_running(ssh_client, process_id)
+                    if final_check:
+                        logger.error(f"Process {process_id} still running after all kill attempts")
+                        # 即使进程还在运行，也继续清理会话，但记录警告
+                    else:
+                        logger.info(f"Successfully stopped process {process_id}")
+                else:
+                    logger.info(f"Process {process_id} was already stopped")
             
             # 清理会话
             del self.active_debug_sessions[debug_id]
@@ -479,11 +608,24 @@ class RemoteDebugService:
             
             return {
                 "status": "stopped",
-                "debug_id": debug_id
+                "debug_id": debug_id,
+                "process_id": process_id
             }
         
         except Exception as e:
-            logger.error(f"Error stopping debug: {str(e)}")
+            logger.error(f"Error stopping debug: {str(e)}", exc_info=True)
+            # 即使出错，也尝试清理会话
+            try:
+                if debug_id in self.active_debug_sessions:
+                    session = self.active_debug_sessions[debug_id]
+                    if "ssh_client" in session:
+                        try:
+                            session["ssh_client"].close()
+                        except:
+                            pass
+                    del self.active_debug_sessions[debug_id]
+            except:
+                pass
             return {"error": str(e)}
     
     async def get_debug_status(self, debug_id: str) -> Dict:

@@ -22,6 +22,7 @@ const TestTaskDetail = lazy(() => import('./pages/TestTaskDetail'));
 const TestTaskManagement = lazy(() => import('./pages/TestTaskManagement'));
 const ScenariosList = lazy(() => import('./pages/ScenariosList'));
 const LocustCreation = lazy(() => import('./pages/LocustCreation'));
+const KarateCreation = lazy(() => import('./pages/KarateCreation'));
 const FileManagement = lazy(() => import('./pages/FileManagement'));
 const LoadProfile = lazy(() => import('./pages/LoadProfile'));
 
@@ -62,6 +63,9 @@ const App: React.FC = () => {
                 
                 {/* Locust 创建页面 */}
                 <Route path="/scenarios/locust/create" element={<LocustCreation />} />
+                
+                {/* Karate 创建页面 */}
+                <Route path="/scenarios/karate/create" element={<KarateCreation />} />
                 
                 {/* Load Profile 页面 */}
                 <Route path="/load-profile" element={<LoadProfile />} />

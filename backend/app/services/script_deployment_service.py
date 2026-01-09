@@ -101,6 +101,7 @@ class ScriptDeploymentService:
             
             # 获取场景文件并上传
             from .minio_service import minio_service
+            from .script_fix_service import ScriptFixService
             
             for scenario_id in scenario_ids:
                 scenario_files = self.db.query(ScenarioFileRecord).filter(
@@ -114,17 +115,37 @@ class ScriptDeploymentService:
                     try:
                         # 从MinIO获取文件内容
                         file_content = minio_service.download_file(file_record.file_path)
+                        original_content = file_content.decode('utf-8') if isinstance(file_content, bytes) else file_content
                         
-                        # 上传文件
+                        # 如果是Python文件，尝试修复常见问题（如assert语句）
+                        fixed_content = original_content
+                        fix_changes = []
+                        if file_name.endswith('.py'):
+                            fix_result = ScriptFixService.fix_assert_statements(original_content)
+                            if fix_result["fixed_count"] > 0:
+                                fixed_content = fix_result["fixed_content"]
+                                fix_changes = fix_result["changes"]
+                                deployment_logs.append(
+                                    f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Fixed {fix_result['fixed_count']} issue(s) in {file_name}"
+                                )
+                                for change in fix_changes:
+                                    deployment_logs.append(
+                                        f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]   - {change}"
+                                    )
+                        
+                        # 上传修复后的文件
+                        file_content_to_upload = fixed_content.encode('utf-8') if isinstance(fixed_content, str) else fixed_content
                         with sftp.open(file_path, 'w') as remote_file:
-                            remote_file.write(file_content)
+                            remote_file.write(file_content_to_upload)
                         
-                        file_size = len(file_content)
+                        file_size = len(file_content_to_upload)
                         deployed_files.append({
                             "name": file_name,
                             "size": file_size,
                             "status": "uploaded",
-                            "path": file_path
+                            "path": file_path,
+                            "fixed": len(fix_changes) > 0,
+                            "fixes": fix_changes
                         })
                         
                         deployment_logs.append(
@@ -216,7 +237,7 @@ class ScriptDeploymentService:
         script_dir: str, 
         venv_path: str
     ) -> Dict:
-        """验证脚本语法"""
+        """验证脚本语法和最佳实践"""
         validate_script = f"""
 #!/bin/bash
 set +e
@@ -225,6 +246,7 @@ SCRIPT_DIR="{script_dir}"
 VENV_PYTHON="{venv_path}/bin/python3"
 
 errors=0
+warnings=0
 validation_logs=()
 
 # 检查目录是否存在
@@ -247,19 +269,45 @@ for script in "$SCRIPT_DIR"/*.py; do
         script_name=$(basename "$script")
         echo "Validating $script_name..."
         
+        # 语法检查
         if "$VENV_PYTHON" -m py_compile "$script" 2>&1; then
-            echo "OK: $script_name is valid"
-            validation_logs+=("OK: $script_name is valid")
+            echo "OK: $script_name syntax is valid"
+            validation_logs+=("OK: $script_name syntax is valid")
         else
             echo "ERROR: $script_name has syntax errors"
             validation_logs+=("ERROR: $script_name has syntax errors")
             errors=$((errors + 1))
+            continue
+        fi
+        
+        # 检查是否使用了assert语句（不推荐在Locust中使用）
+        if grep -q "assert.*status_code" "$script" 2>/dev/null; then
+            echo "WARNING: $script_name uses 'assert' with status_code - this may cause all requests to be marked as failed"
+            validation_logs+=("WARNING: $script_name uses assert with status_code - consider using response.raise_for_status() or response.failure() instead")
+            warnings=$((warnings + 1))
+        fi
+        
+        # 检查是否使用了assert response（更通用的检查）
+        if grep -q "assert.*response" "$script" 2>/dev/null; then
+            echo "WARNING: $script_name uses 'assert' with response - assertions in Locust tasks can cause unexpected failures"
+            validation_logs+=("WARNING: $script_name uses assert with response - consider using response.raise_for_status() or response.failure() instead")
+            warnings=$((warnings + 1))
+        fi
+        
+        # 检查是否使用了推荐的错误处理方式
+        if grep -q "response.raise_for_status\|response.failure" "$script" 2>/dev/null; then
+            echo "INFO: $script_name uses recommended error handling methods"
+            validation_logs+=("INFO: $script_name uses recommended error handling")
         fi
     fi
 done
 
 if [ $errors -eq 0 ]; then
-    echo "VALIDATION_PASSED"
+    if [ $warnings -gt 0 ]; then
+        echo "VALIDATION_PASSED_WITH_WARNINGS"
+    else
+        echo "VALIDATION_PASSED"
+    fi
     exit 0
 else
     echo "VALIDATION_FAILED: $errors error(s) found"
@@ -287,11 +335,16 @@ fi
             
             exit_status = stdout.channel.recv_exit_status()
             
+            # 检查验证结果
+            has_warnings = any("VALIDATION_PASSED_WITH_WARNINGS" in line for line in output_lines)
+            validation_passed = exit_status == 0
+            
             # 过滤掉验证结果标记
             validation_logs = [line for line in output_lines if not line.startswith("VALIDATION_")]
             
             return {
-                "valid": exit_status == 0,
+                "valid": validation_passed,
+                "has_warnings": has_warnings,
                 "logs": validation_logs,
                 "errors": error_lines if error_lines else [],
                 "error_count": exit_status if exit_status != 0 else 0

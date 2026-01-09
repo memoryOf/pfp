@@ -14,7 +14,7 @@ class Scenario(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(200), nullable=False, comment="场景名称")
     description = Column(Text, comment="场景描述")
-    scenario_type = Column(String(20), nullable=False, comment="场景类型: locust/jmeter/gatling")
+    scenario_type = Column(String(20), nullable=False, comment="场景类型: locust/jmeter/gatling/karate")
     
     # 时间戳
     created_at = Column(DateTime, default=func.now(), comment="创建时间")

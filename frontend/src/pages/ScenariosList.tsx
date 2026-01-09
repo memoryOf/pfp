@@ -77,6 +77,18 @@ const ScenariosList: React.FC = () => {
           isEdit: true
         }
       });
+    } else if (record.scenario_type === 'karate') {
+      navigate('/scenarios/karate/create', {
+        state: {
+          scenarioData: {
+            name: record.name,
+            description: record.description,
+            scenario_type: record.scenario_type
+          },
+          scenarioId: record.id,
+          isEdit: true
+        }
+      });
     } else if (record.scenario_type === 'jmeter') {
       // TODO: 实现JMeter编辑页面
       message.info('JMeter edit page coming soon!');
@@ -182,6 +194,13 @@ const ScenariosList: React.FC = () => {
           // TODO: 实现Gatling创建页面
           message.info('Gatling creation page coming soon!');
           fetchScenarios(); // 刷新列表显示新创建的记录
+        } else if (scenarioType === 'karate') {
+          navigate('/scenarios/karate/create', { 
+            state: { 
+              scenarioData: values,
+              scenarioId: createdScenario.id 
+            } 
+          });
         }
       }
     } catch (error) {
@@ -199,7 +218,8 @@ const ScenariosList: React.FC = () => {
     const typeMap = {
       locust: { color: 'green', text: 'Locust' },
       jmeter: { color: 'blue', text: 'JMeter' },
-      gatling: { color: 'purple', text: 'Gatling' }
+      gatling: { color: 'purple', text: 'Gatling' },
+      karate: { color: 'orange', text: 'Karate' }
     };
     const config = typeMap[type as keyof typeof typeMap] || { color: 'default', text: type };
     return <Tag color={config.color}>{config.text}</Tag>;
@@ -271,15 +291,29 @@ const ScenariosList: React.FC = () => {
       title: 'Actions',
       key: 'action',
       render: (_: any, record: Scenario) => (
-        <Space size="small">
+        <Space 
+          size="small"
+          onClick={(e) => {
+            // 阻止事件冒泡，防止触发行点击
+            e.stopPropagation();
+          }}
+        >
           <Button 
             type="link" 
             icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEdit(record);
+            }}
           />
           <Popconfirm
             title="Delete this scenario?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={(e) => {
+              if (e) {
+                e.stopPropagation();
+              }
+              handleDelete(record.id);
+            }}
             okText="Yes"
             cancelText="No"
             okButtonProps={{
@@ -324,7 +358,14 @@ const ScenariosList: React.FC = () => {
               </svg>
             }
           >
-            <Button type="link" danger icon={<DeleteOutlined />} />
+            <Button 
+              type="link" 
+              danger 
+              icon={<DeleteOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            />
           </Popconfirm>
         </Space>
       ),
@@ -339,6 +380,7 @@ const ScenariosList: React.FC = () => {
     locust: scenarios.filter(s => s.scenario_type === 'locust').length,
     jmeter: scenarios.filter(s => s.scenario_type === 'jmeter').length,
     gatling: scenarios.filter(s => s.scenario_type === 'gatling').length,
+    karate: scenarios.filter(s => s.scenario_type === 'karate').length,
   };
 
   return (
@@ -372,6 +414,21 @@ const ScenariosList: React.FC = () => {
         }
         .bound-warning-modal .ant-modal-confirm-content {
           color: #E5E7EB !important;
+        }
+        /* 表格行悬浮效果 */
+        .scenarios-table .ant-table-tbody > tr {
+          transition: background-color 0.2s ease;
+        }
+        .scenarios-table .ant-table-tbody > tr:hover {
+          background-color: rgba(99, 102, 241, 0.1) !important;
+          cursor: pointer;
+        }
+        /* 确保Actions列中的按钮不会触发行点击 */
+        .scenarios-table .ant-table-tbody > tr .ant-space {
+          pointer-events: auto;
+        }
+        .scenarios-table .ant-table-tbody > tr .ant-btn {
+          pointer-events: auto;
         }
       `}</style>
       <div style={{ marginBottom: '32px' }}>
@@ -472,6 +529,16 @@ const ScenariosList: React.FC = () => {
             rowKey="id"
             loading={loading}
             className="scenarios-table"
+            onRow={(record) => ({
+              onClick: () => handleEdit(record),
+              onMouseEnter: (e) => {
+                e.currentTarget.style.cursor = 'pointer';
+                e.currentTarget.style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+              },
+              onMouseLeave: (e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              },
+            })}
             pagination={{
               showSizeChanger: true,
               showQuickJumper: true,
@@ -587,6 +654,7 @@ const ScenariosList: React.FC = () => {
               <Option value="locust">Locust</Option>
               <Option value="jmeter">JMeter</Option>
               <Option value="gatling">Gatling</Option>
+              <Option value="karate">Karate</Option>
             </Select>
           </Form.Item>
 

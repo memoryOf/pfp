@@ -85,11 +85,20 @@ services:
       MINIO_ACCESS_KEY: admin
       MINIO_SECRET_KEY: pfp123456
       MINIO_BUCKET_NAME: scenario-files
+      # Docker相关环境变量
+      DOCKER_HOST: unix:///var/run/docker.sock
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
       - uploads_data:/app/uploads
+      # 挂载Docker socket以支持在容器内运行Docker命令（用于Karate测试）
+      # 在macOS上，Docker Desktop的socket路径可能是符号链接
+      # 直接挂载实际路径（如果存在），否则使用标准路径
+      - /var/run/docker.sock:/var/run/docker.sock
+    # 使用root用户运行，确保有权限访问Docker socket
+    # 注意：在macOS上可能需要调整权限
+    user: "0:0"
     depends_on:
       - mysql
       - redis
@@ -186,6 +195,18 @@ services:
       - backend
     networks:
       - pfp-network
+
+  # Karate测试运行镜像构建服务
+  karate-builder:
+    build:
+      context: ./docker/karate
+      dockerfile: Dockerfile
+      args:
+        KARATE_VERSION: 1.4.1
+    image: pfp-karate:1.4.1
+    # 这个服务只用于构建镜像，不需要运行
+    profiles:
+      - build-only
 
 volumes:
   mysql_data:
