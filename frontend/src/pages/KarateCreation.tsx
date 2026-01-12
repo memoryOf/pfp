@@ -80,34 +80,43 @@ const KarateCreation = () => {
   }, [isEdit, scenarioData, form]);
 
   // 加载已保存的文件数据
-  useEffect(() => {
-    const loadScenarioFiles = async () => {
-      if (scenarioId) {
-        try {
-          const scenarioFiles = await scenarioFileService.getScenarioFiles(scenarioId);
+  const loadScenarioFiles = useCallback(async () => {
+    if (scenarioId) {
+      try {
+        const scenarioFiles = await scenarioFileService.getScenarioFiles(scenarioId);
           const filesWithContent = await Promise.all(
             scenarioFiles.map(async (file: any) => {
               const fileData = await scenarioFileService.getScenarioFile(scenarioId, file.id);
               return {
                 id: file.id,
                 name: file.file_name,
-                content: fileData.file_content
+                content: fileData.file_content,
+                folder: undefined // 确保所有文件都显示在默认文件夹中
               };
             })
           );
-          setFiles(filesWithContent);
-          if (filesWithContent.length > 0) {
-            setSelectedFile(filesWithContent[0].id);
-            setFileContent(filesWithContent[0].content);
-          }
-        } catch (error) {
-          console.error('Failed to load scenario files:', error);
+        setFiles(filesWithContent);
+        if (filesWithContent.length > 0) {
+          // 如果当前没有选中文件，或者选中的文件不在列表中，则选中第一个文件
+          setSelectedFile(prevSelected => {
+            const currentFileExists = filesWithContent.some(f => f.id === prevSelected);
+            if (!currentFileExists) {
+              const firstFile = filesWithContent[0];
+              setFileContent(firstFile.content);
+              return firstFile.id;
+            }
+            return prevSelected;
+          });
         }
+      } catch (error) {
+        console.error('Failed to load scenario files:', error);
       }
-    };
-
-    loadScenarioFiles();
+    }
   }, [scenarioId]);
+
+  useEffect(() => {
+    loadScenarioFiles();
+  }, [scenarioId, loadScenarioFiles]);
 
   const handleNext = () => {
     if (currentStep < 2) {
@@ -176,7 +185,8 @@ const KarateCreation = () => {
       const newFile = {
         id: Date.now(), // 临时ID
         name: file.name,
-        content: content
+        content: content,
+        folder: undefined // 确保文件显示在默认文件夹中
       };
       
       // 如果有scenarioId，直接保存到MinIO
@@ -363,11 +373,28 @@ const KarateCreation = () => {
         const newFile = {
           id: savedFile.id, // 使用服务器返回的真实ID
           name: defaultFileName,
-          content: defaultFeatureContent
+          content: defaultFeatureContent,
+          folder: undefined // 确保文件显示在默认文件夹中
         };
-        setFiles(prev => [...prev, newFile]);
+        
+        // 检查文件是否已存在（避免重复添加）
+        const fileExists = files.some(f => f.id === newFile.id || f.name === defaultFileName);
+        if (!fileExists) {
+          // 直接添加到文件列表
+          setFiles(prev => [...prev, newFile]);
+        } else {
+          // 如果文件已存在，更新它
+          setFiles(prev => prev.map(f => 
+            f.id === newFile.id || f.name === defaultFileName 
+              ? { ...f, id: newFile.id, content: defaultFeatureContent }
+              : f
+          ));
+        }
+        
+        // 选中新创建的文件
         setSelectedFile(newFile.id);
         setFileContent(defaultFeatureContent);
+        
         message.success('Default feature file created');
       } catch (error) {
         console.error('Failed to create default feature file:', error);
@@ -375,15 +402,36 @@ const KarateCreation = () => {
       }
     } else {
       // 如果没有scenarioId，使用临时ID（在最终保存场景时会创建）
+      const tempId = Date.now();
       const newFile = {
-        id: Date.now(),
+        id: tempId,
         name: defaultFileName,
-        content: defaultFeatureContent
+        content: defaultFeatureContent,
+        folder: undefined // 确保文件显示在默认文件夹中
       };
-      setFiles(prev => [...prev, newFile]);
-      setSelectedFile(newFile.id);
-      setFileContent(defaultFeatureContent);
-      message.success('Default feature file created');
+      
+      // 检查文件是否已存在（避免重复添加）
+      const fileExists = files.some(f => f.name === defaultFileName);
+      if (!fileExists) {
+        setFiles(prev => [...prev, newFile]);
+        setSelectedFile(tempId);
+        setFileContent(defaultFeatureContent);
+        message.success('Default feature file created');
+      } else {
+        // 如果文件已存在，选中它并更新内容
+        const existingFile = files.find(f => f.name === defaultFileName);
+        if (existingFile) {
+          setSelectedFile(existingFile.id);
+          setFileContent(defaultFeatureContent);
+          // 更新文件内容
+          setFiles(prev => prev.map(f => 
+            f.id === existingFile.id 
+              ? { ...f, content: defaultFeatureContent }
+              : f
+          ));
+          message.success('Default feature file updated');
+        }
+      }
     }
   };
 
